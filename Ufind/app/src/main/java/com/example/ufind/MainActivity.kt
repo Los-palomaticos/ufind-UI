@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.ufind.composables.LoginScreen
+import com.example.ufind.composables.SignUpScreen
 import com.example.ufind.ui.theme.UfindTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             UfindTheme {
-                LoginScreen()
+                SignUpScreen()
             }
         }
     }
