@@ -1,7 +1,7 @@
-package com.example.ufind.composables
+package com.example.ufind.screen
 
-import android.util.Log
 import android.util.Patterns
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,12 +31,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -47,88 +49,68 @@ import com.example.ufind.R
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpScreen() {
+fun LoginScreen() {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        SignUpBody(Modifier.align(Alignment.Center))
-        SignUpFooter(Modifier.align(BottomCenter))
+        Body(Modifier.align(Center))
+        Footer(Modifier.align(BottomCenter))
+
     }
+
 }
 
 @Composable
-fun SignUpBody(modifier: Modifier) {
-    var createdUserName by rememberSaveable {
-        mutableStateOf("")
-    }
-    var newEmail by rememberSaveable {
-        mutableStateOf("")
-
-    }
-    var createdPassword by rememberSaveable {
+fun Body(modifier: Modifier) {
+    var email by rememberSaveable {
         mutableStateOf("")
     }
 
-    var repeatedPassword by rememberSaveable {
+    var password by rememberSaveable {
         mutableStateOf("")
     }
-    var isSignUpEnable by rememberSaveable {
+
+    var isLoginEnable by rememberSaveable {
         mutableStateOf(false)
+
     }
+
     Column(modifier = modifier) {
-
-        ImageLogo(Modifier.align(CenterHorizontally))
+        ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-
-        CreatedUserName(createdUserName) { createdUserName = it }
-        Spacer(Modifier.size(8.dp))
-
-        NewEmail(email = newEmail, onTextChanged = {
-            newEmail = it
-        })
-        Spacer(Modifier.size(8.dp))
-
-        NewPassword(password = createdPassword, onTextChanged = {
-            createdPassword = it
-        })
-        Spacer(Modifier.size(8.dp))
-
-        RepeatPassword(repeatedPassword = repeatedPassword) {
-            repeatedPassword = it
-            isSignUpEnable = enableSignUp(newEmail, createdPassword, repeatedPassword)
+        Email(email) {
+            email = it
+            isLoginEnable= enableLogin(email, password)
 
         }
+        Spacer(modifier = Modifier.size(8.dp))
+        Password(password) {
+            password = it
+            isLoginEnable = enableLogin(email, password)
+        }
         Spacer(modifier = Modifier.size(16.dp))
+        LoginButton(isLoginEnable)
 
-        SignUpButton(signUpEnable = isSignUpEnable, createdUserName, repeatedPassword)
+
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
+}
 @Composable
-fun CreatedUserName(createdUserName: String, onTextChanged: (String) -> Unit) {
-    TextField(
-        value = createdUserName,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text = "Nombre de usuario") },
-        maxLines = 1,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = colorResource(id = R.color.textfield_color),
-            focusedIndicatorColor = colorResource(id = R.color.primary_color),
-            unfocusedIndicatorColor = Color.Transparent
-        )
+fun ImageLogo(size :Int, modifier: Modifier) {
+    Image(
+        painter = painterResource(id = R.drawable.ic_ufind),
+        contentDescription = "Logo",
+        modifier = modifier.size(size.dp),
+        contentScale = ContentScale.Fit
     )
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewEmail(email: String, onTextChanged: (String) -> Unit) {
+fun Email(email: String, onTextChanged: (String) -> Unit) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
@@ -148,7 +130,8 @@ fun NewEmail(email: String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewPassword(password: String, onTextChanged: (String) -> Unit) {
+fun Password(password: String, onTextChanged: (String) -> Unit) {
+
     var passwordVisibility by rememberSaveable {
         mutableStateOf(false)
     }
@@ -181,79 +164,39 @@ fun NewPassword(password: String, onTextChanged: (String) -> Unit) {
         } else {
             PasswordVisualTransformation()
         }
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RepeatPassword(repeatedPassword: String, onTextChanged: (String) -> Unit) {
-
-    var passwordVisibility by rememberSaveable {
-        mutableStateOf(false)
-    }
-    TextField(
-        value = repeatedPassword,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text = "Confirmar contraseña") },
-        maxLines = 1,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = colorResource(id = R.color.textfield_color),
-            focusedIndicatorColor = colorResource(id = R.color.primary_color),
-            unfocusedIndicatorColor = Color.Transparent
-        ),
-        trailingIcon = {
-            val imagen = if (passwordVisibility) {
-                Icons.Filled.VisibilityOff
-            } else {
-                Icons.Filled.Visibility
-
-            }
-            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(imageVector = imagen, contentDescription = "Show password")
-            }
-        },
-        visualTransformation = if (passwordVisibility) {
-            VisualTransformation.None
-        } else {
-            PasswordVisualTransformation()
-        }
 
     )
 
 }
 
-
 @Composable
-fun SignUpButton(signUpEnable: Boolean, createdUserName: String, repeatedPassword: String) {
+fun LoginButton(loginEnable: Boolean) {
     Button(
-        onClick = { Log.i("NewSignUp", "Username $createdUserName Password: $repeatedPassword") },
-        enabled = signUpEnable,
+        onClick = { /*TODO*/ },
+        enabled = loginEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.primary_color),
             disabledContainerColor = colorResource(id = R.color.disabled_color),
             contentColor = Color.White,
             disabledContentColor = Color.White
-
         )
     ) {
-        Text("Registrarse")
+        Text("Iniciar sesión")
 
     }
+
 }
 
-fun enableSignUp(email: String, password: String, repeatedPassword: String): Boolean {
+fun enableLogin(email: String, password: String): Boolean {
 
     return Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-            password.length > 6 && repeatedPassword == password
+            password.length > 6
 }
 
 @Composable
-fun SignUpFooter(modifier: Modifier) {
-    Column(modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
+fun Footer(modifier: Modifier) {
+    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
         Divider(
             Modifier
                 .background(Color(0xFFF9F9F9))
@@ -261,16 +204,40 @@ fun SignUpFooter(modifier: Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        UserLogInOption()
+        ForgottenPassword()
+        Spacer(modifier = Modifier.size(16.dp))
+        SignUp()
+        Spacer(modifier = Modifier.size(16.dp))
+
     }
 
+
+}
+@Composable
+fun ForgottenPassword() {
+    Text(
+        text = "Olvidé mi contraseña", Modifier.padding(horizontal = 8.dp), color = colorResource(
+            id = R.color.disabled_color
+        )
+    )
 }
 
 @Composable
-fun UserLogInOption(){
-    Row(horizontalArrangement = Arrangement.Center) {
-        Text("¿Ya tienes una cuenta?", color = colorResource(id = R.color.disabled_color), modifier = Modifier.padding(6.dp))
-        Text("Inicia Sesión", color = colorResource(id = R.color.primary_color), textDecoration = TextDecoration.Underline, modifier = Modifier.padding(6.dp))
-
+fun SignUp() {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Text(
+            text = "¿No tienes una cuenta?",
+            Modifier.padding(horizontal = 8.dp),
+            color = colorResource(
+                id = R.color.disabled_color
+            )
+        )
+        Text(
+            text = "Registrate",
+            color = colorResource(id = R.color.primary_color),
+            textDecoration = TextDecoration.Underline
+        )
     }
 }
+
+
