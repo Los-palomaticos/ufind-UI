@@ -1,4 +1,4 @@
-package com.example.ufind
+package com.example.ufind.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.material.BottomNavigation
@@ -8,14 +8,20 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.ufind.R
 import com.example.ufind.data.BottomBarScreen
 import com.example.ufind.data.BottomNavGraph
 
 
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Preview(showBackground=true)
 @Composable
 fun UserInterfaceNavigation() {
     val navController = rememberNavController()
@@ -43,13 +49,23 @@ fun currentRoute(navController: NavHostController): String? {
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController, navigationItem: List<BottomBarScreen>) {
-    androidx.compose.material.BottomAppBar {
-        BottomNavigation {
+    androidx.compose.material.BottomAppBar(backgroundColor = Color.White) {
+        BottomNavigation(backgroundColor = Color.White, contentColor = colorResource(
+            id = R.color.text_color
+        )) {
             val currentRoute = currentRoute(navController = navController)
             navigationItem.forEach { item ->
                 BottomNavigationItem(
                     selected = currentRoute == item.route,
-                    onClick = { navController.navigate(item.route) },
+                    onClick = { navController.navigate(item.route){
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) {
+                                saveState = true
+                            }
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    } },
                     icon = {
                         Icon(
                             imageVector = item.icon,

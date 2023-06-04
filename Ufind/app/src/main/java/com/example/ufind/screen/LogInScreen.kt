@@ -1,8 +1,8 @@
 package com.example.ufind.screen
 
 import android.util.Patterns
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,14 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.BottomCenter
-import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -49,21 +45,20 @@ import com.example.ufind.R
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onClickSignUpScreen: () -> Unit ={}, onClickUserInterfaceNavigation: () -> Unit={}) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Body(Modifier.align(Center))
-        Footer(Modifier.align(BottomCenter))
+        Body(Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
+        Footer(Modifier.align(Alignment.BottomCenter), onClickSignUpScreen)
 
     }
-
 }
 
 @Composable
-fun Body(modifier: Modifier) {
+fun Body(modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit={}) {
     var email by rememberSaveable {
         mutableStateOf("")
     }
@@ -78,11 +73,11 @@ fun Body(modifier: Modifier) {
     }
 
     Column(modifier = modifier) {
-        ImageLogo(150, Modifier.align(CenterHorizontally))
+        ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
         Email(email) {
             email = it
-            isLoginEnable= enableLogin(email, password)
+            isLoginEnable = enableLogin(email, password)
 
         }
         Spacer(modifier = Modifier.size(8.dp))
@@ -91,28 +86,18 @@ fun Body(modifier: Modifier) {
             isLoginEnable = enableLogin(email, password)
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable)
+        LoginButton(isLoginEnable,onClickUserInterfaceNavigation)
 
 
     }
 
-}
-@Composable
-fun ImageLogo(size :Int, modifier: Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.ic_ufind),
-        contentDescription = "Logo",
-        modifier = modifier.size(size.dp),
-        contentScale = ContentScale.Fit
-    )
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Email(email: String, onTextChanged: (String) -> Unit) {
-    TextField(
-        value = email,
+    TextField(value = email,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(text = "Email") },
@@ -135,8 +120,7 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
     var passwordVisibility by rememberSaveable {
         mutableStateOf(false)
     }
-    TextField(
-        value = password,
+    TextField(value = password,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(text = "Contraseña") },
@@ -170,9 +154,10 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean) {
+fun LoginButton(loginEnable: Boolean, onClickUserInterfaceNavigation: () -> Unit={}) {
+
     Button(
-        onClick = { /*TODO*/ },
+        onClick = onClickUserInterfaceNavigation,
         enabled = loginEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
@@ -188,15 +173,14 @@ fun LoginButton(loginEnable: Boolean) {
 
 }
 
-fun enableLogin(email: String, password: String): Boolean {
+private fun enableLogin(email: String, password: String): Boolean {
 
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-            password.length > 6
+    return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 }
 
 @Composable
-fun Footer(modifier: Modifier) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
+fun Footer(modifier: Modifier, onClickSignUpScreen: () -> Unit={}) {
+    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Divider(
             Modifier
                 .background(Color(0xFFF9F9F9))
@@ -206,13 +190,14 @@ fun Footer(modifier: Modifier) {
         Spacer(modifier = Modifier.size(16.dp))
         ForgottenPassword()
         Spacer(modifier = Modifier.size(16.dp))
-        SignUp()
+        SignUp(onClickSignUpScreen)
         Spacer(modifier = Modifier.size(16.dp))
 
     }
 
 
 }
+
 @Composable
 fun ForgottenPassword() {
     Text(
@@ -223,7 +208,7 @@ fun ForgottenPassword() {
 }
 
 @Composable
-fun SignUp() {
+fun SignUp(onClickSignUpScreen: () -> Unit ={}) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
             text = "¿No tienes una cuenta?",
@@ -239,5 +224,3 @@ fun SignUp() {
         )
     }
 }
-
-
