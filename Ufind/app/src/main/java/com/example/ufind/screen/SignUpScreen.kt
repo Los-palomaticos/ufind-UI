@@ -1,9 +1,7 @@
 package com.example.ufind.screen
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -48,19 +47,19 @@ import com.example.ufind.R
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        SignUpBody(Modifier.align(Alignment.Center))
-        SignUpFooter(Modifier.align(BottomCenter))
+        SignUpBody(Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
+        SignUpFooter(Modifier.align(BottomCenter), onClickLogInScreen)
     }
 }
 
 @Composable
-fun SignUpBody(modifier: Modifier) {
+fun SignUpBody(modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit={}) {
     var createdUserName by rememberSaveable {
         mutableStateOf("")
     }
@@ -103,7 +102,7 @@ fun SignUpBody(modifier: Modifier) {
         }
         Spacer(modifier = Modifier.size(16.dp))
 
-        SignUpButton(signUpEnable = isSignUpEnable, createdUserName, repeatedPassword)
+        SignUpButton(signUpEnable = isSignUpEnable, createdUserName, repeatedPassword, onClickUserInterfaceNavigation)
     }
 }
 
@@ -228,9 +227,14 @@ fun RepeatPassword(repeatedPassword: String, onTextChanged: (String) -> Unit) {
 
 
 @Composable
-fun SignUpButton(signUpEnable: Boolean, createdUserName: String, repeatedPassword: String) {
+fun SignUpButton(
+    signUpEnable: Boolean,
+    createdUserName: String,
+    repeatedPassword: String,
+    onClickUserInterfaceNavigation: () -> Unit ={}
+) {
     Button(
-        onClick = { Log.i("NewSignUp", "Username $createdUserName Password: $repeatedPassword") },
+        onClick = onClickUserInterfaceNavigation,
         enabled = signUpEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
@@ -253,7 +257,7 @@ fun enableSignUp(email: String, password: String, repeatedPassword: String): Boo
 }
 
 @Composable
-fun SignUpFooter(modifier: Modifier) {
+fun SignUpFooter(modifier: Modifier, onClickLogInScreen: () -> Unit ={}) {
     Column(modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
         Divider(
             Modifier
@@ -262,16 +266,28 @@ fun SignUpFooter(modifier: Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        UserLogInOption()
+        UserLogInOption(onClickLogInScreen)
     }
 
 }
 
 @Composable
-fun UserLogInOption(){
-    Row(horizontalArrangement = Arrangement.Center) {
-        Text("¿Ya tienes una cuenta?", color = colorResource(id = R.color.disabled_color), modifier = Modifier.padding(6.dp))
-        Text("Inicia Sesión", color = colorResource(id = R.color.primary_color), textDecoration = TextDecoration.Underline, modifier = Modifier.padding(6.dp).clickable {  })
-
+fun UserLogInOption(onClickLogInScreen: () -> Unit={}) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            "¿Ya tienes una cuenta?",
+            color = colorResource(id = R.color.disabled_color),
+            modifier = Modifier.padding(4.dp)
+        )
+        TextButton(onClick = onClickLogInScreen) {
+            Text(
+                "Inicia sesión",
+                color = colorResource(id = R.color.primary_color),
+                textDecoration = TextDecoration.Underline
+            )
+        }
     }
 }

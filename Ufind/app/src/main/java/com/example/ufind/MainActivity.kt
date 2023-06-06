@@ -13,6 +13,9 @@ import com.example.ufind.screen.LogInOrSignUpOptions
 import com.example.ufind.screen.LoginScreen
 import com.example.ufind.screen.SignUpScreen
 import com.example.ufind.navigation.UserInterfaceNavigation
+import com.example.ufind.screen.ChangePasswordScreen
+import com.example.ufind.screen.EnterCodeForgottenPasswordScreen
+import com.example.ufind.screen.ForgottenPasswordScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -40,14 +43,28 @@ fun NavigationView() {
         composable(route = OptionsRoutes.LogIn.route) {
             LoginScreen(
                 onClickSignUpScreen = { navController.navigate(OptionsRoutes.SignUp.route) },
-                onClickUserInterfaceNavigation = {navController.navigate(OptionsRoutes.UserInterface.route)}
+                onClickUserInterfaceNavigation = { navController.navigate(OptionsRoutes.UserInterface.route) },
+                onClickForgottenPasswordScreen = { navController.navigate(OptionsRoutes.ForgottenPassword.route) }
             )
         }
         composable(route = OptionsRoutes.SignUp.route) {
-            SignUpScreen()
+            SignUpScreen({ navController.navigate(OptionsRoutes.LogIn.route) }) {
+                navController.navigate(
+                    OptionsRoutes.UserInterface.route
+                )
+            }
         }
-        composable(route = OptionsRoutes.UserInterface.route){
+        composable(route = OptionsRoutes.UserInterface.route) {
             UserInterfaceNavigation()
+        }
+        composable(route = OptionsRoutes.ForgottenPassword.route) {
+            ForgottenPasswordScreen { navController.navigate(OptionsRoutes.EnterCodeForgottenPasswordScreen.route) }
+        }
+        composable(route = OptionsRoutes.EnterCodeForgottenPasswordScreen.route) {
+            EnterCodeForgottenPasswordScreen { navController.navigate(OptionsRoutes.ChangePasswordScreen.route) }
+        }
+        composable(route = OptionsRoutes.ChangePasswordScreen.route) {
+            ChangePasswordScreen { navController.navigate(OptionsRoutes.LogIn.route) }
         }
     }
 }
