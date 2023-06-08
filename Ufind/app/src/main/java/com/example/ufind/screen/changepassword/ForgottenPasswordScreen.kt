@@ -1,6 +1,5 @@
-package com.example.ufind.screen
+package com.example.ufind.screen.changepassword
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ufind.R
+import com.example.ufind.screen.userhomescreen.ImageLogo
 
 
 @Preview(showBackground = true)

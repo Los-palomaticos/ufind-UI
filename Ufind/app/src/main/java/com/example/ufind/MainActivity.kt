@@ -10,12 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ufind.data.OptionsRoutes
 import com.example.ufind.screen.LogInOrSignUpOptions
-import com.example.ufind.screen.LoginScreen
-import com.example.ufind.screen.SignUpScreen
+import com.example.ufind.screen.login.LoginScreen
+import com.example.ufind.screen.signup.SignUpScreen
 import com.example.ufind.navigation.UserInterfaceNavigation
-import com.example.ufind.screen.ChangePasswordScreen
-import com.example.ufind.screen.EnterCodeForgottenPasswordScreen
-import com.example.ufind.screen.ForgottenPasswordScreen
+import com.example.ufind.screen.changepassword.ChangePasswordScreen
+import com.example.ufind.screen.changepassword.EnterCodeForgottenPasswordScreen
+import com.example.ufind.screen.changepassword.ForgottenPasswordScreen
 
 
 class MainActivity : ComponentActivity() {

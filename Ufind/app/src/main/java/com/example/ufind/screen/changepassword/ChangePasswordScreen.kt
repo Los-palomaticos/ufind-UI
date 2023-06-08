@@ -1,4 +1,4 @@
-package com.example.ufind.screen
+package com.example.ufind.screen.changepassword
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

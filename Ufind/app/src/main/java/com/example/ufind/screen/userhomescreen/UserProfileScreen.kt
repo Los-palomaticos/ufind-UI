@@ -1,4 +1,4 @@
-package com.example.ufind.screen
+package com.example.ufind.screen.userhomescreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

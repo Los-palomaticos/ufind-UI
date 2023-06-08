@@ -3,10 +3,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.ufind.screen.HomeMenuScreen
-import com.example.ufind.screen.MainChatScreen
-import com.example.ufind.screen.SavedPostScreen
-import com.example.ufind.screen.UserProfileScreen
+import com.example.ufind.screen.userhomescreen.HomeMenuScreen
+import com.example.ufind.screen.userhomescreen.MainChatScreen
+import com.example.ufind.screen.userhomescreen.SavedPostScreen
+import com.example.ufind.screen.userhomescreen.UserProfileScreen
 
 
 @Composable
