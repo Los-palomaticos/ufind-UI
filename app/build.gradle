@@ -47,8 +47,14 @@ android {
 }
 
 dependencies {
+    // lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version")
+    // retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$gson_version"
+
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    def nav_version = "2.5.3"
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     constraints {
@@ -66,7 +72,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'androidx.activity:activity-compose:1.5.1'
     implementation 'androidx.compose.material:material-icons-extended:1.4.3'
 
