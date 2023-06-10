@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
-
+val colorbutton = Color(0xFF001233)
 @Preview
 @Composable
 fun ConfigurationsScreen() {
@@ -234,6 +234,6 @@ fun PreviewConfirmationMessage() {
         message = "¿Deseas confirmar esta petición?",
         onAccept = { /* Acción al aceptar la petición */ },
         onCancel = { /* Acción al cancelar la petición */ },
-        color = Color.Blue
+        color = colorbutton
     )
 }
