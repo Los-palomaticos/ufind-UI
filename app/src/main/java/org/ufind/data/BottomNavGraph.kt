@@ -3,6 +3,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import org.ufind.ui.screen.settings.SettingsChangePassword
 import org.ufind.ui.screen.userhomescreen.HomeMenuScreen
 import org.ufind.ui.screen.userhomescreen.MainChatScreen
 import org.ufind.ui.screen.userhomescreen.SavedPostScreen
