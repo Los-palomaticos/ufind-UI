@@ -76,6 +76,7 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = viewModel(factory=SignUpViewModel.Factory)
 //    onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}
 ) {
+    viewModel.getUser()
     Box(
         Modifier
             .fillMaxSize()

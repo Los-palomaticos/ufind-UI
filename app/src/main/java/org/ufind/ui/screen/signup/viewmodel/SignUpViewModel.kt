@@ -1,15 +1,20 @@
 package org.ufind.ui.screen.signup.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.ufind.UfindApplication
 import org.ufind.data.OptionsRoutes
+import org.ufind.data.datastore.DataStoreManager
+import org.ufind.data.model.UserModel
 import org.ufind.navigation.RouteNavigator
 import org.ufind.navigation.UfindNavigator
 import org.ufind.network.ApiResponse
@@ -45,9 +50,20 @@ class SignUpViewModel(
             }
         }
     }
-
+    fun getUser() {
+        viewModelScope.launch {
+             repository.getUserData().collect{
+                if(it.token!="") {
+                    navigateToRoute(OptionsRoutes.UserInterface.route)
+                }
+            }
+        }
+    }
+    //        viewModelScope.launch {
+//        }
     fun clear() {
         username.value = ""
+        email.value = ""
         password.value = ""
         repeatedPassword.value = ""
         isValid.value = false

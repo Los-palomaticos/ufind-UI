@@ -26,13 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ufind.R
+import org.ufind.UfindApplication
+import org.ufind.data.datastore.DataStoreManager
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeMenuScreen() {
-
     Box(
         Modifier
             .fillMaxSize()
