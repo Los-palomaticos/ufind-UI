@@ -8,6 +8,7 @@ sealed class OptionsRoutes(val route:String){
     object ForgottenPassword: OptionsRoutes("ForgottenPasswordScreen")
     object EnterCodeForgottenPasswordScreen: OptionsRoutes("EnterCodeForgottenPasswordScreen")
     object ChangePasswordScreen: OptionsRoutes("ChangePasswordScreen")
-
+    object AddPostScreen: OptionsRoutes("AddPostScreen")
+    object PostScreen: OptionsRoutes("PostScreen")
 
 }

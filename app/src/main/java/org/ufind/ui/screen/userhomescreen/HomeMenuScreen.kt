@@ -14,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,42 +21,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ufind.R
+import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun HomeMenuScreen() {
+fun HomeMenuScreen(onClickAddPostScreen: () -> Unit={}) {
 
     Box(
         Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(16.dp)
     ) {
-        HomeBody()
+        HomeBody(onClickAddPostScreen)
+
+
     }
 }
 
 @Composable
-fun HomeBody() {
+fun HomeBody(onClickAddPostScreen: () -> Unit={}) {
     Column {
         PageHeader()
-        FoundSomethingButton()
         Spacer(modifier = Modifier.size(32.dp))
-        PostsUFind()
+        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        PostScreen(onClickAddPostScreen)
+
     }
-
 }
 
-@Composable
-fun PostsUFind() {
-    Text(text = "Publicaciones", fontSize = 16.sp)
 
-}
+
 
 @Composable
 fun FoundSomethingButton() {
