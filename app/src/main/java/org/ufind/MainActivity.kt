@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavigationComponent
-import org.ufind.ui.screen.LogInOrSignUpOptions
 import org.ufind.ui.screen.login.LoginScreen
 import org.ufind.ui.screen.signup.SignUpScreen
 import org.ufind.ui.navigation.UserInterfaceNavigation
