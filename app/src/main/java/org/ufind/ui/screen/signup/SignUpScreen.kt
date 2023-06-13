@@ -1,6 +1,8 @@
 package org.ufind.ui.screen.signup
 
+import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -22,11 +26,13 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,6 +42,7 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -43,67 +50,84 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import org.ufind.R
+import org.ufind.data.OptionsRoutes
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
 import org.ufind.ui.screen.userhomescreen.ImageLogo
 
-@Preview(showBackground = true)
+object SignUpScreen: NavRoute<SignUpViewModel> {
+    override val route: String
+        get() = OptionsRoutes.SignUp.route
+    @Composable
+    override fun viewModel(): SignUpViewModel = viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: SignUpViewModel) {
+        SignUpScreen()
+    }
+
+}
+
+//@Preview(showBackground = true)
 @Composable
-fun SignUpScreen(onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}) {
+fun SignUpScreen(
+    viewModel: SignUpViewModel = viewModel(factory=SignUpViewModel.Factory)
+//    onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}
+) {
+    viewModel.getUser()
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        SignUpBody(Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
-        SignUpFooter(Modifier.align(BottomCenter), onClickLogInScreen)
+        SignUpBody(modifier = Modifier.align(Alignment.Center), viewModel = viewModel)
+        SignUpFooter(modifier = Modifier.align(BottomCenter))
     }
 }
 
 @Composable
-fun SignUpBody(modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit={}) {
-    var createdUserName by rememberSaveable {
-        mutableStateOf("")
-    }
-    var newEmail by rememberSaveable {
-        mutableStateOf("")
-
-    }
-    var createdPassword by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var repeatedPassword by rememberSaveable {
-        mutableStateOf("")
-    }
-    var isSignUpEnable by rememberSaveable {
-        mutableStateOf(false)
-    }
+fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
+    val uiState = viewModel.uiState.collectAsState()
     Column(modifier = modifier) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-
-        CreatedUserName(createdUserName) { createdUserName = it }
+        if(uiState.value is SignUpUiState.ErrorWithMessage){
+            Text(
+                text = (uiState.value as SignUpUiState.ErrorWithMessage).message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+        CreatedUserName(viewModel.username.value) {
+            viewModel.username.value = it
+            viewModel.checkData()
+        }
         Spacer(Modifier.size(8.dp))
 
-        NewEmail(email = newEmail, onTextChanged = {
-            newEmail = it
+        NewEmail(email = viewModel.email.value, onTextChanged = {
+            viewModel.email.value = it
+            viewModel.checkData()
         })
         Spacer(Modifier.size(8.dp))
 
-        NewPassword(password = createdPassword, onTextChanged = {
-            createdPassword = it
+        NewPassword(password = viewModel.password.value, onTextChanged = {
+            viewModel.password.value = it
+            viewModel.checkData()
         })
         Spacer(Modifier.size(8.dp))
 
-        RepeatPassword(repeatedPassword = repeatedPassword) {
-            repeatedPassword = it
-            isSignUpEnable = enableSignUp(newEmail, createdPassword, repeatedPassword)
-
+        RepeatPassword(repeatedPassword = viewModel.repeatedPassword.value) {
+            viewModel.repeatedPassword.value = it
+            viewModel.checkData()
         }
         Spacer(modifier = Modifier.size(16.dp))
 
-        SignUpButton(signUpEnable = isSignUpEnable, createdUserName, repeatedPassword, onClickUserInterfaceNavigation)
+        SignUpButton(signUpEnable = viewModel.isValid.value) {
+            viewModel.signup()
+        }
     }
 }
 
@@ -230,12 +254,10 @@ fun RepeatPassword(repeatedPassword: String, onTextChanged: (String) -> Unit) {
 @Composable
 fun SignUpButton(
     signUpEnable: Boolean,
-    createdUserName: String,
-    repeatedPassword: String,
-    onClickUserInterfaceNavigation: () -> Unit ={}
+    onClick: () -> Unit ={}
 ) {
     Button(
-        onClick = onClickUserInterfaceNavigation,
+        onClick = onClick,
         enabled = signUpEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
@@ -258,7 +280,7 @@ fun enableSignUp(email: String, password: String, repeatedPassword: String): Boo
 }
 
 @Composable
-fun SignUpFooter(modifier: Modifier, onClickLogInScreen: () -> Unit ={}) {
+fun SignUpFooter(modifier: Modifier) {
     Column(modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
         Divider(
             Modifier
@@ -267,7 +289,7 @@ fun SignUpFooter(modifier: Modifier, onClickLogInScreen: () -> Unit ={}) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        UserLogInOption(onClickLogInScreen)
+        UserLogInOption(/* TODO */)
     }
 
 }

@@ -14,11 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import org.ufind.R
+import org.ufind.UfindApplication
+import org.ufind.data.datastore.DataStoreManager
+import org.ufind.ui.screen.signup.SignUpScreen.viewModel
+import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
 import org.ufind.ui.screen.userhomescreen.ImageLogo
-
 
 @Composable
 fun LogInOrSignUpOptions(onClickSignUpScreen: () -> Unit ={}, onClickSignInScreen: () -> Unit={}) {

@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -51,7 +52,6 @@ fun HomeBody(onClickAddPostScreen: () -> Unit={}) {
         Spacer(modifier = Modifier.size(32.dp))
         Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         PostScreen(onClickAddPostScreen)
-
     }
 }
 
