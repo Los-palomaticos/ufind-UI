@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalContext
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
@@ -65,7 +66,7 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
     override fun viewModel(): SignUpViewModel = viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
     @Composable
     override fun Content(viewModel: SignUpViewModel) {
-        SignUpScreen()
+        SignUpScreen(viewModel)
     }
 
 }
@@ -73,10 +74,9 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
 //@Preview(showBackground = true)
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = viewModel(factory=SignUpViewModel.Factory)
-//    onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}
+    viewModel: SignUpViewModel
 ) {
-    viewModel.getUser()
+    viewModel.handleUiStatus(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()

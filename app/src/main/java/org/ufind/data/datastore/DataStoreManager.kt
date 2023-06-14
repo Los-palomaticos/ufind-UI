@@ -13,7 +13,7 @@ import org.ufind.data.model.UserModel
 
 private const val USER_DATASTORE="USER"
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE)
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE)
 
 class DataStoreManager(val context: Context) {
     suspend fun saveUserData(userModel: UserModel) {

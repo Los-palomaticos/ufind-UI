@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.ufind.data.OptionsRoutes
 import org.ufind.ui.navigation.UserInterfaceNavigation
-import org.ufind.ui.screen.LogInOrSignUpOptions
+import org.ufind.ui.screen.start.LoginOrSignUpOptions
 import org.ufind.ui.screen.changepassword.ChangePasswordScreen
 import org.ufind.ui.screen.changepassword.EnterCodeForgottenPasswordScreen
 import org.ufind.ui.screen.changepassword.ForgottenPasswordScreen
@@ -15,28 +15,27 @@ import org.ufind.ui.screen.login.LoginScreen
 import org.ufind.ui.screen.signup.SignUpScreen
 
 @Composable
-fun NavigationComponent(navHostController: NavHostController) {
+fun NavigationComponent(navHostController: NavHostController, startDestination: String) {
     NavHost(
         navController = navHostController,
-        startDestination = OptionsRoutes.LogInOrSignUpOptions.route,
+        startDestination = startDestination,
         modifier = Modifier
     ) {
-
         composable(route = OptionsRoutes.LogInOrSignUpOptions.route) {
-            LogInOrSignUpOptions(
+            LoginOrSignUpOptions(
                 onClickSignUpScreen = { navHostController.navigate(OptionsRoutes.SignUp.route) },
                 onClickSignInScreen = { navHostController.navigate(OptionsRoutes.LogIn.route) }
             )
         }
-        composable(route = OptionsRoutes.LogIn.route) {
-            LoginScreen(
-                onClickSignUpScreen = { navHostController.navigate(OptionsRoutes.SignUp.route) },
-                onClickUserInterfaceNavigation = { navHostController.navigate(OptionsRoutes.UserInterface.route) },
-                onClickForgottenPasswordScreen = { navHostController.navigate(OptionsRoutes.ForgottenPassword.route) }
-            )
-        }
+//        composable(route = OptionsRoutes.LogIn.route) {
+//            LoginScreen(
+//                onClickSignUpScreen = { navHostController.navigate(OptionsRoutes.SignUp.route) },
+//                onClickUserInterfaceNavigation = { navHostController.navigate(OptionsRoutes.UserInterface.route) },
+//                onClickForgottenPasswordScreen = { navHostController.navigate(OptionsRoutes.ForgottenPassword.route) }
+//            )
+//        }
         SignUpScreen.composable(this, navHostController)
-
+        LoginScreen.composable(this, navHostController)
         composable(route = OptionsRoutes.UserInterface.route) {
             UserInterfaceNavigation()
         }

@@ -1,7 +1,11 @@
 package org.ufind.ui.screen.signup.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -10,6 +14,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.ufind.UfindApplication
 import org.ufind.data.OptionsRoutes
@@ -31,7 +36,7 @@ class SignUpViewModel(
     val repeatedPassword = mutableStateOf("")
     val isValid = mutableStateOf(false)
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Resume)
-    val uiState
+    val uiState:StateFlow<SignUpUiState>
         get() = _uiState
 
 //    val navigationState: MutableStateFlow<NavigationState> = MutableStateFlow(NavigationState.Idle)
@@ -43,7 +48,8 @@ class SignUpViewModel(
                 is ApiResponse.Success -> {
                     _uiState.value = SignUpUiState.Success(response.data)
                     clear()
-                    routeNavigator.navigateToRoute(OptionsRoutes.UserInterface.route)
+                    resetState()
+                    routeNavigator.navigateToRoute(OptionsRoutes.LogIn.route)
                 }
                 is ApiResponse.ErrorWithMessage -> _uiState.value = SignUpUiState.ErrorWithMessage(response.message)
                 is ApiResponse.Error -> _uiState.value = SignUpUiState.Error(response.exception)
@@ -68,13 +74,22 @@ class SignUpViewModel(
         repeatedPassword.value = ""
         isValid.value = false
     }
+    private fun resetState () {
+        _uiState.value = SignUpUiState.Resume
+    }
     fun checkData() {
         isValid.value = (
                 username.value != "" &&
-                email.value != "" &&
-                password.value != "" &&
+                Patterns.EMAIL_ADDRESS.matcher(email.value).matches() &&
+                password.value.length >= 6 &&
                 repeatedPassword.value == password.value
         )
+    }
+    fun handleUiStatus(context: Context) {
+        when(uiState.value) {
+            is SignUpUiState.Success -> Toast.makeText(context, "Registro exitoso, ahora puedes iniciar sesion", Toast.LENGTH_LONG).show()
+            else -> {}
+        }
     }
     companion object {
         val Factory = viewModelFactory {

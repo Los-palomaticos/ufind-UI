@@ -41,12 +41,27 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
+import org.ufind.data.OptionsRoutes
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.login.viewmodel.LoginViewModel
 import org.ufind.ui.screen.userhomescreen.ImageLogo
+object LoginScreen: NavRoute<LoginViewModel> {
+    override val route: String
+        get() = OptionsRoutes.LogIn.route
 
-@Preview(showBackground = true)
+    @Composable
+    override fun viewModel () = viewModel<LoginViewModel>(factory = LoginViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: LoginViewModel) {
+        LoginScreen(viewModel)
+    }
+}
+//@Preview(showBackground = true)
 @Composable
 fun LoginScreen(
+    viewModel: LoginViewModel,
     onClickSignUpScreen: () -> Unit = {},
     onClickUserInterfaceNavigation: () -> Unit = {},
     onClickForgottenPasswordScreen: () -> Unit = {}
@@ -56,42 +71,32 @@ fun LoginScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Body(Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
+        Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
         Footer(Modifier.align(Alignment.BottomCenter), onClickSignUpScreen, onClickForgottenPasswordScreen)
 
     }
 }
 
 @Composable
-fun Body(modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit = {}) {
-    var email by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var password by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var isLoginEnable by rememberSaveable {
-        mutableStateOf(false)
-
-    }
-
+fun Body(viewModel: LoginViewModel, modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit = {}) {
     Column(modifier = modifier) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-        Email(email) {
-            email = it
-            isLoginEnable = enableLogin(email, password)
+        Email(viewModel.email.value) {
+            viewModel.email.value = it
+            viewModel.checkData()
 
         }
         Spacer(modifier = Modifier.size(8.dp))
-        Password(password) {
-            password = it
-            isLoginEnable = enableLogin(email, password)
+        Password(viewModel.password.value) {
+            viewModel.password.value = it
+            viewModel.checkData()
+
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable, onClickUserInterfaceNavigation)
+        LoginButton(viewModel.isValid.value){
+            viewModel.login()
+        }
 
 
     }
