@@ -15,7 +15,7 @@ private const val USER_DATASTORE="USER"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE)
 
-class DataStoreManager(val context: Context) {
+class DataStoreManager(private val context: Context) {
     suspend fun saveUserData(userModel: UserModel) {
         context.dataStore.edit { preferences ->
             preferences[ID] = userModel.id.toString()

@@ -72,7 +72,7 @@ fun LoginScreen(
             .padding(16.dp)
     ) {
         Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
-        Footer(Modifier.align(Alignment.BottomCenter), onClickSignUpScreen, onClickForgottenPasswordScreen)
+        Footer(viewModel = viewModel,modifier = Modifier.align(Alignment.BottomCenter))
 
     }
 }
@@ -193,8 +193,7 @@ private fun enableLogin(email: String, password: String): Boolean {
 @Composable
 fun Footer(
     modifier: Modifier,
-    onClickSignUpScreen: () -> Unit = {},
-    onClickForgottenPasswordScreen: () -> Unit = {}
+    viewModel: LoginViewModel
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Divider(
@@ -204,9 +203,13 @@ fun Footer(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        ForgottenPasswordButton(onClickForgottenPasswordScreen)
+        ForgottenPasswordButton{
+            viewModel.navigateToRoute(OptionsRoutes.ForgottenPassword.route)
+        }
         Spacer(modifier = Modifier.size(16.dp))
-        SignUp(onClickSignUpScreen)
+        SignUp{
+            viewModel.navigateToRoute(OptionsRoutes.SignUp.route)
+        }
         Spacer(modifier = Modifier.size(16.dp))
 
     }

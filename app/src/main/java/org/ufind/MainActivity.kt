@@ -29,10 +29,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
+
             val viewModel: MainViewModel = viewModel<MainViewModel>()
             val dataStoreManager = DataStoreManager(LocalContext.current)
             val startDestination = viewModel.startDestination.collectAsStateWithLifecycle()
-            val navController = rememberNavController()
+
             LaunchedEffect(dataStoreManager.getUserData()) {
                 lifecycleScope.launch {
                     val user = dataStoreManager.getUserData()
@@ -46,54 +48,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-//            val startDestionation = if (user.token == "") OptionsRoutes.LogInOrSignUpOptions.route else OptionsRoutes.UserInterface.route
             NavigationComponent(navHostController = navController, startDestination = startDestination.value)
-//            Log.d("APP_TAG", user.toString())
-//            NavigationView()
         }
     }
-}
-@Composable
-fun NavigationView() {
-    val navController = rememberNavController()
-
-//    NavHost(
-//        navController = navController,
-//        startDestination = OptionsRoutes.LogInOrSignUpOptions.route
-//    ) {
-//        composable(route = OptionsRoutes.LogInOrSignUpOptions.route) {
-//            LogInOrSignUpOptions(
-//                onClickSignUpScreen = { navController.navigate(OptionsRoutes.SignUp.route) },
-//                onClickSignInScreen = { navController.navigate(OptionsRoutes.LogIn.route) }
-//            )
-//        }
-//        composable(route = OptionsRoutes.LogIn.route) {
-//            LoginScreen(
-//                onClickSignUpScreen = { navController.navigate(OptionsRoutes.SignUp.route) },
-//                onClickUserInterfaceNavigation = { navController.navigate(OptionsRoutes.UserInterface.route) },
-//                onClickForgottenPasswordScreen = { navController.navigate(OptionsRoutes.ForgottenPassword.route) }
-//            )
-//        }
-//
-//        composable(route = OptionsRoutes.SignUp.route) {
-//            SignUpScreen( /*{ navController.navigate(OptionsRoutes.LogIn.route) }*/)
-////            {
-////                navController.navigate(
-////                    OptionsRoutes.UserInterface.route
-////                )Logi
-////            }
-//        }
-//        composable(route = OptionsRoutes.UserInterface.route) {
-//            UserInterfaceNavigation()
-//        }
-//        composable(route = OptionsRoutes.ForgottenPassword.route) {
-//            ForgottenPasswordScreen { navController.navigate(OptionsRoutes.EnterCodeForgottenPasswordScreen.route) }
-//        }
-//        composable(route = OptionsRoutes.EnterCodeForgottenPasswordScreen.route) {
-//            EnterCodeForgottenPasswordScreen { navController.navigate(OptionsRoutes.ChangePasswordScreen.route) }
-//        }
-//        composable(route = OptionsRoutes.ChangePasswordScreen.route) {
-//            ChangePasswordScreen { navController.navigate(OptionsRoutes.LogIn.route) }
-//        }
-//    }
 }
