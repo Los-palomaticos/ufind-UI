@@ -46,7 +46,6 @@ fun NavigationComponent(navHostController: NavHostController, startDestination: 
 //            LaunchedEffect(viewModelAsState) {
 //                when(viewModelAsState as NavigationState) {
 //                    is NavigationState.NavigateToRoute -> {
-//                        Log.d("APP_TAG", "Navegando")
 //                    }
 //
 //                    else -> {}

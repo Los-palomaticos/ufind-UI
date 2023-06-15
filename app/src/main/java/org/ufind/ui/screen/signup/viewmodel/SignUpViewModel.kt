@@ -5,21 +5,16 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.ufind.UfindApplication
 import org.ufind.data.OptionsRoutes
-import org.ufind.data.datastore.DataStoreManager
-import org.ufind.data.model.UserModel
 import org.ufind.navigation.RouteNavigator
 import org.ufind.navigation.UfindNavigator
 import org.ufind.network.ApiResponse
@@ -34,17 +29,17 @@ class SignUpViewModel(
     val email = mutableStateOf("")
     val password = mutableStateOf("")
     val repeatedPassword = mutableStateOf("")
+
+    val errorMessage = mutableStateOf("")
     val isValid = mutableStateOf(false)
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Resume)
     val uiState:StateFlow<SignUpUiState>
         get() = _uiState
 
-//    val navigationState: MutableStateFlow<NavigationState> = MutableStateFlow(NavigationState.Idle)
-
     fun signup(){
+        resetState()
         viewModelScope.launch {
-            val response = repository.signup(username.value, email.value, password.value)
-            when(response) {
+            when(val response = repository.signup(username.value, email.value, password.value)) {
                 is ApiResponse.Success -> {
                     _uiState.value = SignUpUiState.Success(response.data)
                     clear()
@@ -87,10 +82,23 @@ class SignUpViewModel(
     }
     fun handleUiStatus(context: Context) {
         when(uiState.value) {
+            is SignUpUiState.Resume -> {
+
+            }
             is SignUpUiState.Success -> Toast.makeText(context, "Registro exitoso, ahora puedes iniciar sesion", Toast.LENGTH_LONG).show()
-            else -> {}
+            is SignUpUiState.ErrorWithMessage -> {
+                Toast.makeText(context, (uiState.value as SignUpUiState.ErrorWithMessage).message, Toast.LENGTH_LONG).show()
+            }
+            is SignUpUiState.Error -> {
+                Toast.makeText(context, (uiState.value as SignUpUiState.Error).exception.toString(), Toast.LENGTH_LONG).show()
+            }
         }
     }
+
+    fun changeErrorMessage() {
+        Log.d("APP_TAG", "EEEEEEE")
+    }
+
     companion object {
         val Factory = viewModelFactory {
             initializer {

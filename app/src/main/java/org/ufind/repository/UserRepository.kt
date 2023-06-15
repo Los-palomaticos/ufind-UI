@@ -1,5 +1,6 @@
 package org.ufind.repository
 
+import android.util.Log
 import com.google.gson.Gson
 import org.ufind.data.datastore.DataStoreManager
 import org.ufind.data.model.Payload
@@ -11,6 +12,8 @@ import org.ufind.network.service.UserService
 import org.ufind.utils.JWT
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.ConnectException
+
 class UserRepository(private val api: UserService, private val dataStoreManager: DataStoreManager) {
 //    private lateinit var dataStoreManager: DataStoreManager
 
@@ -29,14 +32,18 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
     }
     suspend fun signup(username: String, email: String, password: String): ApiResponse<String> {
         return try {
-            val response = api.signup(SignUpRequest(username, email, password))
+            api.signup(SignUpRequest(username, email, password))
             ApiResponse.Success("Registro exitoso")
         } catch(e: HttpException) {
             if (e.code() == 400)
                 ApiResponse.ErrorWithMessage("Credenciales inválidas")
             else
                 ApiResponse.Error(e)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage("No hay conexión a internet")
         } catch(e: IOException) {
+            ApiResponse.Error(e)
+        } catch (e: Exception) {
             ApiResponse.Error(e)
         }
     }

@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.login.viewmodel
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -34,9 +33,7 @@ class LoginViewModel(
 
     fun login() {
         viewModelScope.launch {
-            val response = repository.login(LoginRequest(email.value, password.value))
-            Log.d("APP_TAG", response.toString())
-            when (response) {
+            when (val response = repository.login(LoginRequest(email.value, password.value))) {
                 is ApiResponse.Success -> {
                     _uiState.value = LoginUiState.Success(response.data)
                     clear()

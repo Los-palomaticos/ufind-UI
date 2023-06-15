@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.login
 
-import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
@@ -62,23 +60,19 @@ object LoginScreen: NavRoute<LoginViewModel> {
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onClickSignUpScreen: () -> Unit = {},
-    onClickUserInterfaceNavigation: () -> Unit = {},
-    onClickForgottenPasswordScreen: () -> Unit = {}
 ) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
+        Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center))
         Footer(viewModel = viewModel,modifier = Modifier.align(Alignment.BottomCenter))
-
     }
 }
 
 @Composable
-fun Body(viewModel: LoginViewModel, modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit = {}) {
+fun Body(viewModel: LoginViewModel, modifier: Modifier) {
     Column(modifier = modifier) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
@@ -97,10 +91,7 @@ fun Body(viewModel: LoginViewModel, modifier: Modifier, onClickUserInterfaceNavi
         LoginButton(viewModel.isValid.value){
             viewModel.login()
         }
-
-
     }
-
 }
 
 
@@ -182,12 +173,6 @@ fun LoginButton(loginEnable: Boolean, onClickUserInterfaceNavigation: () -> Unit
         Text("Iniciar sesión")
 
     }
-
-}
-
-private fun enableLogin(email: String, password: String): Boolean {
-
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 }
 
 @Composable
@@ -213,8 +198,6 @@ fun Footer(
         Spacer(modifier = Modifier.size(16.dp))
 
     }
-
-
 }
 
 @Composable

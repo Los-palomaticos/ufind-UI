@@ -1,8 +1,6 @@
 package org.ufind.ui.screen.signup
 
-import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +47,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.compose.ui.platform.LocalContext
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
@@ -91,6 +87,10 @@ fun SignUpScreen(
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsState()
+
+//    LaunchedEffect(uiState) {
+//        viewModel.changeErrorMessage()
+//    }
     Column(modifier = modifier) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
