@@ -30,7 +30,6 @@ class SignUpViewModel(
     val password = mutableStateOf("")
     val repeatedPassword = mutableStateOf("")
 
-    val errorMessage = mutableStateOf("")
     val isValid = mutableStateOf(false)
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Resume)
     val uiState:StateFlow<SignUpUiState>
@@ -46,22 +45,15 @@ class SignUpViewModel(
                     resetState()
                     routeNavigator.navigateToRoute(OptionsRoutes.LogIn.route)
                 }
-                is ApiResponse.ErrorWithMessage -> _uiState.value = SignUpUiState.ErrorWithMessage(response.message)
+                is ApiResponse.ErrorWithMessage -> _uiState.value = response.messages?.let {
+                    SignUpUiState.ErrorWithMessage(
+                        it
+                    )
+                }!!
                 is ApiResponse.Error -> _uiState.value = SignUpUiState.Error(response.exception)
             }
         }
     }
-    fun getUser() {
-        viewModelScope.launch {
-             repository.getUserData().collect{
-                if(it.token!="") {
-                    navigateToRoute(OptionsRoutes.UserInterface.route)
-                }
-            }
-        }
-    }
-    //        viewModelScope.launch {
-//        }
     fun clear() {
         username.value = ""
         email.value = ""
@@ -80,25 +72,9 @@ class SignUpViewModel(
                 repeatedPassword.value == password.value
         )
     }
-    fun handleUiStatus(context: Context) {
-        when(uiState.value) {
-            is SignUpUiState.Resume -> {
-
-            }
-            is SignUpUiState.Success -> Toast.makeText(context, "Registro exitoso, ahora puedes iniciar sesion", Toast.LENGTH_LONG).show()
-            is SignUpUiState.ErrorWithMessage -> {
-                Toast.makeText(context, (uiState.value as SignUpUiState.ErrorWithMessage).message, Toast.LENGTH_LONG).show()
-            }
-            is SignUpUiState.Error -> {
-                Toast.makeText(context, (uiState.value as SignUpUiState.Error).exception.toString(), Toast.LENGTH_LONG).show()
-            }
-        }
+    fun navigateToLogin() {
+        navigateToRoute(OptionsRoutes.LogIn.route)
     }
-
-    fun changeErrorMessage() {
-        Log.d("APP_TAG", "EEEEEEE")
-    }
-
     companion object {
         val Factory = viewModelFactory {
             initializer {

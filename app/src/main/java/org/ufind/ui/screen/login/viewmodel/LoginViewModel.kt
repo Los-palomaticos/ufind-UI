@@ -32,17 +32,16 @@ class LoginViewModel(
         get() = _uiState
 
     fun login() {
+        resetState()
         viewModelScope.launch {
             when (val response = repository.login(LoginRequest(email.value, password.value))) {
                 is ApiResponse.Success -> {
                     _uiState.value = LoginUiState.Success(response.data)
                     clear()
                     resetState()
-
                 }
-
                 is ApiResponse.ErrorWithMessage -> _uiState.value =
-                    LoginUiState.ErrorWithMessage(response.message)
+                    (response.messages?.let { LoginUiState.ErrorWithMessage(it) }?:"NULL") as LoginUiState
 
                 is ApiResponse.Error -> _uiState.value = LoginUiState.Error(response.exception)
             }

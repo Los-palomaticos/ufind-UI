@@ -21,6 +21,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -39,11 +40,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.login.viewmodel.LoginViewModel
+import org.ufind.ui.screen.signup.SignUpUiState
 import org.ufind.ui.screen.userhomescreen.ImageLogo
 object LoginScreen: NavRoute<LoginViewModel> {
     override val route: String
@@ -70,12 +73,26 @@ fun LoginScreen(
         Footer(viewModel = viewModel,modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
-
+@Composable
+fun handleUiState(viewModel: LoginViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    if(uiState.value is LoginUiState.ErrorWithMessage){
+        (uiState.value as LoginUiState.ErrorWithMessage).messages.forEach { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
 @Composable
 fun Body(viewModel: LoginViewModel, modifier: Modifier) {
     Column(modifier = modifier) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
+
+        handleUiState(viewModel = viewModel)
+
         Email(viewModel.email.value) {
             viewModel.email.value = it
             viewModel.checkData()

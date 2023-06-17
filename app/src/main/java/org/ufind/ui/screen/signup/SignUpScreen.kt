@@ -48,10 +48,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.login.LoginUiState
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
 import org.ufind.ui.screen.userhomescreen.ImageLogo
 
@@ -72,7 +74,7 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
 fun SignUpScreen(
     viewModel: SignUpViewModel
 ) {
-    viewModel.handleUiStatus(LocalContext.current)
+//    viewModel.handleUiStatus(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()
@@ -80,10 +82,23 @@ fun SignUpScreen(
             .verticalScroll(rememberScrollState())
     ) {
         SignUpBody(modifier = Modifier.align(Alignment.Center), viewModel = viewModel)
-        SignUpFooter(modifier = Modifier.align(BottomCenter))
+        SignUpFooter(modifier = Modifier.align(BottomCenter)) {
+            viewModel.navigateToLogin()
+        }
     }
 }
-
+@Composable
+fun handleUiStatus(viewModel: SignUpViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    if(uiState.value is SignUpUiState.ErrorWithMessage){
+        (uiState.value as SignUpUiState.ErrorWithMessage).messages.forEach { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsState()
@@ -95,12 +110,9 @@ fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-        if(uiState.value is SignUpUiState.ErrorWithMessage){
-            Text(
-                text = (uiState.value as SignUpUiState.ErrorWithMessage).message,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+
+        handleUiStatus(viewModel=viewModel)
+
         CreatedUserName(viewModel.username.value) {
             viewModel.username.value = it
             viewModel.checkData()
@@ -280,7 +292,7 @@ fun enableSignUp(email: String, password: String, repeatedPassword: String): Boo
 }
 
 @Composable
-fun SignUpFooter(modifier: Modifier) {
+fun SignUpFooter(modifier: Modifier, onClick: () -> Unit) {
     Column(modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
         Divider(
             Modifier
@@ -289,7 +301,7 @@ fun SignUpFooter(modifier: Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        UserLogInOption(/* TODO */)
+        UserLogInOption(onClick)
     }
 
 }

@@ -7,16 +7,18 @@ import org.ufind.data.model.Payload
 import org.ufind.data.model.UserModel
 import org.ufind.network.ApiResponse
 import org.ufind.network.dto.login.LoginRequest
+import org.ufind.network.dto.login.LoginResponse
 import org.ufind.network.dto.signup.SignUpRequest
+import org.ufind.network.dto.signup.SignUpResponse
 import org.ufind.network.service.UserService
 import org.ufind.utils.JWT
+import org.ufind.utils.SerializeErrorBody
 import retrofit2.HttpException
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.net.ConnectException
 
 class UserRepository(private val api: UserService, private val dataStoreManager: DataStoreManager) {
-//    private lateinit var dataStoreManager: DataStoreManager
-
     private suspend fun saveUserToDataStore(token: String) {
         val jwtDecoded = JWT.decoded(token)
 
@@ -32,34 +34,37 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
     }
     suspend fun signup(username: String, email: String, password: String): ApiResponse<String> {
         return try {
-            api.signup(SignUpRequest(username, email, password))
-            ApiResponse.Success("Registro exitoso")
-        } catch(e: HttpException) {
-            if (e.code() == 400)
-                ApiResponse.ErrorWithMessage("Credenciales inválidas")
+            val response = api.signup(SignUpRequest(username, email, password))
+            if (response.ok)
+                ApiResponse.Success(response.message)
             else
-                ApiResponse.Error(e)
+                ApiResponse.ErrorWithMessage(response.errorMessages)
         } catch (e: ConnectException) {
-            ApiResponse.ErrorWithMessage("No hay conexión a internet")
-        } catch(e: IOException) {
-            ApiResponse.Error(e)
-        } catch (e: Exception) {
+                ApiResponse.ErrorWithMessage(listOf("Error de conexión"))
+        } catch(e: HttpException) {
+            val errorResponse = SerializeErrorBody.getSerializedError(e, SignUpResponse::class.java)
+            ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
+        }  catch(e: IOException) {
             ApiResponse.Error(e)
         }
     }
     suspend fun login(loginRequest: LoginRequest): ApiResponse<String> {
-        try {
+        return try {
             val response = api.login(loginRequest)
-            saveUserToDataStore(response.token)
-
-            return ApiResponse.Success("Inicio de sesion exitoso")
-        } catch(e: HttpException) {
-            if(e.code() == 401) {
-                return ApiResponse.ErrorWithMessage("Credenciales invalidas")
+            if (response.ok) {
+                saveUserToDataStore(response.token)
+                ApiResponse.Success("Inicio de sesión exitoso")
+            } else {
+                ApiResponse.ErrorWithMessage(response.errorMessages)
             }
-            return ApiResponse.ErrorWithMessage("Error de servidor")
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(listOf("Error de conexión"))
+        } catch(e: HttpException) {
+            val errorResponse = SerializeErrorBody.getSerializedError(e, LoginResponse::class.java)
+
+            ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
         } catch(e:IOException) {
-            return ApiResponse.Error(e)
+            ApiResponse.Error(e)
         }
     }
     fun getUserData() = dataStoreManager.getUserData()
