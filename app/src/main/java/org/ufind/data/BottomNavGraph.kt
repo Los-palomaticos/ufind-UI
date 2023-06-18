@@ -3,10 +3,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.ufind.ui.screen.userhomescreen.HomeMenuScreen
-import org.ufind.ui.screen.userhomescreen.MainChatScreen
-import org.ufind.ui.screen.userhomescreen.SavedPostScreen
-import org.ufind.ui.screen.userhomescreen.UserProfileScreen
+import org.ufind.ui.screen.home.MainChatScreen
+import org.ufind.ui.screen.home.SavedPostScreen
+import org.ufind.ui.screen.home.UserProfileScreen
+import org.ufind.ui.screen.home.post.add.camera.CameraScreen
 import org.ufind.ui.screen.userpost.addpost.ui.AddPostScreen
 import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
 
@@ -15,7 +15,7 @@ import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
 fun BottomNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomBarScreen.Home.route ){
         composable(route= BottomBarScreen.Home.route){
-            HomeMenuScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
+            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
         }
         composable(route= BottomBarScreen.Profile.route){
             UserProfileScreen()
@@ -29,9 +29,9 @@ fun BottomNavGraph(navController: NavHostController) {
             MainChatScreen()
         }
 
-        composable(route = OptionsRoutes.AddPostScreen.route) {
-            AddPostScreen { navController.navigate(BottomBarScreen.Home.route) }
-        }
+        AddPostScreen.composable(this, navController)
+        CameraScreen.composable(this, navController)
+
         composable(route = OptionsRoutes.PostScreen.route) {
             PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
         }

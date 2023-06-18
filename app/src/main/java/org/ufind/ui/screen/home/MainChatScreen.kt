@@ -1,4 +1,4 @@
-package org.ufind.ui.screen.userhomescreen
+package org.ufind.ui.screen.home
 
 import androidx.compose.runtime.Composable
 

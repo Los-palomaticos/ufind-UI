@@ -1,4 +1,4 @@
-package org.ufind.ui.screen.userpost.addpost.ui.model
+package org.ufind.data.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto

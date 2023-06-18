@@ -17,7 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import org.ufind.R
-import org.ufind.ui.screen.userhomescreen.ImageLogo
+import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+
 @Composable
 fun LoginOrSignUpOptions(onClickSignUpScreen: () -> Unit ={}, onClickSignInScreen: () -> Unit={}) {
     Box(

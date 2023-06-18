@@ -30,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -53,9 +51,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
-import org.ufind.ui.screen.login.LoginUiState
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
-import org.ufind.ui.screen.userhomescreen.ImageLogo
+import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
 
 object SignUpScreen: NavRoute<SignUpViewModel> {
     override val route: String

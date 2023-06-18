@@ -1,21 +1,22 @@
 package org.ufind.ui.screen.userpost.addpost.ui
 
-import androidx.compose.foundation.Image
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -27,24 +28,49 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import org.ufind.R
+import org.ufind.data.OptionsRoutes
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
 
-@Preview(showBackground = true)
+
+object AddPostScreen: NavRoute<AddPostViewModel> {
+    override val route: String
+        get() = OptionsRoutes.AddPostScreen.route
+    @Composable
+    override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
+        factory = AddPostViewModel.Factory
+    )
+    @Composable
+    override fun Content(viewModel: AddPostViewModel) {
+        AddPostScreen(viewModel = viewModel)
+    }
+
+}
 @Composable
-fun AddPostScreen(onClickBackToUserInterface: () -> Unit = {}) {
-
+fun AddPostScreen(viewModel: AddPostViewModel) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         HeaderAddPost(Modifier.align(Alignment.TopStart))
-        BodyAddPost(Modifier.align(Alignment.Center), onClickBackToUserInterface)
+        BodyAddPost(
+            viewModel = viewModel,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 
 }
@@ -57,15 +83,28 @@ fun HeaderAddPost(modifier: Modifier) {
 }
 
 @Composable
-fun BodyAddPost(modifier: Modifier, onClickBackToUserInterface: () -> Unit = {}) {
+fun BodyAddPost(viewModel: AddPostViewModel, modifier: Modifier) {
     var postDescription by remember {
         mutableStateOf("")
     }
     var postTitle by remember {
         mutableStateOf("")
     }
+    val photo = viewModel.postPhoto.collectAsStateWithLifecycle()
     Column(modifier = modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        AddPostImage(150)
+        if (photo.value == "")
+            CameraPreview(viewModel = viewModel)
+        else {
+            viewModel.stopCamera()
+            Box{
+                AsyncImage(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp),model = photo.value.toUri(), contentDescription = null)
+                Button(onClick = {viewModel.resumeCamera()}){
+                    Text(text="De nuevo")
+                }
+            }
+        }
         Spacer (Modifier.size(64.dp))
         TitleTextFieldPost(postTitle) { postTitle = it }
         Spacer(Modifier.size(16.dp))
@@ -73,16 +112,8 @@ fun BodyAddPost(modifier: Modifier, onClickBackToUserInterface: () -> Unit = {})
         Spacer(Modifier.size(32.dp))
         LocationCardPost()
         Spacer(Modifier.size(32.dp))
-        ButtonAddPost(onClickBackToUserInterface)
-
-
-
+        ButtonAddPost()
     }
-}
-
-@Composable
-fun AddPostImage(size:Int) {
-    Image(imageVector = Icons.Filled.AddAPhoto, contentDescription = "", modifier = Modifier.size(size.dp), alignment = Alignment.Center)
 }
 
 @Composable
@@ -178,4 +209,47 @@ fun LocationCardPost() {
         }
     }
 
+}
+
+
+
+@Composable
+fun CameraPreview(
+    modifier: Modifier = Modifier,
+    viewModel: AddPostViewModel
+) {
+    viewModel.setCameraProvider(LocalContext.current)
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    Surface {
+        Box (modifier = Modifier.fillMaxWidth()) {
+            AndroidView(factory = {context ->
+                PreviewView(context).apply {
+                    scaleType = PreviewView.ScaleType.FILL_CENTER
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                    post {
+                        viewModel.cameraProvider.addListener(
+                            {
+                                viewModel.bindPreview(lifecycleOwner, this)
+                            },
+                            ContextCompat.getMainExecutor(context)
+                        )
+                    }
+                }},
+                modifier = Modifier.fillMaxWidth(),
+                update = {
+                }
+
+            )
+            Row(modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp)){
+                Button(
+                    onClick = { viewModel.makePhoto(context) }
+                ) {
+                    Text(text = "Capture")
+                }
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package org.ufind.ui.screen.userhomescreen
+package org.ufind.ui.screen.home
 
 
 import androidx.compose.runtime.Composable
@@ -13,24 +13,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.ufind.R
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import org.w3c.dom.Text
 
 @Preview(showBackground = true)
 @Composable

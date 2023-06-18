@@ -1,9 +1,9 @@
-package org.ufind.ui.screen.userpost.addpost.ui
+package org.ufind.ui.screen.home.post.viewmodel
 
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import org.ufind.ui.screen.userpost.addpost.ui.model.PostModel
+import org.ufind.data.model.PostModel
 import javax.inject.Inject
 
 class PostViewModel @Inject constructor(): ViewModel() {
