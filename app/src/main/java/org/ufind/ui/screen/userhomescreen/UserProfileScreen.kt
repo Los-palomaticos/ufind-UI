@@ -13,56 +13,57 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.ufind.R
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import org.w3c.dom.Text
+import org.ufind.ui.screen.settings.ProfileGoToButtons
 
 @Preview(showBackground = true)
 @Composable
-fun UserProfileScreen() {
+fun UserProfileScreen(
+    onClickProfileSettings: () -> Unit = {},
+    onClickWalletButton: () -> Unit = {}
+) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        ProfileBody()
-
-
-
-
-
+        ProfileBody(onClickProfileSettings, onClickWalletButton)
 
 
     }
 }
 
 @Composable
-fun ProfileBody() {
+fun ProfileBody(onClickProfileSettings: () -> Unit = {}, onClickWalletButton: () -> Unit = {}) {
     Column {
         UserInfo()
         SettingsBody()
         EditProfileButton()
-        IconProfile()
+        Spacer(Modifier.size(16.dp))
+        ProfileGoToButtons(onClickProfileSettings, onClickWalletButton)
 
     }
 
 
 }
+
+
+
+
 
 @Composable
 fun SettingsBody() {
@@ -128,7 +129,7 @@ fun EditProfileButton() {
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 0.dp, end = 0.dp, bottom = 0.dp,)
+            .padding(start = 0.dp, end = 0.dp, bottom = 0.dp)
 
     ) {
         Text(
@@ -138,16 +139,15 @@ fun EditProfileButton() {
         )
 
 
-
     }
 
 }
 
 @Composable
-fun IconProfile(){
+fun IconProfile() {
     Row {
-        Image(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "settings")
-        Image(painter = painterResource(id = R.drawable.ic_wallet), contentDescription = "Wallet")
+        // Image(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "settings")
+        // Image(painter = painterResource(id = R.drawable.ic_wallet), contentDescription = "Wallet")
     }
 
 }

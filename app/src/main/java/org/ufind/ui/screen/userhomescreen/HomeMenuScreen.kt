@@ -107,5 +107,6 @@ fun ImageLogo(size: Int, modifier: Modifier) {
         modifier = modifier.size(size.dp),
         contentScale = ContentScale.Fit
     )
+
 }
 

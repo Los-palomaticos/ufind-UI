@@ -1,6 +1,7 @@
 package org.ufind.data
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -23,7 +24,7 @@ sealed class BottomBarScreen(
     )    object SavedPosts: BottomBarScreen(
         route = "savedPosts",
         title = "Guardados",
-        icon = Icons.Default.SavedSearch
+        icon = Icons.Default.Bookmark
     )    object Profile: BottomBarScreen(
         route = "profile",
         title = "Perfil",

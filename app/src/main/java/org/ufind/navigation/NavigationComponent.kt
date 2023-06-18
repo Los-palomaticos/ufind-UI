@@ -69,5 +69,6 @@ fun NavigationComponent(navHostController: NavHostController) {
         composable(route = OptionsRoutes.ChangePasswordScreen.route) {
             ChangePasswordScreen { navHostController.navigate(OptionsRoutes.LogIn.route) }
         }
+
     }
 }
