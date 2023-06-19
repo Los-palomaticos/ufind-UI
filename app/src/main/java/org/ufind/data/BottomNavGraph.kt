@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import org.ufind.ui.screen.settings.SettingsAccountScreen
 import org.ufind.ui.screen.settings.SettingsScreen
 import org.ufind.ui.screen.userhomescreen.HomeMenuScreen
 import org.ufind.ui.screen.userhomescreen.MainChatScreen
@@ -27,15 +28,12 @@ fun BottomNavGraph(navController: NavHostController) {
                 onClickWalletButton = { navController.navigate(OptionsRoutes.WalletScreen.route) }
             )
         }
-
         composable(route = BottomBarScreen.SavedPosts.route) {
             SavedPostScreen()
         }
-
         composable(route = BottomBarScreen.Chat.route) {
             MainChatScreen()
         }
-
         composable(route = OptionsRoutes.AddPostScreen.route) {
             AddPostScreen { navController.navigate(BottomBarScreen.Home.route) }
         }
@@ -43,11 +41,13 @@ fun BottomNavGraph(navController: NavHostController) {
             PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
         }
         composable(route = OptionsRoutes.SettingsScreen.route){
-            SettingsScreen()
+            SettingsScreen(onClickSettingsAccountScreen = { navController.navigate(OptionsRoutes.SettingsAccountScreen.route) })
         }
         composable(route = OptionsRoutes.WalletScreen.route){
             WalletProfileScreen()
         }
-
+        composable(route = OptionsRoutes.SettingsAccountScreen.route){
+            SettingsAccountScreen()
+        }
     }
 }

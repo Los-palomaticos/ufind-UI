@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.settings
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,15 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,121 +32,51 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
+
 val colorbutton = Color(0xFF001233)
-@Preview
+
+@Preview(showBackground = true)
 @Composable
-fun ConfigurationsScreen() {
-    Column() {
-        ConfigurationsButton(
-            text = "Seguridad",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-        ConfigurationsButton(
-            text = "Preferencias",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-        ConfigurationsButton(
-            text = "Cuenta",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
-        )
-    }
-}
-@Composable
-fun ConfigurationsButton(
-    text: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-   
-        modifier = Modifier
-            .shadow(elevation = 3.dp,
-                shape = MaterialTheme.shapes.medium)
-            .height(60.dp)
-            .fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = text,
-                color = Color.Black
-            )
-            Spacer(Modifier.weight(1f))
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.Black
-            )
-        }
-    }
+fun SettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
+    BodySettingsScreen(onClickSettingsAccountScreen)
 }
 
 @Composable
-fun BlankView() {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.White)) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .background(color = Color.White)) {
+fun BodySettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(color = Color.White)
+        ) {
 
             // Primer componente
-            PreviewCardComponent()
+            HeaderConfiguration()
 
             // Espacio entre los componentes
             Spacer(modifier = Modifier.height(16.dp))
 
             // Segundo componente
-            ConfigurationsScreen()
+            ConfigurationsButtons(onClickSettingsAccountScreen)
 
             Spacer(modifier = Modifier.height(154.dp))
-            ConfigurationsScreen2()
+            SignOutButton()
         }
-    }
-}
-@Composable
-fun ConfigurationsScreen2() {
-    Column(Modifier.padding(16.dp)) {
-        ConfigurationsButton2(text = "Cerrar Sesión") { /* Acción al hacer clic en Cerrar Sesión */ }
     }
 }
 
 @Composable
-fun ConfigurationsButton2(text: String, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
+fun HeaderConfiguration() {
+    HeaderConfigurationCard(title = "Configuracion", description = "Descripción de la tarjeta")
+}
 
-        modifier = Modifier
-            .shadow(elevation = 3.dp,
-                shape = MaterialTheme.shapes.medium )
-            .height(54.dp)
-            .fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-        content = {
-            Text(text = text,
-                textAlign = TextAlign.Right,
-                color = Color.Red)
-        }
-    )
-}
-@Preview
+//Header Card
 @Composable
-fun SettingsScreen() {
-    BlankView()
-}
-//CARD COMPONENTE
-@Composable
-fun CardComponent(title: String, description: String) {
+fun HeaderConfigurationCard(title: String, description: String) {
     Card(
 
         modifier = Modifier
@@ -182,12 +104,102 @@ fun CardComponent(title: String, description: String) {
 }
 
 
+@Preview
 @Composable
-fun PreviewCardComponent() {
-    CardComponent(title = "Configuracion", description = "Descripción de la tarjeta")
+fun ConfigurationsButtons(onClickSettingsAccountScreen: () -> Unit = {}) {
+    Column {
+        ConfigurationButton(
+            text = "Seguridad",
+            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            onClick = { /* Acción al hacer clic en el botón */ }
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        ConfigurationButton(
+            text = "Preferencias",
+            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            onClick = { /* Acción al hacer clic en el botón */ }
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        ConfigurationButton(
+            text = "Cuenta",
+            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            onClick = onClickSettingsAccountScreen
+        )
+    }
 }
-//MENSAJE
 
+
+@Composable
+fun ConfigurationButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+
+        modifier = Modifier
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            )
+            .height(60.dp)
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = text,
+                color = Color.Black
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color.Black
+            )
+        }
+    }
+}
+
+
+@Composable
+fun SignOutButton() {
+    Column(Modifier.padding(16.dp)) {
+        SignOutConfigurationButton(text = "Cerrar Sesión") { /* Acción al hacer clic en Cerrar Sesión */ }
+    }
+}
+
+
+@Composable
+fun SignOutConfigurationButton(text: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+
+        modifier = Modifier
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            )
+            .height(54.dp)
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+        content = {
+            Text(
+                text = text,
+                textAlign = TextAlign.Right,
+                color = Color.Red
+            )
+        }
+    )
+}
+
+
+//MENSAJE
 @Composable
 fun ConfirmationMessage(
     message: String,
@@ -201,8 +213,10 @@ fun ConfirmationMessage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = message,
-            color = Color.Black)
+        Text(
+            text = message,
+            color = Color.Black
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -213,7 +227,8 @@ fun ConfirmationMessage(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text(text = "Aceptar",
+                Text(
+                    text = "Aceptar",
                     color = Color.Black
                 )
             }
@@ -227,6 +242,8 @@ fun ConfirmationMessage(
         }
     }
 }
+
+
 @Preview
 @Composable
 fun PreviewConfirmationMessage() {

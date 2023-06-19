@@ -51,7 +51,6 @@ fun UserProfileScreen(
 fun ProfileBody(onClickProfileSettings: () -> Unit = {}, onClickWalletButton: () -> Unit = {}) {
     Column {
         UserInfo()
-        SettingsBody()
         EditProfileButton()
         Spacer(Modifier.size(16.dp))
         ProfileGoToButtons(onClickProfileSettings, onClickWalletButton)
@@ -60,19 +59,6 @@ fun ProfileBody(onClickProfileSettings: () -> Unit = {}, onClickWalletButton: ()
 
 
 }
-
-
-
-
-
-@Composable
-fun SettingsBody() {
-    Row {
-
-    }
-
-}
-
 
 @Composable
 fun UserInfo() {
@@ -142,14 +128,4 @@ fun EditProfileButton() {
     }
 
 }
-
-@Composable
-fun IconProfile() {
-    Row {
-        // Image(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "settings")
-        // Image(painter = painterResource(id = R.drawable.ic_wallet), contentDescription = "Wallet")
-    }
-
-}
-
 
