@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import org.ufind.UfindApplication.Companion.setToken
 import org.ufind.data.OptionsRoutes
 import org.ufind.data.datastore.DataStoreManager
 import org.ufind.navigation.NavigationComponent
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
                 lifecycleScope.launch {
                     val user = dataStoreManager.getUserData()
                     user.collect{
+                        setToken(it.token)
                         if(it.token != "")
                             viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
                         else

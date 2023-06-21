@@ -1,5 +1,9 @@
 package org.ufind.ui.screen.userpost.addpost.ui
 
+import android.net.Uri
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,15 +20,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +44,9 @@ import coil.compose.AsyncImage
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.home.post.add.AddPostUiState
 import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
+import org.ufind.ui.screen.login.LoginUiState
 
 
 object AddPostScreen: NavRoute<AddPostViewModel> {
@@ -53,14 +56,18 @@ object AddPostScreen: NavRoute<AddPostViewModel> {
     override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
         factory = AddPostViewModel.Factory
     )
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content(viewModel: AddPostViewModel) {
         AddPostScreen(viewModel = viewModel)
     }
 
 }
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AddPostScreen(viewModel: AddPostViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    viewModel.checkPermissions(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()
@@ -68,6 +75,7 @@ fun AddPostScreen(viewModel: AddPostViewModel) {
     ) {
         HeaderAddPost(Modifier.align(Alignment.TopStart))
         BodyAddPost(
+            uiState = uiState.value,
             viewModel = viewModel,
             modifier = Modifier.align(Alignment.Center)
         )
@@ -81,52 +89,77 @@ fun HeaderAddPost(modifier: Modifier) {
         Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
     }
 }
-
 @Composable
-fun BodyAddPost(viewModel: AddPostViewModel, modifier: Modifier) {
-    var postDescription by remember {
-        mutableStateOf("")
+fun HandleUiState(uiState: AddPostUiState) {
+    when(uiState){
+        is AddPostUiState.ErrorWithMessage -> {
+            uiState.errorMessages.forEach { message ->
+                Text(
+                    text = message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+        is AddPostUiState.Success -> {
+            Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_LONG).show()
+        }
+        is AddPostUiState.Error -> {
+            Text(
+                text = "Error desconocido",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        else -> {}
     }
-    var postTitle by remember {
-        mutableStateOf("")
-    }
-    val photo = viewModel.postPhoto.collectAsStateWithLifecycle()
+}
+@Composable
+fun BodyAddPost(
+        uiState: AddPostUiState,
+        viewModel: AddPostViewModel,
+        modifier: Modifier
+    ) {
+    val photo = viewModel.photoUri.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     Column(modifier = modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        if (photo.value == "")
+
+        if (photo.value == Uri.EMPTY)
             CameraPreview(viewModel = viewModel)
         else {
             viewModel.stopCamera()
             Box{
                 AsyncImage(modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp),model = photo.value.toUri(), contentDescription = null)
+                    .height(250.dp), model = photo.value, contentDescription = null)
                 Button(onClick = {viewModel.resumeCamera()}){
                     Text(text="De nuevo")
                 }
             }
         }
         Spacer (Modifier.size(64.dp))
-        TitleTextFieldPost(postTitle) { postTitle = it }
+        TitleTextFieldPost(viewModel.title.value) { viewModel.title.value = it }
         Spacer(Modifier.size(16.dp))
-        DescriptionTextFieldPost(postDescription) { postDescription = it }
+        DescriptionTextFieldPost(viewModel.description.value) { viewModel.description.value = it }
         Spacer(Modifier.size(32.dp))
         LocationCardPost()
         Spacer(Modifier.size(32.dp))
-        ButtonAddPost()
+        ButtonAddPost(uiState){
+            viewModel.addPost(context)
+        }
     }
 }
 
 @Composable
-fun ButtonAddPost(onClickBackToUserInterface: () -> Unit = {}) {
+fun ButtonAddPost(uiState: AddPostUiState, onClickBackToUserInterface: () -> Unit = {}) {
     Button(
         onClick = onClickBackToUserInterface,
         modifier = Modifier.fillMaxWidth(),
+        enabled = uiState !is AddPostUiState.Sending,
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(id = R.color.text_color),
             disabledContainerColor = colorResource(id = R.color.disabled_color),
             contentColor = Color.White,
             disabledContentColor = Color.White
-
         )
     ) {
         Text("Publicar")

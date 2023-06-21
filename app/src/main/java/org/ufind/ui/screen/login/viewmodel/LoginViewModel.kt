@@ -40,8 +40,7 @@ class LoginViewModel(
                     clear()
                     resetState()
                 }
-                is ApiResponse.ErrorWithMessage -> _uiState.value =
-                    (response.messages?.let { LoginUiState.ErrorWithMessage(it) }?:"NULL") as LoginUiState
+                is ApiResponse.ErrorWithMessage -> _uiState.value = LoginUiState.ErrorWithMessage(response.messages)
 
                 is ApiResponse.Error -> _uiState.value = LoginUiState.Error(response.exception)
             }

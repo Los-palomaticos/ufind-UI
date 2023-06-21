@@ -2,48 +2,76 @@ package org.ufind.ui.screen.home.post.add.viewmodel
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.ufind.R
 import org.ufind.UfindApplication
+import org.ufind.data.OptionsRoutes
 import org.ufind.data.datastore.DataStoreManager
 import org.ufind.navigation.RouteNavigator
 import org.ufind.navigation.UfindNavigator
+import org.ufind.network.ApiResponse
+import org.ufind.repository.PostRepository
+import org.ufind.ui.screen.home.post.add.AddPostUiState
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
 
+
 class AddPostViewModel(
-    val repository: String,
+    val repository: PostRepository,
     val dataStoreManager: DataStoreManager,
     val routeNavigator: UfindNavigator = UfindNavigator()
-    ): ViewModel(), RouteNavigator by routeNavigator, DefaultLifecycleObserver {
-    lateinit var cameraProvider: ListenableFuture<ProcessCameraProvider>
+): ViewModel(), RouteNavigator by routeNavigator, DefaultLifecycleObserver {
+    // variables de estado
+    private lateinit var photo: File
+    val photoUri = MutableStateFlow<Uri>(Uri.EMPTY)
+    val description = mutableStateOf("")
+    val title = mutableStateOf("")
+
+    private val _uiState  = MutableStateFlow<AddPostUiState>(AddPostUiState.Resume)
+
+    val uiState: StateFlow<AddPostUiState>
+        get() = _uiState
+
+    // camara
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private val imageCapture: ImageCapture = ImageCapture.Builder()
         .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
         .build()
-
     private val cameraSelector: CameraSelector = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
         .build()
+    lateinit var cameraProvider: ListenableFuture<ProcessCameraProvider>
 
-    val postPhoto = MutableStateFlow<String>("")
-
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+    }
     fun setCameraProvider(context: Context) {
         cameraProvider = ProcessCameraProvider.getInstance(context)
     }
@@ -57,7 +85,6 @@ class AddPostViewModel(
         preview.setSurfaceProvider(previewView.surfaceProvider)
         var camera = cameraProvider.get().bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture, preview)
     }
-
     fun makePhoto(context: Context) {
 //        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(File("")).build()
         imageCapture.let { imageCapture ->
@@ -83,32 +110,73 @@ class AddPostViewModel(
                         Log.e("APP_TAG", "Photo capture failed: ${exc.message}", exc)
                     }
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        val savedUri = output.savedUri
-                        postPhoto.value = savedUri.toString()
-                        Log.d("APP_TAG", "Photo capture succeeded: $savedUri")
+                        photoUri.value = output.savedUri?:"".toUri()
                     }
                 }
             )
         }
     }
-
-
     fun resumeCamera() {
-        postPhoto.value = ""
+        photoUri.value = Uri.EMPTY
     }
-
-//    override fun onResume(owner: LifecycleOwner) {
-//        super.onResume(owner)
-//        cameraProvider.get().bindToLifecycle(owner, )
-//    }
     fun stopCamera() {
         cameraProvider.get().unbindAll()
+    }
+    fun addPost(context: Context) {
+        _uiState.value = AddPostUiState.Resume
+        if (photoUri.value == Uri.EMPTY)
+            return
+
+        _uiState.value = AddPostUiState.Sending
+        val realPath = getPath(photoUri.value, context)
+        val photoFile = File(realPath)
+        viewModelScope.launch {
+            val response = repository.addPost(
+                title = title.value,
+                photo = photoFile,
+                description = description.value
+            )
+            _uiState.value = AddPostUiState.Resume
+            when(response) {
+                is ApiResponse.Success -> {
+                    _uiState.value = AddPostUiState.Success(response.data)
+                    routeNavigator.popToRoute(OptionsRoutes.Home.route)
+                }
+                is ApiResponse.ErrorWithMessage -> {
+                    _uiState.value = AddPostUiState.ErrorWithMessage(response.messages)
+                }
+                is ApiResponse.Error -> {
+                    _uiState.value = AddPostUiState.Error(response.exception)
+                }
+            }
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun checkPermissions(context: Context) {
+        val permissions = android.Manifest.permission.READ_MEDIA_IMAGES
+        if (ContextCompat.checkSelfPermission(context, permissions) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("APP_TAG", "no")
+        } else
+            Log.d("APP_TAG", "si")
+
+    }
+    private fun getPath(uri: Uri, context: Context): String {
+        var path = ""
+        val data = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context.contentResolver.query(uri, data, null, null, null)
+        if (cursor != null) {
+            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            path = cursor.getString(columnIndex)
+            cursor.close()
+        }
+        return path
     }
     companion object {
         val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as UfindApplication
-                AddPostViewModel(repository = "", dataStoreManager = app.dataStoreManager)
+                AddPostViewModel(app.postRepository, dataStoreManager = app.dataStoreManager)
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.camera.core.CameraXConfig
 import org.ufind.data.UfindDatabase
 import org.ufind.data.datastore.DataStoreManager
 import org.ufind.network.retrofit.RetrofitInstance
+import org.ufind.repository.PostRepository
 import org.ufind.repository.UserRepository
 
 class UfindApplication:Application(), CameraXConfig.Provider {
@@ -24,9 +25,24 @@ class UfindApplication:Application(), CameraXConfig.Provider {
         }
         UserRepository(api = service, dataStoreManager = dataStoreManager)
     }
+    val postRepository by lazy {
+        val service = with(RetrofitInstance) {
+            getPostService()
+        }
+        PostRepository(api = service)
+    }
     override fun getCameraXConfig(): CameraXConfig {
         return CameraXConfig.Builder.fromConfig(Camera2Config.defaultConfig())
             .setAvailableCamerasLimiter(CameraSelector.DEFAULT_BACK_CAMERA)
             .setMinimumLoggingLevel(Log.ERROR).build()
+    }
+
+    companion object {
+        private var TOKEN = ""
+
+        fun setToken(token: String) {
+            this.TOKEN = token
+        }
+        fun getToken() = TOKEN
     }
 }

@@ -10,5 +10,5 @@ sealed class OptionsRoutes(val route:String){
     object ChangePasswordScreen: OptionsRoutes("ChangePasswordScreen")
     object AddPostScreen: OptionsRoutes("AddPostScreen")
     object PostScreen: OptionsRoutes("PostScreen")
-    object Camera: OptionsRoutes("Camera")
+    object Home: OptionsRoutes("Home")
 }
