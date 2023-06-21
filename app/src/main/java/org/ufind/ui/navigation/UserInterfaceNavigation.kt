@@ -54,6 +54,7 @@ fun BottomNavigationBar(navController: NavHostController, navigationItem: List<B
             id = R.color.text_color
         )) {
             val currentRoute = currentRoute(navController = navController)
+
             navigationItem.forEach { item ->
                 BottomNavigationItem(
                     selected = currentRoute == item.route,

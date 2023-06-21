@@ -12,6 +12,9 @@ sealed class OptionsRoutes(val route:String){
     object PostScreen: OptionsRoutes("PostScreen")
     object SettingsAccountScreen: OptionsRoutes("SettingsAccountScreen")
     object SettingsScreen: OptionsRoutes("SettingsScreen")
+    object SettingsPreferencesScreen: OptionsRoutes("SettingsPreferencesScreen")
+    object SettingsSecurityScreen: OptionsRoutes("SettingsSecurityScreen")
+    object SettingsChangePassword: OptionsRoutes("SettingsChangePassword")
     object WalletScreen: OptionsRoutes("WalletProfileScreen")
 
 }

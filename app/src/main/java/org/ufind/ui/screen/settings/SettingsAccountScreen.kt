@@ -1,9 +1,6 @@
 package org.ufind.ui.screen.settings
 
-
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,24 +10,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -40,54 +32,131 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import org.ufind.R
+import org.ufind.ui.screen.changepassword.BackToLogInButton
 
 @Preview
 @Composable
-fun SettingsAccountScreen() {
-    AccountScreen()
+fun SettingsAccountScreen(onClickSettingsScreen: () -> Unit = {}) {
+
+    AccountScreen(onClickSettingsScreen)
 
 }
 
+@Composable
+fun AccountScreen(onClickSettingsScreen: () -> Unit) {
+    var newInstitution by rememberSaveable {
+        mutableStateOf("")
+    }
+    var newUserName by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var newResidence by rememberSaveable {
+        mutableStateOf("")
+    }
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(color = Color.White)
+        ) {
+            HeaderConfigurationCard("Configuración cuenta", onClickSettingsScreen)
+
+            Spacer(modifier = Modifier.height(32.dp))
+            // Cambiar institucion
+            ChangeAccountSettingsCard(title = "Institución",
+                value = newInstitution,
+                placeHolderText = "UCA",
+                onTextChanged = { newInstitution = it })
+            Spacer(modifier = Modifier.height(32.dp))
+
+            //  Cambiar nombre de usuario
+            ChangeAccountSettingsCard(title = "Nombre de Usuario",
+                value = newUserName,
+                placeHolderText = "Chompi",
+                onTextChanged = { newUserName = it })
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Cambiar Residencia
+            ChangeAccountSettingsCard(title = "Residencia",
+                value = newResidence,
+                placeHolderText = "San Salvador",
+                onTextChanged = { newResidence = it })
+            Spacer(modifier = Modifier.height(64.dp))
+            SaveNewAccountSettingsButton()
+
+        }
+
+
+        // Cambiar fecha de nacimiento -> ¿necesario?
+        /*            ChangeAccountSettingsCard(
+                        title = "Cumpleños",
+                        title2 = "27 de noviembre",
+                        onTextChanged = {})
+                    Spacer(modifier = Modifier.height(12.dp))*/
+
+    }
+}
+
+@Composable
+fun SaveNewAccountSettingsButton() {
+
+    Button(
+        onClick = {}, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(id = R.color.primary_color),
+            disabledContainerColor = colorResource(id = R.color.disabled_color),
+            contentColor = Color.White,
+            disabledContentColor = Color.White
+        )
+    ) {
+        Text("Guardar cambios")
+
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomCard3(title: String, title2: String,onTextChanged: (String) -> Unit) {
+fun ChangeAccountSettingsCard(
+    title: String, value: String, placeHolderText: String, onTextChanged: (String) -> Unit
+) {
+
     Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
+        shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(
             containerColor = Color.White,
-        ),
-        modifier = Modifier
-            .height(98.dp)
+        ), modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation = 4.dp,
-                RoundedCornerShape(16.dp))
+            .shadow(
+                elevation = 4.dp, RoundedCornerShape(16.dp)
+            )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = title,
-                    modifier = Modifier.padding(horizontal = 0.dp,vertical=0.dp)
+                    text = title, modifier = Modifier.padding(horizontal = 0.dp, vertical = 0.dp)
                 )
-                TextField(value = title2,
+                TextField(
+                    value = value,
                     onValueChange = { onTextChanged(it) },
-                    modifier = Modifier
-
-                        .wrapContentWidth()
-                        .sizeIn(minWidth = 0.dp, maxWidth = 200.dp),
-                    placeholder = { Text(text = "Institution") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(text = placeHolderText) },
                     maxLines = 1,
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
@@ -106,30 +175,32 @@ fun CustomCard3(title: String, title2: String,onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun AccountScreen() {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.White)) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .background(color = Color.White)) {
+fun AreYouSureToDoThisChangesDialog(
+    show: Boolean, onDismiss: () -> Unit, onClickSignInScreen: () -> Unit = {}
+) {
+    if (show) {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Column(
+                Modifier
+                    .background(Color.White)
+                    .padding(36.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Su contraseña ha sido cambiada exitosamente",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = colorResource(
+                        id = R.color.text_color
+                    )
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+                BackToLogInButton(onClickSignInScreen)
 
+            }
 
-            CustomCard3(title = "Institution", title2 = "UCA", onTextChanged ={} )
-
-            // Espacio entre los componentes
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Segundo componente
-            CustomCard3(title = "Cumpleños", title2 = "27 de noviembre", onTextChanged ={} )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Segundo componente
-            CustomCard3(title = "Nombre", title2 = "Username", onTextChanged ={} )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Segundo componente
-            CustomCard3(title = "Residencia", title2 = "San Salvador", onTextChanged ={} )
         }
     }
 }

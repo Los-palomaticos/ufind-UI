@@ -5,7 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.ufind.ui.screen.settings.SettingsAccountScreen
+import org.ufind.ui.screen.settings.SettingsChangePassword
+import org.ufind.ui.screen.settings.SettingsPreferencesScreen
 import org.ufind.ui.screen.settings.SettingsScreen
+import org.ufind.ui.screen.settings.SettingsSecurityScreen
 import org.ufind.ui.screen.userhomescreen.HomeMenuScreen
 import org.ufind.ui.screen.userhomescreen.MainChatScreen
 import org.ufind.ui.screen.userhomescreen.SavedPostScreen
@@ -40,14 +43,37 @@ fun BottomNavGraph(navController: NavHostController) {
         composable(route = OptionsRoutes.PostScreen.route) {
             PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
         }
-        composable(route = OptionsRoutes.SettingsScreen.route){
-            SettingsScreen(onClickSettingsAccountScreen = { navController.navigate(OptionsRoutes.SettingsAccountScreen.route) })
+        composable(route = OptionsRoutes.SettingsScreen.route) {
+            SettingsScreen(
+                onClickSettingsAccountScreen = { navController.navigate(OptionsRoutes.SettingsAccountScreen.route) },
+                onClickSettingsPreferences = { navController.navigate(OptionsRoutes.SettingsPreferencesScreen.route) },
+            ) {
+                navController.navigate(
+                    OptionsRoutes.SettingsSecurityScreen.route
+                )
+            }
         }
-        composable(route = OptionsRoutes.WalletScreen.route){
+        composable(route = OptionsRoutes.SettingsPreferencesScreen.route) {
+            SettingsPreferencesScreen { navController.navigate(OptionsRoutes.SettingsScreen.route) }
+        }
+        composable(route = OptionsRoutes.SettingsSecurityScreen.route) {
+            SettingsSecurityScreen(
+                onClickSettingsScreen = { navController.navigate(OptionsRoutes.SettingsScreen.route) }
+            ) {
+                navController.navigate(
+                    OptionsRoutes.SettingsChangePassword.route
+                )
+            }
+        }
+        composable(route = OptionsRoutes.SettingsAccountScreen.route) {
+            SettingsAccountScreen { navController.navigate(OptionsRoutes.SettingsScreen.route) }
+        }
+        composable(route = OptionsRoutes.SettingsChangePassword.route) {
+            SettingsChangePassword { navController.navigate(OptionsRoutes.SettingsChangePassword.route) }
+        }
+        composable(route = OptionsRoutes.WalletScreen.route) {
             WalletProfileScreen()
         }
-        composable(route = OptionsRoutes.SettingsAccountScreen.route){
-            SettingsAccountScreen()
-        }
+
     }
 }

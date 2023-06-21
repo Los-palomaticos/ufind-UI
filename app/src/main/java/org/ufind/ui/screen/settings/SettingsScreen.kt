@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.settings
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -27,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,12 +39,20 @@ val colorbutton = Color(0xFF001233)
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
-    BodySettingsScreen(onClickSettingsAccountScreen)
+fun SettingsScreen(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
+    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
 }
 
 @Composable
-fun BodySettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
+fun BodySettingsScreen(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,10 +68,10 @@ fun BodySettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
             HeaderConfiguration()
 
             // Espacio entre los componentes
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Segundo componente
-            ConfigurationsButtons(onClickSettingsAccountScreen)
+            ConfigurationsButtons(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
 
             Spacer(modifier = Modifier.height(154.dp))
             SignOutButton()
@@ -71,29 +81,32 @@ fun BodySettingsScreen(onClickSettingsAccountScreen: () -> Unit = {}) {
 
 @Composable
 fun HeaderConfiguration() {
-    HeaderConfigurationCard(title = "Configuracion", description = "Descripción de la tarjeta")
+    HeaderConfigurationCardScreen(title = "Configuracion")
 }
 
 //Header Card
 @Composable
-fun HeaderConfigurationCard(title: String, description: String) {
+fun HeaderConfigurationCardScreen(title: String) {
     Card(
 
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.coca), // Reemplaza con tu icono de editar
-                contentDescription = "Back",
-                modifier = Modifier.size(24.dp)
-            )
+            IconButton(onClick = {}) {
+                Icon(
+                    Icons.Filled.Settings,
+                    contentDescription = "",
+                    tint = colorResource(id = R.color.text_color),
+                    modifier = Modifier.size(24.dp)
+                )
+
+            }
             Column(
                 modifier = Modifier.padding(start = 16.dp)
             ) {
@@ -103,21 +116,24 @@ fun HeaderConfigurationCard(title: String, description: String) {
     }
 }
 
-
-@Preview
 @Composable
-fun ConfigurationsButtons(onClickSettingsAccountScreen: () -> Unit = {}) {
+fun ConfigurationsButtons(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
     Column {
         ConfigurationButton(
             text = "Seguridad",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
+            onClick = onClickSecuritySettings
         )
+
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Preferencias",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
+            onClick = onClickSettingsPreferences
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
@@ -133,7 +149,7 @@ fun ConfigurationsButtons(onClickSettingsAccountScreen: () -> Unit = {}) {
 fun ConfigurationButton(
     text: String,
     icon: ImageVector,
-    onClick: () -> Unit
+    onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
