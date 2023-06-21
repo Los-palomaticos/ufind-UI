@@ -1,7 +1,5 @@
 package org.ufind.ui.screen.settings
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,15 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,47 +29,136 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
+
 val colorbutton = Color(0xFF001233)
-@Preview
+
+@Preview(showBackground = true)
 @Composable
-fun ConfigurationsScreen() {
-    Column() {
-        ConfigurationsButton(
+fun SettingsScreen(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
+    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
+}
+
+@Composable
+fun BodySettingsScreen(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(color = Color.White)
+        ) {
+
+            // Primer componente
+            HeaderConfiguration()
+
+            // Espacio entre los componentes
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Segundo componente
+            ConfigurationsButtons(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
+
+            Spacer(modifier = Modifier.height(154.dp))
+            SignOutButton()
+        }
+    }
+}
+
+@Composable
+fun HeaderConfiguration() {
+    HeaderConfigurationCardScreen(title = "Configuracion")
+}
+
+//Header Card
+@Composable
+fun HeaderConfigurationCardScreen(title: String) {
+    Card(
+
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = {}) {
+                Icon(
+                    Icons.Filled.Settings,
+                    contentDescription = "",
+                    tint = colorResource(id = R.color.text_color),
+                    modifier = Modifier.size(24.dp)
+                )
+
+            }
+            Column(
+                modifier = Modifier.padding(start = 16.dp)
+            ) {
+                Text(text = title)
+            }
+        }
+    }
+}
+
+@Composable
+fun ConfigurationsButtons(
+    onClickSettingsAccountScreen: () -> Unit = {},
+    onClickSettingsPreferences: () -> Unit = {},
+    onClickSecuritySettings: () -> Unit = {}
+) {
+    Column {
+        ConfigurationButton(
             text = "Seguridad",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
+            onClick = onClickSecuritySettings
         )
+
         Spacer(modifier = Modifier.padding(8.dp))
-        ConfigurationsButton(
+        ConfigurationButton(
             text = "Preferencias",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
+            onClick = onClickSettingsPreferences
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        ConfigurationsButton(
+        ConfigurationButton(
             text = "Cuenta",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = { /* Acción al hacer clic en el botón */ }
+            onClick = onClickSettingsAccountScreen
         )
     }
 }
+
+
 @Composable
-fun ConfigurationsButton(
+fun ConfigurationButton(
     text: String,
     icon: ImageVector,
-    onClick: () -> Unit
+    onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
-   
+
         modifier = Modifier
-            .shadow(elevation = 3.dp,
-                shape = MaterialTheme.shapes.medium)
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            )
             .height(60.dp)
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -97,97 +180,42 @@ fun ConfigurationsButton(
     }
 }
 
+
 @Composable
-fun BlankView() {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.White)) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .background(color = Color.White)) {
-
-            // Primer componente
-            PreviewCardComponent()
-
-            // Espacio entre los componentes
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Segundo componente
-            ConfigurationsScreen()
-
-            Spacer(modifier = Modifier.height(154.dp))
-            ConfigurationsScreen2()
-        }
-    }
-}
-@Composable
-fun ConfigurationsScreen2() {
+fun SignOutButton() {
     Column(Modifier.padding(16.dp)) {
-        ConfigurationsButton2(text = "Cerrar Sesión") { /* Acción al hacer clic en Cerrar Sesión */ }
+        SignOutConfigurationButton(text = "Cerrar Sesión") { /* Acción al hacer clic en Cerrar Sesión */ }
     }
 }
 
+
 @Composable
-fun ConfigurationsButton2(text: String, onClick: () -> Unit) {
+fun SignOutConfigurationButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
 
         modifier = Modifier
-            .shadow(elevation = 3.dp,
-                shape = MaterialTheme.shapes.medium )
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            )
             .height(54.dp)
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
         content = {
-            Text(text = text,
+            Text(
+                text = text,
                 textAlign = TextAlign.Right,
-                color = Color.Red)
+                color = Color.Red
+            )
         }
     )
 }
-@Preview
-@Composable
-fun SettingsScreen() {
-    BlankView()
-}
-//CARD COMPONENTE
-@Composable
-fun CardComponent(title: String, description: String) {
-    Card(
-
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.coca), // Reemplaza con tu icono de editar
-                contentDescription = "Back",
-                modifier = Modifier.size(24.dp)
-            )
-            Column(
-                modifier = Modifier.padding(start = 16.dp)
-            ) {
-                Text(text = title)
-            }
-        }
-    }
-}
 
 
-@Composable
-fun PreviewCardComponent() {
-    CardComponent(title = "Configuracion", description = "Descripción de la tarjeta")
-}
 //MENSAJE
-
 @Composable
 fun ConfirmationMessage(
     message: String,
@@ -201,8 +229,10 @@ fun ConfirmationMessage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = message,
-            color = Color.Black)
+        Text(
+            text = message,
+            color = Color.Black
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -213,7 +243,8 @@ fun ConfirmationMessage(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text(text = "Aceptar",
+                Text(
+                    text = "Aceptar",
                     color = Color.Black
                 )
             }
@@ -227,6 +258,8 @@ fun ConfirmationMessage(
         }
     }
 }
+
+
 @Preview
 @Composable
 fun PreviewConfirmationMessage() {

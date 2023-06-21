@@ -15,10 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,8 +34,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.ufind.ui.screen.userpost.addpost.ui.ItemPost
-import org.ufind.ui.screen.userpost.addpost.ui.model.PostModel
+import org.ufind.data.model.PostModel
+import org.ufind.ui.screen.home.post.ItemPost
 
 
 @Composable
@@ -69,7 +67,8 @@ fun UserCard(message: String, subMessage: String, time: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .shadow(elevation=4.dp,
+            .shadow(
+                elevation = 4.dp,
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
