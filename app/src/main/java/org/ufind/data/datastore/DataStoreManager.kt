@@ -1,7 +1,6 @@
 package org.ufind.data.datastore
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -13,9 +12,9 @@ import org.ufind.data.model.UserModel
 
 private const val USER_DATASTORE="USER"
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE)
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE)
 
-class DataStoreManager(val context: Context) {
+class DataStoreManager(private val context: Context) {
     suspend fun saveUserData(userModel: UserModel) {
         context.dataStore.edit { preferences ->
             preferences[ID] = userModel.id.toString()

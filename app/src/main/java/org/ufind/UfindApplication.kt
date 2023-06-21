@@ -10,7 +10,7 @@ class UfindApplication:Application() {
     private val database by lazy {
         UfindDatabase.getInstance(this)
     }
-    val  dataStoreManager by lazy {
+    private val  dataStoreManager by lazy {
         DataStoreManager(this)
     }
     val userRepository by lazy {

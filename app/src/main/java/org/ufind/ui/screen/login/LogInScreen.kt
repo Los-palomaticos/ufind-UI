@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.login
 
-import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -39,63 +39,76 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
+import org.ufind.data.OptionsRoutes
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.login.viewmodel.LoginViewModel
+import org.ufind.ui.screen.signup.SignUpUiState
 import org.ufind.ui.screen.userhomescreen.ImageLogo
+object LoginScreen: NavRoute<LoginViewModel> {
+    override val route: String
+        get() = OptionsRoutes.LogIn.route
 
-@Preview(showBackground = true)
+    @Composable
+    override fun viewModel () = viewModel<LoginViewModel>(factory = LoginViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: LoginViewModel) {
+        LoginScreen(viewModel)
+    }
+}
+//@Preview(showBackground = true)
 @Composable
 fun LoginScreen(
-    onClickSignUpScreen: () -> Unit = {},
-    onClickUserInterfaceNavigation: () -> Unit = {},
-    onClickForgottenPasswordScreen: () -> Unit = {}
+    viewModel: LoginViewModel,
 ) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Body(Modifier.align(Alignment.Center), onClickUserInterfaceNavigation)
-        Footer(Modifier.align(Alignment.BottomCenter), onClickSignUpScreen, onClickForgottenPasswordScreen)
-
+        Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center))
+        Footer(viewModel = viewModel,modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
-
 @Composable
-fun Body(modifier: Modifier, onClickUserInterfaceNavigation: () -> Unit = {}) {
-    var email by rememberSaveable {
-        mutableStateOf("")
+fun handleUiState(viewModel: LoginViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    if(uiState.value is LoginUiState.ErrorWithMessage){
+        (uiState.value as LoginUiState.ErrorWithMessage).messages.forEach { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
-
-    var password by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var isLoginEnable by rememberSaveable {
-        mutableStateOf(false)
-
-    }
-
+}
+@Composable
+fun Body(viewModel: LoginViewModel, modifier: Modifier) {
     Column(modifier = modifier) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-        Email(email) {
-            email = it
-            isLoginEnable = enableLogin(email, password)
+
+        handleUiState(viewModel = viewModel)
+
+        Email(viewModel.email.value) {
+            viewModel.email.value = it
+            viewModel.checkData()
 
         }
         Spacer(modifier = Modifier.size(8.dp))
-        Password(password) {
-            password = it
-            isLoginEnable = enableLogin(email, password)
+        Password(viewModel.password.value) {
+            viewModel.password.value = it
+            viewModel.checkData()
+
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable, onClickUserInterfaceNavigation)
-
-
+        LoginButton(viewModel.isValid.value){
+            viewModel.login()
+        }
     }
-
 }
 
 
@@ -177,19 +190,12 @@ fun LoginButton(loginEnable: Boolean, onClickUserInterfaceNavigation: () -> Unit
         Text("Iniciar sesión")
 
     }
-
-}
-
-private fun enableLogin(email: String, password: String): Boolean {
-
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 }
 
 @Composable
 fun Footer(
     modifier: Modifier,
-    onClickSignUpScreen: () -> Unit = {},
-    onClickForgottenPasswordScreen: () -> Unit = {}
+    viewModel: LoginViewModel
 ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Divider(
@@ -199,14 +205,16 @@ fun Footer(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        ForgottenPasswordButton(onClickForgottenPasswordScreen)
+        ForgottenPasswordButton{
+            viewModel.navigateToRoute(OptionsRoutes.ForgottenPassword.route)
+        }
         Spacer(modifier = Modifier.size(16.dp))
-        SignUp(onClickSignUpScreen)
+        SignUp{
+            viewModel.navigateToRoute(OptionsRoutes.SignUp.route)
+        }
         Spacer(modifier = Modifier.size(16.dp))
 
     }
-
-
 }
 
 @Composable

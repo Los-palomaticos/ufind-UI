@@ -1,8 +1,6 @@
 package org.ufind.ui.screen.signup
 
-import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,13 +47,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.login.LoginUiState
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
 import org.ufind.ui.screen.userhomescreen.ImageLogo
 
@@ -65,7 +64,7 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
     override fun viewModel(): SignUpViewModel = viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
     @Composable
     override fun Content(viewModel: SignUpViewModel) {
-        SignUpScreen()
+        SignUpScreen(viewModel)
     }
 
 }
@@ -73,10 +72,9 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
 //@Preview(showBackground = true)
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = viewModel(factory=SignUpViewModel.Factory)
-//    onClickLogInScreen: () -> Unit = {}, onClickUserInterfaceNavigation: () -> Unit={}
+    viewModel: SignUpViewModel
 ) {
-    viewModel.getUser()
+//    viewModel.handleUiStatus(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()
@@ -84,23 +82,37 @@ fun SignUpScreen(
             .verticalScroll(rememberScrollState())
     ) {
         SignUpBody(modifier = Modifier.align(Alignment.Center), viewModel = viewModel)
-        SignUpFooter(modifier = Modifier.align(BottomCenter))
+        SignUpFooter(modifier = Modifier.align(BottomCenter)) {
+            viewModel.navigateToLogin()
+        }
     }
 }
-
+@Composable
+fun handleUiStatus(viewModel: SignUpViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    if(uiState.value is SignUpUiState.ErrorWithMessage){
+        (uiState.value as SignUpUiState.ErrorWithMessage).messages.forEach { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsState()
+
+//    LaunchedEffect(uiState) {
+//        viewModel.changeErrorMessage()
+//    }
     Column(modifier = modifier) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
-        if(uiState.value is SignUpUiState.ErrorWithMessage){
-            Text(
-                text = (uiState.value as SignUpUiState.ErrorWithMessage).message,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+
+        handleUiStatus(viewModel=viewModel)
+
         CreatedUserName(viewModel.username.value) {
             viewModel.username.value = it
             viewModel.checkData()
@@ -280,7 +292,7 @@ fun enableSignUp(email: String, password: String, repeatedPassword: String): Boo
 }
 
 @Composable
-fun SignUpFooter(modifier: Modifier) {
+fun SignUpFooter(modifier: Modifier, onClick: () -> Unit) {
     Column(modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
         Divider(
             Modifier
@@ -289,7 +301,7 @@ fun SignUpFooter(modifier: Modifier) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        UserLogInOption(/* TODO */)
+        UserLogInOption(onClick)
     }
 
 }

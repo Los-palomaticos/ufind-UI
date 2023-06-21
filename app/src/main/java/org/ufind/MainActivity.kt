@@ -4,72 +4,40 @@ package org.ufind
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import org.ufind.data.OptionsRoutes
+import org.ufind.data.datastore.DataStoreManager
 import org.ufind.navigation.NavigationComponent
-import org.ufind.ui.screen.login.LoginScreen
-import org.ufind.ui.screen.signup.SignUpScreen
-import org.ufind.ui.navigation.UserInterfaceNavigation
-import org.ufind.ui.screen.changepassword.ChangePasswordScreen
-import org.ufind.ui.screen.changepassword.EnterCodeForgottenPasswordScreen
-import org.ufind.ui.screen.changepassword.ForgottenPasswordScreen
-
+import org.ufind.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            NavigationComponent(navHostController = navController)
-//            NavigationView()
+
+            val viewModel: MainViewModel = viewModel<MainViewModel>()
+            val dataStoreManager = DataStoreManager(LocalContext.current)
+            val startDestination = viewModel.startDestination.collectAsStateWithLifecycle()
+
+            LaunchedEffect(dataStoreManager.getUserData()) {
+                lifecycleScope.launch {
+                    val user = dataStoreManager.getUserData()
+                    user.collect{
+                        if(it.token != "")
+                            viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
+                        else
+                            viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)
+                    }
+                }
+            }
+            NavigationComponent(navHostController = navController, startDestination = startDestination.value)
         }
     }
-}
-
-@Composable
-fun NavigationView() {
-    val navController = rememberNavController()
-
-//    NavHost(
-//        navController = navController,
-//        startDestination = OptionsRoutes.LogInOrSignUpOptions.route
-//    ) {
-//        composable(route = OptionsRoutes.LogInOrSignUpOptions.route) {
-//            LogInOrSignUpOptions(
-//                onClickSignUpScreen = { navController.navigate(OptionsRoutes.SignUp.route) },
-//                onClickSignInScreen = { navController.navigate(OptionsRoutes.LogIn.route) }
-//            )
-//        }
-//        composable(route = OptionsRoutes.LogIn.route) {
-//            LoginScreen(
-//                onClickSignUpScreen = { navController.navigate(OptionsRoutes.SignUp.route) },
-//                onClickUserInterfaceNavigation = { navController.navigate(OptionsRoutes.UserInterface.route) },
-//                onClickForgottenPasswordScreen = { navController.navigate(OptionsRoutes.ForgottenPassword.route) }
-//            )
-//        }
-//
-//        composable(route = OptionsRoutes.SignUp.route) {
-//            SignUpScreen( /*{ navController.navigate(OptionsRoutes.LogIn.route) }*/)
-////            {
-////                navController.navigate(
-////                    OptionsRoutes.UserInterface.route
-////                )
-////            }
-//        }
-//        composable(route = OptionsRoutes.UserInterface.route) {
-//            UserInterfaceNavigation()
-//        }
-//        composable(route = OptionsRoutes.ForgottenPassword.route) {
-//            ForgottenPasswordScreen { navController.navigate(OptionsRoutes.EnterCodeForgottenPasswordScreen.route) }
-//        }
-//        composable(route = OptionsRoutes.EnterCodeForgottenPasswordScreen.route) {
-//            EnterCodeForgottenPasswordScreen { navController.navigate(OptionsRoutes.ChangePasswordScreen.route) }
-//        }
-//        composable(route = OptionsRoutes.ChangePasswordScreen.route) {
-//            ChangePasswordScreen { navController.navigate(OptionsRoutes.LogIn.route) }
-//        }
-//    }
 }
