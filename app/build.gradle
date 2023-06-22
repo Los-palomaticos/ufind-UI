@@ -78,7 +78,8 @@ dependencies {
 
     // coil
     implementation("io.coil-kt:coil-compose:2.4.0")
-
+    // glide
+    implementation("com.github.bumptech.glide:compose:$glide_version")
     // reflect
     implementation("org.jetbrains.kotlin:kotlin-reflect:$reflect_version")
 

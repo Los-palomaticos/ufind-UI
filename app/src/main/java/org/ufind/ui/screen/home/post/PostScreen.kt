@@ -29,12 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bumptech.glide.Glide
 import org.ufind.R
 import org.ufind.data.BottomBarScreen
 import org.ufind.data.model.PostModel
@@ -55,7 +57,7 @@ object PostScreen: NavRoute<PostViewModel> {
 @Composable
 fun PageHeader() {
     ImageLogo(75, modifier = Modifier)
-    PageHeaderLineDivider()
+//    PageHeaderLineDivider()
 }
 
 @Composable
@@ -88,7 +90,7 @@ fun PostScreen(
         .fillMaxSize()
         .padding(horizontal = 16.dp, vertical = 8.dp)) {
         PageHeader()
-        Spacer(modifier = Modifier.size(32.dp))
+//        Spacer(modifier = Modifier.size(32.dp))
         Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         Box(modifier = Modifier
             .fillMaxSize()
@@ -104,46 +106,10 @@ fun PostScreen(
 @Composable
 fun PostList(posts: List<PostModel>) {
 
-    LazyColumn() {
+    LazyColumn{
         items(posts){post ->
             ItemPost(post = post)
         }
-    }
-}
-
-@Composable
-fun PostImage(size: Int) {
-    Image(
-        imageVector = Icons.Filled.AddAPhoto,
-        contentDescription = "",
-        modifier = Modifier.size(size.dp),
-        alignment = Alignment.Center
-    )
-
-}
-
-@Composable
-fun BottomBarPostIcons() {
-    Row(
-        Modifier
-            .fillMaxWidth()
-    ) {
-        Image(
-            imageVector = Icons.Filled.Comment,
-            contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
-        )
-
-        Image(
-            imageVector = Icons.Filled.BookmarkBorder,
-            contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
-        )
-        Image(
-            imageVector = Icons.Filled.Share, contentDescription = "", Modifier.padding(16.dp, 0.dp)
-        )
-
-
     }
 }
 

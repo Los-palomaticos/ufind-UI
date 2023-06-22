@@ -1,11 +1,16 @@
 package org.ufind.ui.screen.home.post
 
-import android.graphics.fonts.FontStyle
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Comment
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -16,9 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import org.ufind.R
 import org.ufind.data.model.PostModel
 
@@ -61,9 +67,47 @@ fun ItemPost(post: PostModel) {
                 modifier = Modifier.align(Alignment.Start)
             )
             Spacer(Modifier.size(16.dp))
-            PostImage(size = 125)
+            PostImage(url = post.photos.first(), modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.size(16.dp))
             BottomBarPostIcons()
         }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun PostImage(
+    url: String,
+    modifier:Modifier = Modifier
+) {
+    GlideImage(
+        model = url,
+        contentDescription = "Imagen de post",
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun BottomBarPostIcons() {
+    Row(
+        Modifier
+            .fillMaxWidth()
+    ) {
+        Image(
+            imageVector = Icons.Filled.Comment,
+            contentDescription = "",
+            Modifier.padding(16.dp, 0.dp)
+        )
+
+        Image(
+            imageVector = Icons.Filled.BookmarkBorder,
+            contentDescription = "",
+            Modifier.padding(16.dp, 0.dp)
+        )
+        Image(
+            imageVector = Icons.Filled.Share, contentDescription = "", Modifier.padding(16.dp, 0.dp)
+        )
+
+
     }
 }
