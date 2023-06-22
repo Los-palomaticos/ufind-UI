@@ -13,6 +13,7 @@ import org.ufind.utils.SerializeErrorBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
+import java.net.ConnectException
 
 class PostRepository(private val api: PostService) {
     private val photos = mutableListOf<MultipartBody.Part>()
@@ -30,12 +31,14 @@ class PostRepository(private val api: PostService) {
             val postData: HashMap<String, RequestBody> = HashMap()
             postData["title"] = getRequestMultipartBody(title)
             postData["description"] = getRequestMultipartBody(description)
-            postData["location"] = getRequestMultipartBody(location?:"")
+            postData["location"] = getRequestMultipartBody(location ?: "")
             val response = api.addPost(
                 photos = photos,
                 postData = postData
             )
             ApiResponse.Success(response.message)
+        } catch (e: ConnectException){
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
         } catch (e: HttpException) {
             val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
             ApiResponse.ErrorWithMessage(errorBody.errorMessages)

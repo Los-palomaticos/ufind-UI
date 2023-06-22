@@ -11,7 +11,7 @@ import org.ufind.ui.screen.settings.SettingsChangePassword
 import org.ufind.ui.screen.settings.SettingsPreferencesScreen
 import org.ufind.ui.screen.settings.SettingsScreen
 import org.ufind.ui.screen.settings.SettingsSecurityScreen
-import org.ufind.ui.screen.userpost.addpost.ui.AddPostScreen
+import org.ufind.ui.screen.home.post.add.AddPostScreen
 import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
 import org.ufind.ui.screen.wallet.WalletProfileScreen
 

@@ -58,7 +58,7 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
                 ApiResponse.ErrorWithMessage(response.errorMessages)
             }
         } catch (e: ConnectException) {
-            ApiResponse.ErrorWithMessage(listOf("Error de conexión"))
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
         } catch(e: HttpException) {
             val errorResponse = SerializeErrorBody.getSerializedError(e, LoginResponse::class.java)
 

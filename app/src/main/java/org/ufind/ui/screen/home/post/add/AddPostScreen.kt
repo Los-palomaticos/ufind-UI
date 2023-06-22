@@ -1,4 +1,4 @@
-package org.ufind.ui.screen.userpost.addpost.ui
+package org.ufind.ui.screen.home.post.add
 
 import android.net.Uri
 import android.os.Build
@@ -37,23 +37,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
-import org.ufind.ui.screen.home.post.add.AddPostUiState
 import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
-import org.ufind.ui.screen.login.LoginUiState
 
 
 object AddPostScreen: NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
     @Composable
-    override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
+    override fun viewModel(): AddPostViewModel = viewModel(
         factory = AddPostViewModel.Factory
     )
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -101,7 +98,7 @@ fun HandleUiState(uiState: AddPostUiState) {
             }
         }
         is AddPostUiState.Success -> {
-            Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_SHORT).show()
         }
         is AddPostUiState.Error -> {
             Text(
@@ -119,11 +116,11 @@ fun BodyAddPost(
         viewModel: AddPostViewModel,
         modifier: Modifier
     ) {
-    val photo = viewModel.photoUri.collectAsStateWithLifecycle()
+    val photo = viewModel.photoPath.collectAsStateWithLifecycle()
     val context = LocalContext.current
     Column(modifier = modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-
-        if (photo.value == Uri.EMPTY)
+        HandleUiState(uiState = uiState)
+        if (photo.value == "")
             CameraPreview(viewModel = viewModel)
         else {
             viewModel.stopCamera()
