@@ -36,19 +36,10 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         AddPostScreen.composable(this, navController)
+        SettingsScreen.composable(this, navController)
 
         composable(route = OptionsRoutes.PostScreen.route) {
             PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-        }
-        composable(route = OptionsRoutes.SettingsScreen.route) {
-            SettingsScreen(
-                onClickSettingsAccountScreen = { navController.navigate(OptionsRoutes.SettingsAccountScreen.route) },
-                onClickSettingsPreferences = { navController.navigate(OptionsRoutes.SettingsPreferencesScreen.route) },
-            ) {
-                navController.navigate(
-                    OptionsRoutes.SettingsSecurityScreen.route
-                )
-            }
         }
         composable(route = OptionsRoutes.SettingsPreferencesScreen.route) {
             SettingsPreferencesScreen { navController.navigate(OptionsRoutes.SettingsScreen.route) }

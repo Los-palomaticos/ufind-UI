@@ -67,6 +67,9 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
             ApiResponse.Error(e)
         }
     }
+    suspend fun logout() {
+        dataStoreManager.clearDataStore()
+    }
     fun getUserData() = dataStoreManager.getUserData()
 
 }
