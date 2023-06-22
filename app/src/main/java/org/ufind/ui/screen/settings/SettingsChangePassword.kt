@@ -10,20 +10,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
@@ -37,6 +45,15 @@ import androidx.compose.ui.unit.sp
 import org.ufind.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import org.ufind.ui.screen.changepassword.BackToLogInButton
+import org.ufind.ui.screen.changepassword.changeShowDialog
+import org.ufind.ui.screen.changepassword.enableChangePassword
 
 val colorbu = Color(0xFF001233)
 
@@ -44,12 +61,12 @@ val colorbu = Color(0xFF001233)
 @Preview
 @Composable
 fun SettingsChangePassword(onClickSettingsSecurityScreen: () -> Unit = {}) {
-    ChangeScreen()
+    ChangeScreen(onClickSettingsSecurityScreen)
 }
 
 @Preview
 @Composable
-fun ChangeScreen() {
+fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +77,10 @@ fun ChangeScreen() {
                 .padding(16.dp)
                 .background(color = Color.White)
         ) {
+            HeaderConfigurationCard(
+                title = "Cambiar contraseña",
+                onClick = onClickSettingsSecurityScreen
+            )
 
             Spacer(modifier = Modifier.height(36.dp))
             // Primer componente
@@ -78,16 +99,21 @@ fun ChangeScreen() {
 @Composable
 fun ChangePasswordCard() {
     // Estado para almacenar el valor del TextField
-    val passwordState = remember { mutableStateOf("") }
-    val newpasswordState = remember { mutableStateOf("") }
-    val confirmpasswordState = remember { mutableStateOf("")}
+    var actualPassword by rememberSaveable { mutableStateOf("") }
+    var newPasswordState by rememberSaveable { mutableStateOf("") }
+    var confirmPasswordState by rememberSaveable { mutableStateOf("") }
     var isChangePasswordAvailable by rememberSaveable {
         mutableStateOf(false)
     }
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -101,37 +127,168 @@ fun ChangePasswordCard() {
                     .background(Color.White)
             )
 
-            // Input fields for old password, new password, and confirm password
-            OutlinedTextField(
-                value = passwordState.value,
-                onValueChange = { newValue -> passwordState.value = newValue },
-                label = { Text("Contraseña actual") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-                    .background(Color.White)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = newpasswordState.value,
-                onValueChange = { newValue -> newpasswordState.value = newValue },
-                label = { Text("Nueva contraseña") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = confirmpasswordState.value,
-                onValueChange = { newValue -> confirmpasswordState.value = newValue },
-                label = { Text("Confirmar nueva contraseña") },
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.size(16.dp))
+
+            ActualPasswordSecuritySettings(
+                actualpassword = actualPassword,
+                onTextChanged = { actualPassword = it })
+            Spacer(modifier = Modifier.size(16.dp))
+
+            NewPasswordSecuritySettings(
+                newPassword = newPasswordState,
+                onTextChanged = { newPasswordState = it })
+
+            Spacer(modifier = Modifier.size(16.dp))
+
+            RepeatedNewPasswordSecuritySettings(
+                repeatedNewPassword = confirmPasswordState,
+                onTextChanged = {
+                    confirmPasswordState = it
+                    isChangePasswordAvailable =
+                        enableChangePasswordSetting(
+                            actualPassword,
+                            newPasswordState,
+                            confirmPasswordState
+                        )
+                }
             )
 
-            // Button to submit the password change
-            //ChangePasswordSettingButton()
+            Spacer(modifier = Modifier.size(32.dp))
+
+            ChangePasswordSettingButton(
+                isChangePasswordAvailable,
+                confirmPasswordState,
+                isShowDialogAvailable = { changeShowDialogChangePasswordSettings(showDialog) }
+            )
+
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ActualPasswordSecuritySettings(
+    actualpassword: String,
+    onTextChanged: (String) -> Unit
+) {
+    var passwordVisibility by rememberSaveable {
+        mutableStateOf(false)
+    }
+    TextField(
+        value = actualpassword,
+        onValueChange = { onTextChanged(it) },
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = "Contraseña Actual") },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = colorResource(id = R.color.textfield_color),
+            focusedIndicatorColor = colorResource(id = R.color.primary_color),
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        trailingIcon = {
+            val imagen = if (passwordVisibility) {
+                Icons.Filled.VisibilityOff
+            } else {
+                Icons.Filled.Visibility
+
+            }
+            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                Icon(imageVector = imagen, contentDescription = "Show password")
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        }
+
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NewPasswordSecuritySettings(
+    newPassword: String,
+    onTextChanged: (String) -> Unit
+) {
+    var passwordVisibility by rememberSaveable {
+        mutableStateOf(false)
+    }
+    TextField(
+        value = newPassword,
+        onValueChange = { onTextChanged(it) },
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = "Nueva contraseña") },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = colorResource(id = R.color.textfield_color),
+            focusedIndicatorColor = colorResource(id = R.color.primary_color),
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        trailingIcon = {
+            val imagen = if (passwordVisibility) {
+                Icons.Filled.VisibilityOff
+            } else {
+                Icons.Filled.Visibility
+
+            }
+            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                Icon(imageVector = imagen, contentDescription = "Show password")
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        }
+
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RepeatedNewPasswordSecuritySettings(
+    repeatedNewPassword: String,
+    onTextChanged: (String) -> Unit
+) {
+    var passwordVisibility by rememberSaveable {
+        mutableStateOf(false)
+    }
+    TextField(
+        value = repeatedNewPassword,
+        onValueChange = { onTextChanged(it) },
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = "Repetir nueva contraseña") },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = colorResource(id = R.color.textfield_color),
+            focusedIndicatorColor = colorResource(id = R.color.primary_color),
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        trailingIcon = {
+            val imagen = if (passwordVisibility) {
+                Icons.Filled.VisibilityOff
+            } else {
+                Icons.Filled.Visibility
+
+            }
+            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                Icon(imageVector = imagen, contentDescription = "Show password")
+            }
+        },
+        visualTransformation = if (passwordVisibility) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        }
+    )
 }
 
 @Preview
@@ -227,14 +384,55 @@ fun ChangePasswordSettingButton(
     }
 }
 
+@Composable
+fun DialogSettingsPasswordChangedCorrectly(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onClickSignInScreen: () -> Unit = {}
+) {
+    if (show) {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Column(
+                Modifier
+                    .background(Color.White)
+                    .padding(36.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Su contraseña ha sido cambiada exitosamente",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = colorResource(
+                        id = R.color.text_color
+                    )
+                )
+                Spacer(modifier = Modifier.size(16.dp))
 
-fun isRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String) : Boolean {
+            }
+
+        }
+    }
+}
+
+fun isRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String): Boolean {
     return newChangedPassword == repeatedChangedPassword
 }
 
-fun enableChangePasswordSetting(currentPassword: String, newChangedPassword: String, repeatedChangedPassword: String): Boolean {
-    if (currentPassword != "" && newChangedPassword.length > 6 && newChangedPassword == repeatedChangedPassword){
-        return  true
+fun enableChangePasswordSetting(
+    currentPassword: String,
+    newChangedPassword: String,
+    repeatedChangedPassword: String
+): Boolean {
+    if (currentPassword != "" && newChangedPassword.length > 6 && newChangedPassword == repeatedChangedPassword) {
+        return true
     }
-        return false
+    return false
+}
+
+fun changeShowDialogChangePasswordSettings(isShowDialogAvailable: Boolean): Boolean {
+    var holderShow = isShowDialogAvailable
+    holderShow = true
+    return holderShow
 }

@@ -66,15 +66,19 @@ fun ImageLogo(size: Int, modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PostScreen(onClickAddPostScreen: () -> Unit = {}) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal=16.dp, vertical=8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp)
+    ) {
         PageHeader()
         Spacer(modifier = Modifier.size(32.dp))
         Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical=8.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp)
+        ) {
             PostList()
             AddPostFloatingButton(onClickAddPostScreen, Modifier.align(Alignment.BottomEnd))
 

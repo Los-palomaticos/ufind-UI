@@ -66,7 +66,7 @@ fun BottomNavGraph(navController: NavHostController) {
             SettingsAccountScreen { navController.navigate(OptionsRoutes.SettingsScreen.route) }
         }
         composable(route = OptionsRoutes.SettingsChangePassword.route) {
-            SettingsChangePassword { navController.navigate(OptionsRoutes.SettingsChangePassword.route) }
+            SettingsChangePassword { navController.navigate(OptionsRoutes.SettingsSecurityScreen.route) }
         }
         composable(route = OptionsRoutes.WalletScreen.route) {
             WalletProfileScreen()
