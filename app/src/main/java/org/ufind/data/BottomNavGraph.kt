@@ -12,16 +12,16 @@ import org.ufind.ui.screen.settings.SettingsPreferencesScreen
 import org.ufind.ui.screen.settings.SettingsScreen
 import org.ufind.ui.screen.settings.SettingsSecurityScreen
 import org.ufind.ui.screen.userpost.addpost.ui.AddPostScreen
-import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
+import org.ufind.ui.screen.home.post.PostScreen
 import org.ufind.ui.screen.wallet.WalletProfileScreen
 
 
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomBarScreen.Home.route ){
-        composable(route= BottomBarScreen.Home.route){
-            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-        }
+//        composable(route= BottomBarScreen.Home.route){
+//            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
+//        }
         composable(route = BottomBarScreen.Profile.route) {
             UserProfileScreen(
                 onClickProfileSettings = { navController.navigate(OptionsRoutes.SettingsScreen.route) },
@@ -36,10 +36,10 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         AddPostScreen.composable(this, navController)
-
-        composable(route = OptionsRoutes.PostScreen.route) {
-            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-        }
+        PostScreen.composable(this, navController)
+//        composable(route = OptionsRoutes.PostScreen.route) {
+//            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
+//        }
         composable(route = OptionsRoutes.SettingsScreen.route) {
             SettingsScreen(
                 onClickSettingsAccountScreen = { navController.navigate(OptionsRoutes.SettingsAccountScreen.route) },

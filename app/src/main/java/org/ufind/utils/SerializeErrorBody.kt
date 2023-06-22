@@ -1,6 +1,7 @@
 package org.ufind.utils
 
 import com.google.gson.Gson
+import org.ufind.network.dto.GeneralResponse
 import retrofit2.HttpException
 
 class SerializeErrorBody() {

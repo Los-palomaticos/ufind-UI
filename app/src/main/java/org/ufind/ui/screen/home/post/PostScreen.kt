@@ -1,4 +1,4 @@
-package org.ufind.ui.screen.userpost.addpost.ui
+package org.ufind.ui.screen.home.post
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,13 +32,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
+import org.ufind.data.BottomBarScreen
 import org.ufind.data.model.PostModel
-import org.ufind.ui.screen.home.post.ItemPost
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
+object PostScreen: NavRoute<PostViewModel> {
+    override val route: String
+        get() = BottomBarScreen.Home.route
+    @Composable
+    override fun viewModel(): PostViewModel = viewModel(factory = PostViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: PostViewModel) {
+        PostScreen(viewModel)
+    }
+
+}
 @Composable
 fun PageHeader() {
     ImageLogo(75, modifier = Modifier)
@@ -63,36 +78,36 @@ fun ImageLogo(size: Int, modifier: Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun PostScreen(onClickAddPostScreen: () -> Unit = {}) {
+fun PostScreen(
+    viewModel: PostViewModel,
+) {
+    viewModel.getAll()
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(horizontal=16.dp, vertical=8.dp)) {
+        .padding(horizontal = 16.dp, vertical = 8.dp)) {
         PageHeader()
         Spacer(modifier = Modifier.size(32.dp))
         Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(vertical=8.dp)) {
-            PostList()
-            AddPostFloatingButton(onClickAddPostScreen, Modifier.align(Alignment.BottomEnd))
-
-
+            .padding(vertical = 8.dp)) {
+            PostList(viewModel.listOfPosts)
+            AddPostFloatingButton(modifier = Modifier.align(Alignment.BottomEnd)) {
+                viewModel.navigateToAddPost()
+            }
         }
     }
 }
 
 @Composable
-fun PostList() {
-    val myPost: List<PostModel> = emptyList()
-    Column(Modifier.verticalScroll(rememberScrollState())) {
-        ItemPost()
-        ItemPost()
-        ItemPost()
-        ItemPost()
-        ItemPost()
-        ItemPost()
+fun PostList(posts: List<PostModel>) {
+
+    LazyColumn() {
+        items(posts){post ->
+            ItemPost(post = post)
+        }
     }
 }
 
@@ -133,7 +148,7 @@ fun BottomBarPostIcons() {
 }
 
 @Composable
-fun AddPostFloatingButton(onClickAddPostScreen: () -> Unit = {}, modifier: Modifier) {
+fun AddPostFloatingButton(modifier: Modifier,onClickAddPostScreen: () -> Unit = {}) {
     FloatingActionButton(
         onClick = onClickAddPostScreen,
         modifier = modifier.padding(0.dp, 42.dp),
