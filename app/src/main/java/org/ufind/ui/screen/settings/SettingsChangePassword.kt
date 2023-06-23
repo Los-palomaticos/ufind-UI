@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -112,12 +113,12 @@ fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Cambiar contraseña",
@@ -132,6 +133,8 @@ fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
                 actualpassword = actualPassword,
                 onTextChanged = { actualPassword = it })
             Spacer(modifier = Modifier.size(16.dp))
+            IsRepeatedPasswordOk(newPasswordState, confirmPasswordState)
+            Spacer(modifier = Modifier.size(8.dp))
 
             NewPasswordSecuritySettings(
                 newPassword = newPasswordState,
@@ -158,7 +161,8 @@ fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
                 isChangePasswordAvailable,
                 confirmPasswordState,
                 isShowDialogAvailable = {
-                    // acá enviar datos para cambiar la contraseña del usuario
+                    // TODO("En esta lambda enviar datos de la nueva contraseña)
+
                     showDialog = changeShowDialogChangePasswordSettings(showDialog)
                 }
             )
@@ -218,7 +222,7 @@ fun ActualPasswordSecuritySettings(
 @Composable
 fun NewPasswordSecuritySettings(
     newPassword: String,
-    onTextChanged: (String) -> Unit
+    onTextChanged: (String) -> Unit,
 ) {
     var passwordVisibility by rememberSaveable {
         mutableStateOf(false)
@@ -265,6 +269,7 @@ fun RepeatedNewPasswordSecuritySettings(
     var passwordVisibility by rememberSaveable {
         mutableStateOf(false)
     }
+
     TextField(
         value = repeatedNewPassword,
         onValueChange = { onTextChanged(it) },
@@ -442,10 +447,14 @@ fun GoBackToSettingsScreenButton(onClickBackToSettings: () -> Unit = {}) {
     }
 
 }
+@Composable
+fun IsRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String) {
+    if(newChangedPassword != repeatedChangedPassword)  {
+        Text(text = "Las contraseñas no coinciden", color = MaterialTheme.colorScheme.error)
 
-fun isRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String): Boolean {
-    return newChangedPassword == repeatedChangedPassword
+    }
 }
+
 
 fun enableChangePasswordSetting(
     currentPassword: String,
@@ -456,6 +465,7 @@ fun enableChangePasswordSetting(
         return true
     }
     return false
+    // TODO("Revisar currentPassword con la contraseña actual del usuario, cambiar el condicional !=")
 }
 
 fun changeShowDialogChangePasswordSettings(isShowDialogAvailable: Boolean): Boolean {

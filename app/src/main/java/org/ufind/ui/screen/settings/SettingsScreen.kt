@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -44,9 +46,14 @@ fun SettingsScreen(
     onClickSettingsAccountScreen: () -> Unit = {},
     onClickSettingsPreferences: () -> Unit = {},
     onClickSecuritySettings: () -> Unit = {},
-    onClickProfileScreen:  () -> Unit = {}
+    onClickProfileScreen: () -> Unit = {}
 ) {
-    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings, onClickProfileScreen)
+    BodySettingsScreen(
+        onClickSettingsAccountScreen,
+        onClickSettingsPreferences,
+        onClickSecuritySettings,
+        onClickProfileScreen
+    )
 }
 
 @Composable
@@ -65,6 +72,8 @@ fun BodySettingsScreen(
             modifier = Modifier
                 .padding(16.dp)
                 .background(color = Color.White)
+                .verticalScroll(rememberScrollState())
+
         ) {
 
             // Primer componente
@@ -74,7 +83,11 @@ fun BodySettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Segundo componente
-            ConfigurationsButtons(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
+            ConfigurationsButtons(
+                onClickSettingsAccountScreen,
+                onClickSettingsPreferences,
+                onClickSecuritySettings
+            )
 
             Spacer(modifier = Modifier.height(154.dp))
             SignOutButton()

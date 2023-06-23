@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -59,6 +61,9 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
     var newResidence by rememberSaveable {
         mutableStateOf("")
     }
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
 
 
     Box(
@@ -69,8 +74,9 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
                 .background(color = Color.White)
+                .verticalScroll(rememberScrollState())
+
         ) {
             HeaderConfigurationCard("Configuración cuenta", onClickSettingsScreen)
 
@@ -115,7 +121,7 @@ fun SaveNewAccountSettingsButton() {
 
     Button(
         onClick = {}, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.primary_color),
+            containerColor = colorResource(id = R.color.text_color),
             disabledContainerColor = colorResource(id = R.color.disabled_color),
             contentColor = Color.White,
             disabledContentColor = Color.White
