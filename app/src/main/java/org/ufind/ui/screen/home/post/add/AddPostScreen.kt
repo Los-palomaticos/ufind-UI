@@ -5,6 +5,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,16 +44,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import org.ufind.R
+import org.ufind.data.BottomBarScreen
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
+import org.ufind.ui.screen.settings.HeaderConfigurationCard
 
 
 object AddPostScreen: NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
     @Composable
-    override fun viewModel(): AddPostViewModel = viewModel(
+    override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
         factory = AddPostViewModel.Factory
     )
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -98,7 +103,7 @@ fun HandleUiState(uiState: AddPostUiState) {
             }
         }
         is AddPostUiState.Success -> {
-            Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_LONG).show()
         }
         is AddPostUiState.Error -> {
             Text(
@@ -118,30 +123,52 @@ fun BodyAddPost(
     ) {
     val photo = viewModel.photoPath.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    Column(modifier = modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        HandleUiState(uiState = uiState)
-        if (photo.value == "")
-            CameraPreview(viewModel = viewModel)
-        else {
-            viewModel.stopCamera()
-            Box{
-                AsyncImage(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp), model = photo.value, contentDescription = null)
-                Button(onClick = {viewModel.resumeCamera()}){
-                    Text(text="De nuevo")
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 64.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HeaderConfigurationCard(
+            title = "Crear publicación",
+            onClick = { viewModel.popToRoute(BottomBarScreen.Home.route) }
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+7
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            HandleUiState(uiState = uiState)
+            if (photo.value == "")
+                CameraPreview(viewModel = viewModel)
+            else {
+                viewModel.stopCamera()
+                Box {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp), model = photo.value, contentDescription = null
+                    )
+                    Button(onClick = { viewModel.resumeCamera() }) {
+                        Text(text = "De nuevo")
+                    }
                 }
             }
-        }
-        Spacer (Modifier.size(64.dp))
-        TitleTextFieldPost(viewModel.title.value) { viewModel.title.value = it }
-        Spacer(Modifier.size(16.dp))
-        DescriptionTextFieldPost(viewModel.description.value) { viewModel.description.value = it }
-        Spacer(Modifier.size(32.dp))
-        LocationCardPost()
-        Spacer(Modifier.size(32.dp))
-        ButtonAddPost(uiState){
-            viewModel.addPost(context)
+            Spacer(Modifier.size(64.dp))
+            TitleTextFieldPost(viewModel.title.value) { viewModel.title.value = it }
+            Spacer(Modifier.size(16.dp))
+            DescriptionTextFieldPost(viewModel.description.value) {
+                viewModel.description.value = it
+            }
+            Spacer(Modifier.size(32.dp))
+            LocationCardPost()
+            Spacer(Modifier.size(32.dp))
+            ButtonAddPost(uiState) {
+                viewModel.addPost(context)
+            }
         }
     }
 }
@@ -265,15 +292,18 @@ fun CameraPreview(
                             ContextCompat.getMainExecutor(context)
                         )
                     }
-                }},
+                }
+            },
                 modifier = Modifier.fillMaxWidth(),
                 update = {
                 }
 
             )
-            Row(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp)){
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 40.dp)
+            ) {
                 Button(
                     onClick = { viewModel.makePhoto(context) }
                 ) {
