@@ -6,6 +6,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.ufind.data.model.PostModel
 import org.ufind.network.ApiResponse
 import org.ufind.network.dto.GeneralResponse
 import org.ufind.network.service.PostService
@@ -48,5 +49,20 @@ class PostRepository(private val api: PostService) {
             photos.clear()
         }
 
+    }
+
+    suspend fun getAll(): ApiResponse<List<PostModel>> {
+        return try {
+            val response = api.getAll()
+            ApiResponse.Success(response.message)
+        } catch (e: ConnectException){
+            ApiResponse.ErrorWithMessage(listOf("No hay conexión"))
+        } catch(e: HttpException) {
+            val errorResponse = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
+            ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
+        } catch (e: IOException) {
+            ApiResponse.Error(e)
+        }
+        /*TODO: ConnectException*/
     }
 }

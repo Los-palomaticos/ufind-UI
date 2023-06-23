@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ufind.R
-import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
 
 @Preview(showBackground = true)
