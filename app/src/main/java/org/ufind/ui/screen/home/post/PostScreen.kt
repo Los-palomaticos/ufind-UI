@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,7 +57,7 @@ import org.ufind.ui.screen.home.post.ItemPost
 
 @Composable
 fun PageHeader() {
-    ImageLogo(75, modifier = Modifier)
+    ImageLogo(80, modifier = Modifier)
     PageHeaderLineDivider()
 }
 
@@ -66,7 +67,7 @@ fun PageHeaderLineDivider() {
         Modifier
             .height(1.dp)
             .fillMaxWidth(),
-        color = Color(0xFF02092E)
+        color = colorResource(id = R.color.grey01)
     )
 }
 
@@ -83,15 +84,19 @@ fun ImageLogo(size: Int, modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun PostScreen(onClickAddPostScreen: () -> Unit = {}) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal=16.dp, vertical=8.dp)) {
-        PageHeader()
-        Spacer(modifier = Modifier.size(32.dp))
-        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-        Box(modifier = Modifier
+    Column(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(vertical=8.dp)) {
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        PageHeader()
+        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.Start).padding(0.dp, 16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp)
+        ) {
             PostList()
             AddPostFloatingButton(onClickAddPostScreen, Modifier.align(Alignment.BottomEnd))
 
