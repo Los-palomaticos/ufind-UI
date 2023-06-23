@@ -46,6 +46,7 @@ import org.ufind.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -95,7 +96,6 @@ fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}, onClickBackToSe
 }
 
 @Preview
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
     // Estado para almacenar el valor del TextField
@@ -159,10 +159,8 @@ fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
 
             ChangePasswordSettingButton(
                 isChangePasswordAvailable,
-                confirmPasswordState,
                 isShowDialogAvailable = {
                     // TODO("En esta lambda enviar datos de la nueva contraseña)
-
                     showDialog = changeShowDialogChangePasswordSettings(showDialog)
                 }
             )
@@ -376,7 +374,6 @@ fun MessageCard(message: String) {
 @Composable
 fun ChangePasswordSettingButton(
     changePasswordAvailable: Boolean,
-    repeatedChangedPassword: String,
     isShowDialogAvailable: () -> Unit = {}
 ) {
     Button(
@@ -410,13 +407,14 @@ fun DialogSettingsPasswordChangedCorrectly(
             Column(
                 Modifier
                     .background(Color.White)
-                    .padding(36.dp)
+                    .padding(48.dp)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "¡Su contraseña ha sido cambiada exitosamente!",
                     textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = colorResource(
                         id = R.color.text_color
