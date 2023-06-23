@@ -1,6 +1,7 @@
 package org.ufind.ui.screen.userpost.addpost.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,7 @@ import org.ufind.ui.screen.home.post.ItemPost
 
 @Composable
 fun PageHeader() {
-    ImageLogo(75, modifier = Modifier)
+    ImageLogo(80, modifier = Modifier)
     PageHeaderLineDivider()
 }
 
@@ -49,7 +50,7 @@ fun PageHeaderLineDivider() {
         Modifier
             .height(1.dp)
             .fillMaxWidth(),
-        color = Color(0xFF02092E)
+        color = colorResource(id = R.color.grey01)
     )
 }
 
@@ -69,11 +70,11 @@ fun PostScreen(onClickAddPostScreen: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp)
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PageHeader()
-        Spacer(modifier = Modifier.size(32.dp))
-        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.Start).padding(0.dp, 16.dp))
         Box(
             modifier = Modifier
                 .fillMaxSize()

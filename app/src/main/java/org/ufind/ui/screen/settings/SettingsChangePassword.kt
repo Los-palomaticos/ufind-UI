@@ -2,6 +2,7 @@ package org.ufind.ui.screen.settings
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,9 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,22 +50,22 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import org.ufind.ui.screen.changepassword.BackToLogInButton
-import org.ufind.ui.screen.changepassword.changeShowDialog
-import org.ufind.ui.screen.changepassword.enableChangePassword
 
 val colorbu = Color(0xFF001233)
 
 
 @Preview
 @Composable
-fun SettingsChangePassword(onClickSettingsSecurityScreen: () -> Unit = {}) {
-    ChangeScreen(onClickSettingsSecurityScreen)
+fun SettingsChangePassword(
+    onClickSettingsSecurityScreen: () -> Unit = {},
+    onClickBackToSettings: () -> Unit = {}
+) {
+    ChangeScreen(onClickSettingsSecurityScreen,onClickBackToSettings)
 }
 
 @Preview
 @Composable
-fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}) {
+fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}, onClickBackToSettings: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +87,7 @@ fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}) {
             // Espacio entre los componentes
             Spacer(modifier = Modifier.height(36.dp))
             // Segundo componente
-            ChangePasswordCard()
+            ChangePasswordCard(onClickBackToSettings)
             Spacer(modifier = Modifier.height(132.dp))
         }
     }
@@ -97,7 +96,7 @@ fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}) {
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChangePasswordCard() {
+fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
     // Estado para almacenar el valor del TextField
     var actualPassword by rememberSaveable { mutableStateOf("") }
     var newPasswordState by rememberSaveable { mutableStateOf("") }
@@ -158,8 +157,15 @@ fun ChangePasswordCard() {
             ChangePasswordSettingButton(
                 isChangePasswordAvailable,
                 confirmPasswordState,
-                isShowDialogAvailable = { changeShowDialogChangePasswordSettings(showDialog) }
+                isShowDialogAvailable = {
+                    // acá enviar datos para cambiar la contraseña del usuario
+                    showDialog = changeShowDialogChangePasswordSettings(showDialog)
+                }
             )
+            DialogSettingsPasswordChangedCorrectly(
+                show = showDialog,
+                onDismiss = { showDialog = false },
+                onClickBackToSettings)
 
         }
     }
@@ -178,7 +184,7 @@ fun ActualPasswordSecuritySettings(
         value = actualpassword,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text = "Contraseña Actual") },
+        placeholder = { Text(text = "Contraseña actual") },
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -384,11 +390,12 @@ fun ChangePasswordSettingButton(
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DialogSettingsPasswordChangedCorrectly(
-    show: Boolean,
-    onDismiss: () -> Unit,
-    onClickSignInScreen: () -> Unit = {}
+    show: Boolean = true,
+    onDismiss: () -> Unit = {},
+    onClickBackToSettings: () -> Unit = {},
 ) {
     if (show) {
         Dialog(
@@ -399,21 +406,41 @@ fun DialogSettingsPasswordChangedCorrectly(
                 Modifier
                     .background(Color.White)
                     .padding(36.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Su contraseña ha sido cambiada exitosamente",
+                    text = "¡Su contraseña ha sido cambiada exitosamente!",
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = colorResource(
                         id = R.color.text_color
                     )
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(24.dp))
+                GoBackToSettingsScreenButton(onClickBackToSettings)
 
             }
 
         }
     }
+}
+
+@Composable
+fun GoBackToSettingsScreenButton(onClickBackToSettings: () -> Unit = {}) {
+    Button(
+        onClick = onClickBackToSettings,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(id = R.color.primary_color),
+            disabledContainerColor = colorResource(id = R.color.disabled_color),
+            contentColor = Color.White,
+            disabledContentColor = Color.White
+        )
+    ) {
+        Text("Regresar a configuraciones")
+    }
+
 }
 
 fun isRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String): Boolean {

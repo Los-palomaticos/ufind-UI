@@ -19,9 +19,8 @@ import org.ufind.data.BottomBarScreen
 import org.ufind.data.BottomNavGraph
 
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@Preview(showBackground=true)
+@Preview(showBackground = true)
 @Composable
 fun UserInterfaceNavigation() {
     val navController = rememberNavController()
@@ -33,9 +32,13 @@ fun UserInterfaceNavigation() {
         BottomBarScreen.SavedPosts,
         BottomBarScreen.Profile
     )
+    val showBottomBar =
+        navController.currentBackStackEntryAsState().value?.destination?.route in navigationItem.map { it.route }
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
-        bottomBar = { BottomNavigationBar(navController, navigationItem) }
+        bottomBar = { if(showBottomBar) {
+            BottomNavigationBar(navController, navigationItem)}
+        }
     ) {
         BottomNavGraph(navController = navController)
     }
@@ -50,23 +53,27 @@ fun currentRoute(navController: NavHostController): String? {
 @Composable
 fun BottomNavigationBar(navController: NavHostController, navigationItem: List<BottomBarScreen>) {
     androidx.compose.material.BottomAppBar(backgroundColor = Color.White) {
-        BottomNavigation(backgroundColor = Color.White, contentColor = colorResource(
-            id = R.color.text_color
-        )) {
+        BottomNavigation(
+            backgroundColor = Color.White, contentColor = colorResource(
+                id = R.color.text_color
+            )
+        ) {
             val currentRoute = currentRoute(navController = navController)
 
             navigationItem.forEach { item ->
                 BottomNavigationItem(
                     selected = currentRoute == item.route,
-                    onClick = { navController.navigate(item.route){
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) {
-                                saveState = true
+                    onClick = {
+                        navController.navigate(item.route) {
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route) {
+                                    saveState = true
+                                }
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    } },
+                    },
                     icon = {
                         Icon(
                             imageVector = item.icon,

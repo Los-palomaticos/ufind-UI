@@ -51,15 +51,18 @@ import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.home.post.add.AddPostUiState
 import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
 import org.ufind.ui.screen.login.LoginUiState
+import org.ufind.ui.screen.settings.HeaderConfigurationCard
 
 
-object AddPostScreen: NavRoute<AddPostViewModel> {
+object AddPostScreen : NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
+
     @Composable
     override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
         factory = AddPostViewModel.Factory
     )
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content(viewModel: AddPostViewModel) {
@@ -70,7 +73,7 @@ object AddPostScreen: NavRoute<AddPostViewModel> {
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun AddPostScreen(viewModel: AddPostViewModel) {
+fun AddPostScreen(viewModel: AddPostViewModel, onClickHomeScreen: () -> Unit = {}) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     viewModel.checkPermissions(LocalContext.current)
     Box(
@@ -94,9 +97,10 @@ fun HeaderAddPost(modifier: Modifier) {
         Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
     }
 }
+
 @Composable
 fun HandleUiState(uiState: AddPostUiState) {
-    when(uiState){
+    when (uiState) {
         is AddPostUiState.ErrorWithMessage -> {
             uiState.errorMessages.forEach { message ->
                 Text(
@@ -105,9 +109,11 @@ fun HandleUiState(uiState: AddPostUiState) {
                 )
             }
         }
+
         is AddPostUiState.Success -> {
             Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_LONG).show()
         }
+
         is AddPostUiState.Error -> {
             Text(
                 text = "Error desconocido",
@@ -118,37 +124,54 @@ fun HandleUiState(uiState: AddPostUiState) {
         else -> {}
     }
 }
+
 @Composable
 fun BodyAddPost(
-        uiState: AddPostUiState,
-        viewModel: AddPostViewModel,
-        modifier: Modifier
-    ) {
+    uiState: AddPostUiState,
+    viewModel: AddPostViewModel,
+    modifier: Modifier,
+    oncClickHomeScreen: () -> Unit = {}
+) {
     val photo = viewModel.photoUri.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 64.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 64.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+
+        HeaderConfigurationCard(
+            title = "Crear publicación",
+            onClick = oncClickHomeScreen
+        )
+        Spacer(modifier = Modifier.height(32.dp))
 
         if (photo.value == Uri.EMPTY)
             CameraPreview(viewModel = viewModel)
         else {
             viewModel.stopCamera()
-            Box{
-                AsyncImage(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp), model = photo.value, contentDescription = null)
-                Button(onClick = {viewModel.resumeCamera()}){
-                    Text(text="De nuevo")
+            Box {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp), model = photo.value, contentDescription = null
+                )
+                Button(onClick = { viewModel.resumeCamera() }) {
+                    Text(text = "De nuevo")
                 }
             }
         }
-        Spacer (Modifier.size(64.dp))
+        Spacer(Modifier.size(48.dp))
         TitleTextFieldPost(viewModel.title.value) { viewModel.title.value = it }
         Spacer(Modifier.size(16.dp))
         DescriptionTextFieldPost(viewModel.description.value) { viewModel.description.value = it }
         Spacer(Modifier.size(32.dp))
         LocationCardPost()
         Spacer(Modifier.size(32.dp))
-        ButtonAddPost(uiState){
+        ButtonAddPost(uiState) {
             viewModel.addPost(context)
         }
     }
@@ -243,12 +266,12 @@ fun LocationCardPost() {
             Text(text = "Ubicación")
             Spacer(modifier = Modifier.size(16.dp))
             Text(
-                text = "Universidad Centroamericana José Simeón Cañas")
+                text = "Universidad Centroamericana José Simeón Cañas"
+            )
         }
     }
 
 }
-
 
 
 @Composable
@@ -260,8 +283,8 @@ fun CameraPreview(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     Surface {
-        Box (modifier = Modifier.fillMaxWidth()) {
-            AndroidView(factory = {context ->
+        Box(modifier = Modifier.fillMaxWidth()) {
+            AndroidView(factory = { context ->
                 PreviewView(context).apply {
                     scaleType = PreviewView.ScaleType.FILL_CENTER
                     implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -273,15 +296,18 @@ fun CameraPreview(
                             ContextCompat.getMainExecutor(context)
                         )
                     }
-                }},
+                }
+            },
                 modifier = Modifier.fillMaxWidth(),
                 update = {
                 }
 
             )
-            Row(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp)){
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 40.dp)
+            ) {
                 Button(
                     onClick = { viewModel.makePhoto(context) }
                 ) {

@@ -109,7 +109,10 @@ fun HeaderConfigurationCard(
     Card(
 
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.textfield_color)
+        )
     ) {
         Row(
             modifier = Modifier

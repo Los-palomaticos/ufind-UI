@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,16 +43,18 @@ val colorbutton = Color(0xFF001233)
 fun SettingsScreen(
     onClickSettingsAccountScreen: () -> Unit = {},
     onClickSettingsPreferences: () -> Unit = {},
-    onClickSecuritySettings: () -> Unit = {}
+    onClickSecuritySettings: () -> Unit = {},
+    onClickProfileScreen:  () -> Unit = {}
 ) {
-    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
+    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings, onClickProfileScreen)
 }
 
 @Composable
 fun BodySettingsScreen(
     onClickSettingsAccountScreen: () -> Unit = {},
     onClickSettingsPreferences: () -> Unit = {},
-    onClickSecuritySettings: () -> Unit = {}
+    onClickSecuritySettings: () -> Unit = {},
+    onClickProfileScreen: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -65,7 +68,7 @@ fun BodySettingsScreen(
         ) {
 
             // Primer componente
-            HeaderConfiguration()
+            HeaderConfiguration(onClickProfileScreen)
 
             // Espacio entre los componentes
             Spacer(modifier = Modifier.height(32.dp))
@@ -80,17 +83,20 @@ fun BodySettingsScreen(
 }
 
 @Composable
-fun HeaderConfiguration() {
-    HeaderConfigurationCardScreen(title = "Configuracion")
+fun HeaderConfiguration(onClickProfileScreen: () -> Unit = {}) {
+    HeaderConfigurationCardScreen(title = "Configuración", onClick = onClickProfileScreen)
 }
 
 //Header Card
 @Composable
-fun HeaderConfigurationCardScreen(title: String) {
+fun HeaderConfigurationCardScreen(title: String, onClick: () -> Unit) {
     Card(
 
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.textfield_color)
+        )
     ) {
         Row(
             modifier = Modifier
@@ -98,9 +104,9 @@ fun HeaderConfigurationCardScreen(title: String) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onClick) {
                 Icon(
-                    Icons.Filled.Settings,
+                    Icons.Filled.ArrowBack,
                     contentDescription = "",
                     tint = colorResource(id = R.color.text_color),
                     modifier = Modifier.size(24.dp)
