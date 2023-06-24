@@ -13,7 +13,7 @@ import org.ufind.ui.screen.settings.SettingsPreferencesScreen
 import org.ufind.ui.screen.settings.SettingsScreen
 import org.ufind.ui.screen.settings.SettingsSecurityScreen
 import org.ufind.ui.screen.userpost.addpost.ui.AddPostScreen
-import org.ufind.ui.screen.userpost.addpost.ui.PostScreen
+import org.ufind.ui.screen.home.post.PostScreen
 import org.ufind.ui.screen.wallet.WalletProfileScreen
 
 

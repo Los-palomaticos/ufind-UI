@@ -52,7 +52,7 @@ import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
-import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
 object SignUpScreen : NavRoute<SignUpViewModel> {
     override val route: String

@@ -48,7 +48,7 @@ import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.login.viewmodel.LoginViewModel
-import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
 object LoginScreen : NavRoute<LoginViewModel> {
     override val route: String

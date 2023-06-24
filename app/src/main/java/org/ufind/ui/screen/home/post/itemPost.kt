@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ufind.R
-import org.ufind.ui.screen.userpost.addpost.ui.BottomBarPostIcons
-import org.ufind.ui.screen.userpost.addpost.ui.PostImage
+import org.ufind.ui.screen.home.post.BottomBarPostIcons
+import org.ufind.ui.screen.home.post.PostImage
 
 
 @Preview(showBackground = true)
