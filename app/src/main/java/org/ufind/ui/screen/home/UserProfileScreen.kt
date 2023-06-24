@@ -16,7 +16,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -49,7 +51,9 @@ fun UserProfileScreen(
 
 @Composable
 fun ProfileBody(onClickProfileSettings: () -> Unit = {}, onClickWalletButton: () -> Unit = {}) {
-    Column {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         UserInfo()
         EditProfileButton()
         Spacer(Modifier.size(16.dp))

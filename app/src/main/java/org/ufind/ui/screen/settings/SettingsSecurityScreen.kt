@@ -4,13 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,12 +23,15 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +49,7 @@ fun SettingsSecurityScreen(
     onClickSettingsScreen: () -> Unit = {},
     onClickSettingsChangePassword: () -> Unit = {}
 ) {
-    SecurityScreen(onClickSettingsScreen,onClickSettingsChangePassword)
+    SecurityScreen(onClickSettingsScreen, onClickSettingsChangePassword)
 }
 
 
@@ -60,9 +67,11 @@ fun SecurityScreen(
             modifier = Modifier
                 .padding(16.dp)
                 .background(color = Color.White)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
 
-            HeaderConfigurationCard(title = "Seguridad",onClick = onClickSettingsScreen)
+            HeaderConfigurationCard(title = "Seguridad", onClick = onClickSettingsScreen)
             Spacer(modifier = Modifier.size(32.dp))
 
 
@@ -72,31 +81,27 @@ fun SecurityScreen(
             // Segundo componente
             CustomCardCheck(
                 titleS = "Edad visible ",
-                titleS2 = "Tu edad se mostrará al público",
-                checked2 = true
+                titleS2 = "Tu edad se mostrará al público"
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Segundo componente
             CustomCardCheck(
                 titleS = "Visibilidad del correo elecronico ",
-                titleS2 = "Tu correo se mostrará al público",
-                checked2 = false
-            )
+                titleS2 = "Tu correo se mostrará al público")
             Spacer(modifier = Modifier.height(16.dp))
 
             // Segundo componente
             CustomCardCheck(
                 titleS = "Residencia visible ",
-                titleS2 = "Tu residencia será visible al público",
-                checked2 = true
-            )
+                titleS2 = "Tu residencia será visible al público")
             Spacer(modifier = Modifier.height(16.dp))
             ConfigurationButton(
                 text = "Cambiar contraseña",
                 icon = Icons.Default.ArrowRight,
                 onClick = onClickSettingsChangePassword
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -140,7 +145,12 @@ fun HeaderConfigurationCard(
 
 
 @Composable
-fun CustomCardCheck(titleS: String, titleS2: String, checked2: Boolean) {
+fun CustomCardCheck(titleS: String, titleS2: String) {
+    var cardCheckState by rememberSaveable {
+        mutableStateOf(false)
+
+    }
+
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -171,14 +181,22 @@ fun CustomCardCheck(titleS: String, titleS2: String, checked2: Boolean) {
                 )
             }
             Checkbox(
-                checked = checked2,
-                onCheckedChange = { isChecked -> /* handle checkbox state change */ },
+                checked = cardCheckState,
+                onCheckedChange = { cardCheckState = !cardCheckState},
+                enabled = true,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = colorResource(id = R.color.text_color),
+
+                ),
                 modifier = Modifier.clip(MaterialTheme.shapes.small)
             )
         }
     }
 }
 
+fun changeCheckBoxState(state: Boolean): Boolean {
+    return !state
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
