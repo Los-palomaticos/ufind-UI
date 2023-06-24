@@ -72,7 +72,9 @@ fun SettingsScreen(
         ) {
 
             // Primer componente
-            HeaderConfiguration()
+            HeaderConfiguration{
+                viewModel.navigateBack()
+            }
 
             // Espacio entre los componentes
             Spacer(modifier = Modifier.height(32.dp))
@@ -89,13 +91,15 @@ fun SettingsScreen(
 }
 
 @Composable
-fun HeaderConfiguration() {
-    HeaderConfigurationCardScreen(title = "Configuracion")
+fun HeaderConfiguration(onClick: () -> Unit) {
+    HeaderConfigurationCardScreen(title = "Configuracion") {
+        onClick()
+    }
 }
 
 //Header Card
 @Composable
-fun HeaderConfigurationCardScreen(title: String) {
+fun HeaderConfigurationCardScreen(title: String, onClick: () -> Unit) {
     Card(
 
         modifier = Modifier
@@ -110,7 +114,7 @@ fun HeaderConfigurationCardScreen(title: String) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {onClick}) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "",
