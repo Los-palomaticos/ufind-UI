@@ -5,6 +5,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -23,6 +26,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,7 +40,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -54,6 +61,7 @@ import org.ufind.ui.screen.settings.HeaderConfigurationCard
 object AddPostScreen: NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
+
     @Composable
     override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
         factory = AddPostViewModel.Factory
@@ -299,15 +307,12 @@ fun CameraPreview(
                 }
 
             )
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 40.dp)
-            ) {
-                Button(
-                    onClick = { viewModel.makePhoto(context) }
-                ) {
-                    Text(text = "Capture")
+            Row(modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp)){
+                IconButton(onClick = { viewModel.makePhoto(context) }) {
+                    Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
+                        id = R.color.white), modifier = Modifier.size(32.dp) )
                 }
             }
         }
