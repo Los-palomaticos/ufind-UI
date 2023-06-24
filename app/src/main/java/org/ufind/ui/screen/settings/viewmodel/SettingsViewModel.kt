@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.launch
 import org.ufind.UfindApplication
+import org.ufind.data.BottomBarScreen
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.RouteNavigator
 import org.ufind.navigation.UfindNavigator
@@ -33,7 +34,9 @@ class SettingsViewModel(val repository: UserRepository, private val routeNavigat
     fun navigateToAccount(){
         routeNavigator.navigateToRoute(OptionsRoutes.SettingsAccountScreen.route)
     }
-
+    fun navigateBack() {
+        routeNavigator.popToRoute(BottomBarScreen.Profile.route)
+    }
     companion object {
         val Factory = viewModelFactory {
             initializer {
