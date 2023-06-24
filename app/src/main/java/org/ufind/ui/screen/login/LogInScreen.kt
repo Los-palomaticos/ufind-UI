@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -46,19 +48,21 @@ import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.login.viewmodel.LoginViewModel
-import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
-object LoginScreen: NavRoute<LoginViewModel> {
+object LoginScreen : NavRoute<LoginViewModel> {
     override val route: String
         get() = OptionsRoutes.LogIn.route
 
     @Composable
-    override fun viewModel () = viewModel<LoginViewModel>(factory = LoginViewModel.Factory)
+    override fun viewModel() = viewModel<LoginViewModel>(factory = LoginViewModel.Factory)
+
     @Composable
     override fun Content(viewModel: LoginViewModel) {
         LoginScreen(viewModel)
     }
 }
+
 //@Preview(showBackground = true)
 @Composable
 fun LoginScreen(
@@ -70,13 +74,14 @@ fun LoginScreen(
             .padding(16.dp)
     ) {
         Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center))
-        Footer(viewModel = viewModel,modifier = Modifier.align(Alignment.BottomCenter))
+        Footer(viewModel = viewModel, modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
+
 @Composable
 fun handleUiState(viewModel: LoginViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    if(uiState.value is LoginUiState.ErrorWithMessage){
+    if (uiState.value is LoginUiState.ErrorWithMessage) {
         (uiState.value as LoginUiState.ErrorWithMessage).messages.forEach { message ->
             Text(
                 text = message,
@@ -85,9 +90,12 @@ fun handleUiState(viewModel: LoginViewModel) {
         }
     }
 }
+
 @Composable
 fun Body(viewModel: LoginViewModel, modifier: Modifier) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.verticalScroll(rememberScrollState())
+    ) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
 
@@ -105,7 +113,7 @@ fun Body(viewModel: LoginViewModel, modifier: Modifier) {
 
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(viewModel.isValid.value){
+        LoginButton(viewModel.isValid.value) {
             viewModel.login()
         }
     }
@@ -205,11 +213,11 @@ fun Footer(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(16.dp))
-        ForgottenPasswordButton{
+        ForgottenPasswordButton {
             viewModel.navigateToRoute(OptionsRoutes.ForgottenPassword.route)
         }
         Spacer(modifier = Modifier.size(16.dp))
-        SignUp{
+        SignUp {
             viewModel.navigateToRoute(OptionsRoutes.SignUp.route)
         }
         Spacer(modifier = Modifier.size(16.dp))
@@ -221,7 +229,9 @@ fun Footer(
 fun ForgottenPasswordButton(onClickForgottenPasswordScreen: () -> Unit = {}) {
     TextButton(onClick = onClickForgottenPasswordScreen) {
         Text(
-            text = "Olvidé mi contraseña", Modifier.padding(horizontal = 8.dp), color = colorResource(
+            text = "Olvidé mi contraseña",
+            Modifier.padding(horizontal = 8.dp),
+            color = colorResource(
                 id = R.color.disabled_color
             )
         )

@@ -52,13 +52,16 @@ import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
-import org.ufind.ui.screen.userpost.addpost.ui.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
-object SignUpScreen: NavRoute<SignUpViewModel> {
+object SignUpScreen : NavRoute<SignUpViewModel> {
     override val route: String
         get() = OptionsRoutes.SignUp.route
+
     @Composable
-    override fun viewModel(): SignUpViewModel = viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
+    override fun viewModel(): SignUpViewModel =
+        viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
+
     @Composable
     override fun Content(viewModel: SignUpViewModel) {
         SignUpScreen(viewModel)
@@ -84,10 +87,11 @@ fun SignUpScreen(
         }
     }
 }
+
 @Composable
 fun handleUiStatus(viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    if(uiState.value is SignUpUiState.ErrorWithMessage){
+    if (uiState.value is SignUpUiState.ErrorWithMessage) {
         (uiState.value as SignUpUiState.ErrorWithMessage).messages.forEach { message ->
             Text(
                 text = message,
@@ -96,6 +100,7 @@ fun handleUiStatus(viewModel: SignUpViewModel) {
         }
     }
 }
+
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsState()
@@ -103,12 +108,14 @@ fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
 //    LaunchedEffect(uiState) {
 //        viewModel.changeErrorMessage()
 //    }
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.verticalScroll(rememberScrollState())
+    ) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
 
-        handleUiStatus(viewModel=viewModel)
+        handleUiStatus(viewModel = viewModel)
 
         CreatedUserName(viewModel.username.value) {
             viewModel.username.value = it
@@ -263,7 +270,7 @@ fun RepeatPassword(repeatedPassword: String, onTextChanged: (String) -> Unit) {
 @Composable
 fun SignUpButton(
     signUpEnable: Boolean,
-    onClick: () -> Unit ={}
+    onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
@@ -304,7 +311,7 @@ fun SignUpFooter(modifier: Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun UserLogInOption(onClickLogInScreen: () -> Unit={}) {
+fun UserLogInOption(onClickLogInScreen: () -> Unit = {}) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically

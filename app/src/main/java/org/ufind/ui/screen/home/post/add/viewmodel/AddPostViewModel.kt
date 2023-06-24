@@ -50,7 +50,7 @@ class AddPostViewModel(
 ): ViewModel(), RouteNavigator by routeNavigator, DefaultLifecycleObserver {
     // variables de estado
     private lateinit var photo: File
-    val photoUri = MutableStateFlow<Uri>(Uri.EMPTY)
+    val photoPath = MutableStateFlow<String>("")
     val description = mutableStateOf("")
     val title = mutableStateOf("")
 
@@ -110,26 +110,28 @@ class AddPostViewModel(
                         Log.e("APP_TAG", "Photo capture failed: ${exc.message}", exc)
                     }
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                        photoUri.value = output.savedUri?:"".toUri()
+                        output.savedUri?.let {
+                            photoPath.value = getPath(it, context)
+                        }
                     }
                 }
             )
         }
     }
     fun resumeCamera() {
-        photoUri.value = Uri.EMPTY
+        File(photoPath.value).delete()
+        photoPath.value = ""
     }
     fun stopCamera() {
         cameraProvider.get().unbindAll()
     }
     fun addPost(context: Context) {
         _uiState.value = AddPostUiState.Resume
-        if (photoUri.value == Uri.EMPTY)
+        if (photoPath.value == "")
             return
 
         _uiState.value = AddPostUiState.Sending
-        val realPath = getPath(photoUri.value, context)
-        val photoFile = File(realPath)
+        val photoFile = File(photoPath.value)
         viewModelScope.launch {
             val response = repository.addPost(
                 title = title.value,
@@ -140,7 +142,7 @@ class AddPostViewModel(
             when(response) {
                 is ApiResponse.Success -> {
                     _uiState.value = AddPostUiState.Success(response.data)
-                    routeNavigator.popToRoute(OptionsRoutes.Home.route)
+                    routeNavigator.navigateToRoute(OptionsRoutes.Home.route)
                 }
                 is ApiResponse.ErrorWithMessage -> {
                     _uiState.value = AddPostUiState.ErrorWithMessage(response.messages)
@@ -149,6 +151,7 @@ class AddPostViewModel(
                     _uiState.value = AddPostUiState.Error(response.exception)
                 }
             }
+            photoFile.delete()
         }
     }
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

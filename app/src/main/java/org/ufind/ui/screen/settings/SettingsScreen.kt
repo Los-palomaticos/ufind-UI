@@ -12,14 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,25 +35,28 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
+import org.ufind.data.OptionsRoutes
+import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.settings.viewmodel.SettingsViewModel
 
 val colorbutton = Color(0xFF001233)
+object SettingsScreen: NavRoute<SettingsViewModel> {
+    override val route: String
+        get() = OptionsRoutes.SettingsScreen.route
+    @Composable
+    override fun viewModel(): SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: SettingsViewModel) {
+        SettingsScreen(viewModel)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreen(
-    onClickSettingsAccountScreen: () -> Unit = {},
-    onClickSettingsPreferences: () -> Unit = {},
-    onClickSecuritySettings: () -> Unit = {}
-) {
-    BodySettingsScreen(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
 }
 
 @Composable
-fun BodySettingsScreen(
-    onClickSettingsAccountScreen: () -> Unit = {},
-    onClickSettingsPreferences: () -> Unit = {},
-    onClickSecuritySettings: () -> Unit = {}
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
 ) {
     Box(
         modifier = Modifier
@@ -62,6 +67,8 @@ fun BodySettingsScreen(
             modifier = Modifier
                 .padding(16.dp)
                 .background(color = Color.White)
+                .verticalScroll(rememberScrollState())
+
         ) {
 
             // Primer componente
@@ -71,10 +78,12 @@ fun BodySettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Segundo componente
-            ConfigurationsButtons(onClickSettingsAccountScreen, onClickSettingsPreferences, onClickSecuritySettings)
+            ConfigurationsButtons(viewModel)
 
             Spacer(modifier = Modifier.height(154.dp))
-            SignOutButton()
+            SignOutButton{
+                viewModel.logout()
+            }
         }
     }
 }
@@ -90,7 +99,10 @@ fun HeaderConfigurationCardScreen(title: String) {
     Card(
 
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.textfield_color)
+        )
     ) {
         Row(
             modifier = Modifier
@@ -100,7 +112,7 @@ fun HeaderConfigurationCardScreen(title: String) {
         ) {
             IconButton(onClick = {}) {
                 Icon(
-                    Icons.Filled.Settings,
+                    Icons.Filled.ArrowBack,
                     contentDescription = "",
                     tint = colorResource(id = R.color.text_color),
                     modifier = Modifier.size(24.dp)
@@ -118,28 +130,26 @@ fun HeaderConfigurationCardScreen(title: String) {
 
 @Composable
 fun ConfigurationsButtons(
-    onClickSettingsAccountScreen: () -> Unit = {},
-    onClickSettingsPreferences: () -> Unit = {},
-    onClickSecuritySettings: () -> Unit = {}
+    viewModel: SettingsViewModel,
 ) {
     Column {
         ConfigurationButton(
             text = "Seguridad",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = onClickSecuritySettings
+            onClick = { viewModel.navigateToSecurity() }
         )
 
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Preferencias",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = onClickSettingsPreferences
+            onClick = { viewModel.navigateToPreferences() }
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Cuenta",
             icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
-            onClick = onClickSettingsAccountScreen
+            onClick = { viewModel.navigateToAccount() }
         )
     }
 }
@@ -182,9 +192,9 @@ fun ConfigurationButton(
 
 
 @Composable
-fun SignOutButton() {
+fun SignOutButton(onClick: () -> Unit) {
     Column(Modifier.padding(16.dp)) {
-        SignOutConfigurationButton(text = "Cerrar Sesión") { /* Acción al hacer clic en Cerrar Sesión */ }
+        SignOutConfigurationButton(text = "Cerrar Sesión") { onClick() }
     }
 }
 

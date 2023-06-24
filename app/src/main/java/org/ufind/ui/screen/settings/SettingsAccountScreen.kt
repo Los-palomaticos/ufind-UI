@@ -1,6 +1,7 @@
 package org.ufind.ui.screen.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,8 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.ufind.R
@@ -48,7 +53,7 @@ fun SettingsAccountScreen(onClickSettingsScreen: () -> Unit = {}) {
 }
 
 @Composable
-fun AccountScreen(onClickSettingsScreen: () -> Unit) {
+fun AccountScreen(onClickSettingsScreen: () -> Unit = {}) {
     var newInstitution by rememberSaveable {
         mutableStateOf("")
     }
@@ -58,6 +63,9 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
 
     var newResidence by rememberSaveable {
         mutableStateOf("")
+    }
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
     }
 
 
@@ -69,8 +77,9 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
                 .background(color = Color.White)
+                .verticalScroll(rememberScrollState())
+
         ) {
             HeaderConfigurationCard("Configuración cuenta", onClickSettingsScreen)
 
@@ -83,7 +92,7 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
             Spacer(modifier = Modifier.height(32.dp))
 
             //  Cambiar nombre de usuario
-            ChangeAccountSettingsCard(title = "Nombre de Usuario",
+            ChangeAccountSettingsCard(title = "Nombre de usuario",
                 value = newUserName,
                 placeHolderText = "Chompi",
                 onTextChanged = { newUserName = it })
@@ -95,7 +104,18 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
                 placeHolderText = "San Salvador",
                 onTextChanged = { newResidence = it })
             Spacer(modifier = Modifier.height(64.dp))
-            SaveNewAccountSettingsButton()
+            SaveNewAccountSettingsButton(
+                isShowDialogAvailable = {
+                    // TODO("En esta lambda enviar datos de la cambios de cuenta antes de mostrar el dialogo)
+                    showDialog = changeShowDialogAccountSettings(showDialog)
+                })
+            AreYouSureToDoThisChangesDialog(
+                userNameChanged = newUserName,
+                institutionChanged = newInstitution,
+                residencyChanged = newResidence,
+                showDialog, onDismiss = { showDialog = false },
+                onClickSettingsScreen
+            )
 
         }
 
@@ -111,11 +131,15 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit) {
 }
 
 @Composable
-fun SaveNewAccountSettingsButton() {
+fun SaveNewAccountSettingsButton(
+    isShowDialogAvailable: () -> Unit = {}
+) {
 
     Button(
-        onClick = {}, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.primary_color),
+        onClick = isShowDialogAvailable,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(id = R.color.text_color),
             disabledContainerColor = colorResource(id = R.color.disabled_color),
             contentColor = Color.White,
             disabledContentColor = Color.White
@@ -174,9 +198,15 @@ fun ChangeAccountSettingsCard(
     }
 }
 
+@Preview
 @Composable
 fun AreYouSureToDoThisChangesDialog(
-    show: Boolean, onDismiss: () -> Unit, onClickSignInScreen: () -> Unit = {}
+    userNameChanged: String = "",
+    institutionChanged: String = "",
+    residencyChanged: String = "",
+    show: Boolean = true,
+    onDismiss: () -> Unit = {},
+    onClickSettingsScreen: () -> Unit = {}
 ) {
     if (show) {
         Dialog(
@@ -187,20 +217,57 @@ fun AreYouSureToDoThisChangesDialog(
                 Modifier
                     .background(Color.White)
                     .padding(36.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Su contraseña ha sido cambiada exitosamente",
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = colorResource(
-                        id = R.color.text_color
+
+                if (userNameChanged != "" || institutionChanged != "" || residencyChanged != "") {
+                    Text(
+                        text = "¡Sus cambios se han guardado exitosamente!",
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = colorResource(
+                            id = R.color.text_color
+                        )
                     )
-                )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                if (userNameChanged != "") {
+                    Text("Nuevo nombre de usuario: $userNameChanged")
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                }
+                if (institutionChanged != "") {
+                    Text("Nueva institución: $institutionChanged")
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                }
+                if (residencyChanged != "") {
+                    Text("Nueva residencia: $residencyChanged")
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                }
+                if (userNameChanged == "" && institutionChanged == "" && residencyChanged == "") {
+                    Text(
+                        text = "No ha hecho ningún cambio, por favor llenar los campos requeridos",
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
+                }
                 Spacer(modifier = Modifier.size(16.dp))
-                BackToLogInButton(onClickSignInScreen)
+                GoBackToSettingsScreenButton(onClickSettingsScreen)
 
             }
 
         }
     }
+}
+
+fun changeShowDialogAccountSettings(isShowDialogAvailable: Boolean): Boolean {
+    var holderShow = isShowDialogAvailable
+    holderShow = true
+    return holderShow
 }
