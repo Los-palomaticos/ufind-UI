@@ -1,6 +1,5 @@
 package org.ufind.ui.screen.home
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -94,9 +93,13 @@ fun ImageWithTexts() {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = "Nombre", fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "00000000@example.com")
+            Text(text = "Edad")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Institución")
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Residencia")
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "00000000@example.com")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "10000 UPoints")
 
@@ -127,9 +130,6 @@ fun EditProfileButton() {
             color = colorResource(id = R.color.white),
             modifier = Modifier.padding(5.dp)
         )
-
-
     }
-
 }
 

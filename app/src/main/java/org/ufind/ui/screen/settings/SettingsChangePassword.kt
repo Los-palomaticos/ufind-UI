@@ -1,11 +1,9 @@
 package org.ufind.ui.screen.settings
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,21 +51,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
-val colorbu = Color(0xFF001233)
-
-
 @Preview
 @Composable
 fun SettingsChangePassword(
     onClickSettingsSecurityScreen: () -> Unit = {},
     onClickBackToSettings: () -> Unit = {}
 ) {
-    ChangeScreen(onClickSettingsSecurityScreen,onClickBackToSettings)
+    ChangeScreen(onClickSettingsSecurityScreen, onClickBackToSettings)
 }
 
 @Preview
 @Composable
-fun ChangeScreen(onClickSettingsSecurityScreen: () -> Unit = {}, onClickBackToSettings: () -> Unit = {}) {
+fun ChangeScreen(
+    onClickSettingsSecurityScreen: () -> Unit = {},
+    onClickBackToSettings: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -167,7 +165,8 @@ fun ChangePasswordCard(onClickBackToSettings: () -> Unit = {}) {
             DialogSettingsPasswordChangedCorrectly(
                 show = showDialog,
                 onDismiss = { showDialog = false },
-                onClickBackToSettings)
+                onClickBackToSettings
+            )
 
         }
     }
@@ -300,7 +299,7 @@ fun RepeatedNewPasswordSecuritySettings(
     )
 }
 
-@Preview
+/*@Preview
 @Composable
 fun SaveCancelButtons() {
     Row(
@@ -309,7 +308,7 @@ fun SaveCancelButtons() {
             .padding(horizontal = 16.dp)
     ) {
         Button(
-            onClick = { /* Acción al guardar */ },
+            onClick = { *//* Acción al guardar *//* },
             border = BorderStroke(1.dp, Color.Black),
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             modifier = Modifier
@@ -320,7 +319,7 @@ fun SaveCancelButtons() {
         }
 
         Button(
-            onClick = { /* Acción al cancelar */ },
+            onClick = { *//* Acción al cancelar *//* },
             colors = ButtonDefaults.buttonColors(containerColor = colorbu),
             modifier = Modifier
                 .weight(1f)
@@ -330,7 +329,7 @@ fun SaveCancelButtons() {
             Text(text = "Cancelar", color = Color.White)
         }
     }
-}
+}*/
 
 @Preview
 @Composable
@@ -445,9 +444,10 @@ fun GoBackToSettingsScreenButton(onClickBackToSettings: () -> Unit = {}) {
     }
 
 }
+
 @Composable
 fun IsRepeatedPasswordOk(newChangedPassword: String, repeatedChangedPassword: String) {
-    if(newChangedPassword != repeatedChangedPassword)  {
+    if (newChangedPassword != repeatedChangedPassword) {
         Text(text = "Las contraseñas no coinciden", color = MaterialTheme.colorScheme.error)
 
     }
