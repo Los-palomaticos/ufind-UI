@@ -1,8 +1,12 @@
 package org.ufind.ui.screen.home.post
 
+import android.app.Instrumentation.ActivityResult
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Add
@@ -55,6 +59,7 @@ object PostScreen: NavRoute<PostViewModel> {
         val vm = viewModel<PostViewModel>(factory = PostViewModel.Factory)
         return vm
     }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content(viewModel: PostViewModel) {
         PostScreen(viewModel)
@@ -96,6 +101,7 @@ fun ImageLogo(size: Int, modifier: Modifier) {
 }
 
 //@Preview(showBackground = true)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun PostScreen(
     viewModel: PostViewModel,
@@ -113,9 +119,7 @@ fun PostScreen(
             .fillMaxSize()
             .padding(vertical = 8.dp)) {
             PostList(listPosts.value)
-            AddPostFloatingButton(modifier = Modifier.align(Alignment.BottomEnd)) {
-                viewModel.navigateToAddPost()
-            }
+            AddPostFloatingButton(viewModel = viewModel, modifier = Modifier.align(Alignment.BottomEnd))
         }
     }
 }
@@ -130,30 +134,21 @@ fun PostList(posts: List<PostModel>) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun AddPostFloatingButton(modifier: Modifier,onClickAddPostScreen: () -> Unit = {}) {
+fun AddPostFloatingButton(viewModel: PostViewModel, modifier: Modifier) {
     val context = LocalContext.current
-    var cameraPermissionGranted by remember { mutableStateOf(false) }
-
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+    val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        cameraPermissionGranted = isGranted
-        if (isGranted) {
-            // El permiso de la cámara se otorgó correctamente
-            Toast.makeText(context, "Permiso de cámara otorgado", Toast.LENGTH_SHORT).show()
-        } else {
-            // El permiso de la cámara se denegó
-            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
-        }
+        if (isGranted)
+            viewModel.navigateToAddPost()
+        else
+            Toast.makeText(context, "UFind necesita acceder a la cámara para poder realizar una publicación", Toast.LENGTH_LONG).show()
     }
     FloatingActionButton(
         onClick = {
-            if (!cameraPermissionGranted) {
-                requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-            } else {
-                onClickAddPostScreen()
-            }
+            viewModel.checkPermissions(context, launcher)
         },
         modifier = modifier.padding(0.dp, 42.dp),
         containerColor = colorResource(id = R.color.text_color)

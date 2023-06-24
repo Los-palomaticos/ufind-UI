@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -15,6 +16,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -28,6 +30,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.ufind.MainActivity
 import org.ufind.R
 import org.ufind.UfindApplication
 import org.ufind.data.OptionsRoutes
@@ -53,6 +56,7 @@ class AddPostViewModel(
     val photoPath = MutableStateFlow<String>("")
     val description = mutableStateOf("")
     val title = mutableStateOf("")
+    val cameraPermissionGranted = mutableStateOf(false)
 
     private val _uiState  = MutableStateFlow<AddPostUiState>(AddPostUiState.Resume)
 
@@ -71,6 +75,9 @@ class AddPostViewModel(
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
+    }
+    fun navigateBack() {
+        routeNavigator.navigateToRoute(OptionsRoutes.Home.route)
     }
     fun setCameraProvider(context: Context) {
         cameraProvider = ProcessCameraProvider.getInstance(context)
@@ -142,7 +149,7 @@ class AddPostViewModel(
             when(response) {
                 is ApiResponse.Success -> {
                     _uiState.value = AddPostUiState.Success(response.data)
-                    routeNavigator.navigateToRoute(OptionsRoutes.Home.route)
+                    navigateBack()
                 }
                 is ApiResponse.ErrorWithMessage -> {
                     _uiState.value = AddPostUiState.ErrorWithMessage(response.messages)
@@ -153,15 +160,6 @@ class AddPostViewModel(
             }
             photoFile.delete()
         }
-    }
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun checkPermissions(context: Context) {
-        val permissions = android.Manifest.permission.READ_MEDIA_IMAGES
-        if (ContextCompat.checkSelfPermission(context, permissions) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("APP_TAG", "no")
-        } else
-            Log.d("APP_TAG", "si")
-
     }
     private fun getPath(uri: Uri, context: Context): String {
         var path = ""
