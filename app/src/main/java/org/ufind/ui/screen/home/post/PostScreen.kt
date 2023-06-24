@@ -23,6 +23,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,25 +33,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.ufind.R
 import org.ufind.data.BottomBarScreen
 import org.ufind.data.model.PostModel
 import org.ufind.navigation.NavRoute
+import org.ufind.ui.screen.home.post.PostScreen.observeLifecycleEvents
 import org.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
 object PostScreen: NavRoute<PostViewModel> {
     override val route: String
         get() = BottomBarScreen.Home.route
     @Composable
-    override fun viewModel(): PostViewModel = viewModel(factory = PostViewModel.Factory)
+    override fun viewModel(): PostViewModel {
+        val vm = viewModel<PostViewModel>(factory = PostViewModel.Factory)
+        return vm
+    }
     @Composable
     override fun Content(viewModel: PostViewModel) {
         PostScreen(viewModel)
     }
-
+    @Composable
+    fun <viewModel: LifecycleObserver> viewModel.observeLifecycleEvents(lifecycle: Lifecycle) {
+        DisposableEffect(lifecycle) {
+            lifecycle.addObserver(this@observeLifecycleEvents)
+            onDispose {
+                lifecycle.removeObserver(this@observeLifecycleEvents)
+            }
+        }
+    }
 }
 @Composable
 fun PageHeader() {
@@ -83,7 +100,9 @@ fun ImageLogo(size: Int, modifier: Modifier) {
 fun PostScreen(
     viewModel: PostViewModel,
 ) {
-    viewModel.getAll()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    viewModel.observeLifecycleEvents(lifecycle = lifecycle)
+    val listPosts = viewModel.listOfPosts.collectAsStateWithLifecycle()
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -93,7 +112,7 @@ fun PostScreen(
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 8.dp)) {
-            PostList(viewModel.listOfPosts)
+            PostList(listPosts.value)
             AddPostFloatingButton(modifier = Modifier.align(Alignment.BottomEnd)) {
                 viewModel.navigateToAddPost()
             }
