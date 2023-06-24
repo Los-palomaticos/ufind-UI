@@ -113,9 +113,8 @@ fun BottomBarPostIcons() {
         )
 
         IconButton(
-            onClick = { compartirPost(context, "Texto del post que deseas compartir") },
-            Modifier.padding(16.dp, 0.dp)
-        ) {
+            onClick = { compartirContenido(context, "Mira Este Objeto Perdido  ") },
+            Modifier.padding(16.dp, 0.dp)        ) {
             Icon(
                 imageVector = Icons.Filled.Share,
                 contentDescription = "Compartir",
@@ -125,15 +124,33 @@ fun BottomBarPostIcons() {
     }
 }
 
-private fun compartirPost(context: Context, texto: String) {
+private fun compartirContenido(context: Context, texto: String) {
     val intent = Intent(Intent.ACTION_SEND)
     intent.type = "text/plain"
     intent.putExtra(Intent.EXTRA_TEXT, texto)
-    intent.setPackage("com.whatsapp") // Especifica que se utilice WhatsApp para compartir
+
+    val shareIntent = Intent.createChooser(intent, "Compartir a través de")
+    shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    val pm = context.packageManager
+    val activities = pm.queryIntentActivities(shareIntent, 0)
+    val availablePackages = mutableListOf<String>()
+
+    activities.forEach { activity ->
+        val packageName = activity.activityInfo.packageName
+        if (packageName.contains("com.whatsapp") || packageName.contains("com.instagram.android") || packageName.contains("com.facebook.katana")) {
+            availablePackages.add(packageName)
+        }
+    }
+
+    if (availablePackages.isNotEmpty()) {
+        val packageArray = availablePackages.toTypedArray()
+        shareIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, packageArray)
+    }
 
     try {
-        context.startActivity(intent)
+        context.startActivity(shareIntent)
     } catch (e: ActivityNotFoundException) {
-        Toast.makeText(context, "WhatsApp no está instalado", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "No se encontraron aplicaciones de compartir disponibles", Toast.LENGTH_SHORT).show()
     }
 }
