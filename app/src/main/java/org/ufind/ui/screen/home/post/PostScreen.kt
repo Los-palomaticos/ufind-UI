@@ -1,14 +1,12 @@
 package org.ufind.ui.screen.home.post
-
-import android.app.Instrumentation.ActivityResult
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.filled.Add
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.Image
@@ -23,15 +21,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,8 +41,8 @@ import org.ufind.R
 import org.ufind.data.BottomBarScreen
 import org.ufind.data.model.PostModel
 import org.ufind.navigation.NavRoute
-import org.ufind.ui.screen.home.post.PostScreen.observeLifecycleEvents
 import org.ufind.ui.screen.home.post.viewmodel.PostViewModel
+import org.ufind.ui.screen.home.post.PostScreen.observeLifecycleEvents
 
 object PostScreen: NavRoute<PostViewModel> {
     override val route: String
@@ -104,22 +97,28 @@ fun ImageLogo(size: Int, modifier: Modifier) {
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun PostScreen(
-    viewModel: PostViewModel,
+    viewModel: PostViewModel
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     viewModel.observeLifecycleEvents(lifecycle = lifecycle)
     val listPosts = viewModel.listOfPosts.collectAsStateWithLifecycle()
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp, vertical = 8.dp)) {
-        PageHeader()
-//        Spacer(modifier = Modifier.size(32.dp))
-        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-        Box(modifier = Modifier
+    Column(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 8.dp)) {
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        PageHeader()
+        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.Start).padding(0.dp, 16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp)
+        ) {
             PostList(listPosts.value)
-            AddPostFloatingButton(viewModel = viewModel, modifier = Modifier.align(Alignment.BottomEnd))
+            AddPostFloatingButton(viewModel = viewModel, Modifier.align(Alignment.BottomEnd))
+
+
         }
     }
 }
@@ -136,7 +135,10 @@ fun PostList(posts: List<PostModel>) {
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun AddPostFloatingButton(viewModel: PostViewModel, modifier: Modifier) {
+fun AddPostFloatingButton(
+    viewModel: PostViewModel,
+    modifier: Modifier
+) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -151,7 +153,7 @@ fun AddPostFloatingButton(viewModel: PostViewModel, modifier: Modifier) {
             viewModel.checkPermissions(context, launcher)
         },
         modifier = modifier.padding(0.dp, 42.dp),
-        containerColor = colorResource(id = R.color.text_color)
+        backgroundColor = colorResource(id = R.color.text_color)
     ) {
         Icon(Icons.Filled.Add, contentDescription = "", tint = Color.White)
 
