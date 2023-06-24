@@ -74,7 +74,6 @@ object SignUpScreen : NavRoute<SignUpViewModel> {
 fun SignUpScreen(
     viewModel: SignUpViewModel
 ) {
-//    viewModel.handleUiStatus(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()
@@ -89,7 +88,7 @@ fun SignUpScreen(
 }
 
 @Composable
-fun handleUiStatus(viewModel: SignUpViewModel) {
+fun HandleUiStatus(viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     if (uiState.value is SignUpUiState.ErrorWithMessage) {
         (uiState.value as SignUpUiState.ErrorWithMessage).messages.forEach { message ->
@@ -103,19 +102,15 @@ fun handleUiStatus(viewModel: SignUpViewModel) {
 
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
-    val uiState = viewModel.uiState.collectAsState()
-
-//    LaunchedEffect(uiState) {
-//        viewModel.changeErrorMessage()
-//    }
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
+//        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
 
-        handleUiStatus(viewModel = viewModel)
+        HandleUiStatus(viewModel = viewModel)
 
         CreatedUserName(viewModel.username.value) {
             viewModel.username.value = it
