@@ -72,7 +72,7 @@ fun SettingsScreen(
         ) {
 
             // Primer componente
-            HeaderConfiguration{
+            HeaderConfiguration {
                 viewModel.navigateBack()
             }
 
@@ -91,15 +91,13 @@ fun SettingsScreen(
 }
 
 @Composable
-fun HeaderConfiguration(onClick: () -> Unit) {
-    HeaderConfigurationCardScreen(title = "Configuracion") {
-        onClick()
-    }
+fun HeaderConfiguration(onClickGoToProfileScreen: () -> Unit = {}) {
+    HeaderConfigurationCardScreen(title = "Configuracion", onClickGoToProfileScreen = onClickGoToProfileScreen)
 }
 
 //Header Card
 @Composable
-fun HeaderConfigurationCardScreen(title: String, onClick: () -> Unit) {
+fun HeaderConfigurationCardScreen(title: String, onClickGoToProfileScreen: () -> Unit = {}) {
     Card(
 
         modifier = Modifier
@@ -114,7 +112,7 @@ fun HeaderConfigurationCardScreen(title: String, onClick: () -> Unit) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {onClick}) {
+            IconButton(onClick = onClickGoToProfileScreen) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "",

@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
 //    id 'dagger.hilt.android.plugin'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -83,8 +85,6 @@ dependencies {
     // reflect
     implementation("org.jetbrains.kotlin:kotlin-reflect:$reflect_version")
 
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
@@ -94,6 +94,13 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
+    implementation "androidx.appcompat:appcompat:1.5.1"
+    // Google maps
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.maps.android:maps-compose:2.8.0'
+
+
     implementation("androidx.compose.material:material:1.4.3")
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
