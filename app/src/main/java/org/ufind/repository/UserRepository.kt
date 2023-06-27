@@ -16,6 +16,7 @@ import org.ufind.utils.SerializeErrorBody
 import retrofit2.HttpException
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.lang.Exception
 import java.net.ConnectException
 
 class UserRepository(private val api: UserService, private val dataStoreManager: DataStoreManager) {
@@ -65,6 +66,14 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
             ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
         } catch(e:IOException) {
             ApiResponse.Error(e)
+        }
+    }
+    suspend fun validateToken(): ApiResponse<Boolean> {
+        return try {
+            val response = api.validateToken()
+            ApiResponse.Success(response.ok)
+        } catch (e: Exception) {
+            ApiResponse.Success(false)
         }
     }
     suspend fun logout() {
