@@ -1,11 +1,11 @@
 package org.ufind.ui.screen.home.post.add
 
+import android.content.Intent
 import android.os.Build
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,10 +42,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -61,7 +65,7 @@ import org.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
 import org.ufind.ui.screen.settings.HeaderConfigurationCard
 
 
-object AddPostScreen: NavRoute<AddPostViewModel> {
+object AddPostScreen : NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
 
@@ -69,6 +73,7 @@ object AddPostScreen: NavRoute<AddPostViewModel> {
     override fun viewModel(): AddPostViewModel = viewModel<AddPostViewModel>(
         factory = AddPostViewModel.Factory
     )
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content(viewModel: AddPostViewModel) {
@@ -76,6 +81,7 @@ object AddPostScreen: NavRoute<AddPostViewModel> {
     }
 
 }
+
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AddPostScreen(viewModel: AddPostViewModel) {
@@ -102,9 +108,10 @@ fun HeaderAddPost(modifier: Modifier) {
         Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
     }
 }
+
 @Composable
 fun HandleUiState(uiState: AddPostUiState) {
-    when(uiState){
+    when (uiState) {
         is AddPostUiState.ErrorWithMessage -> {
             uiState.errorMessages.forEach { message ->
                 Text(
@@ -113,9 +120,11 @@ fun HandleUiState(uiState: AddPostUiState) {
                 )
             }
         }
+
         is AddPostUiState.Success -> {
             Toast.makeText(LocalContext.current, uiState.message, Toast.LENGTH_LONG).show()
         }
+
         is AddPostUiState.Error -> {
             Text(
                 text = "Error desconocido",
@@ -126,12 +135,13 @@ fun HandleUiState(uiState: AddPostUiState) {
         else -> {}
     }
 }
+
 @Composable
 fun BodyAddPost(
-        uiState: AddPostUiState,
-        viewModel: AddPostViewModel,
-        modifier: Modifier
-    ) {
+    uiState: AddPostUiState,
+    viewModel: AddPostViewModel,
+    modifier: Modifier
+) {
     val photo = viewModel.photoPath.collectAsStateWithLifecycle()
     val context = LocalContext.current
     Column(
@@ -143,10 +153,10 @@ fun BodyAddPost(
     ) {
         HeaderConfigurationCard(
             title = "Crear publicación",
-            onClick = { viewModel.popToRoute(BottomBarScreen.Home.route) }
+            onClick = { viewModel.navigateBack() }
         )
         Spacer(modifier = Modifier.height(32.dp))
-7
+
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.Center,
@@ -181,11 +191,14 @@ fun BodyAddPost(
                 viewModel.description.value = it
             }
             Spacer(Modifier.size(32.dp))
-            LocationCardPost()
+            LocationCardPost {
+                viewModel.navigateToMapScreen()
+            }
             Spacer(Modifier.size(32.dp))
             ButtonAddPost(uiState) {
                 viewModel.addPost(context)
             }
+
         }
     }
 }
@@ -206,6 +219,7 @@ fun ButtonAddPost(uiState: AddPostUiState, onClickBackToUserInterface: () -> Uni
         Text("Publicar")
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -228,10 +242,9 @@ fun DescriptionTextFieldPost(postDescription: String, onTextChanged: (String) ->
             focusedIndicatorColor = colorResource(id = R.color.text_color),
             unfocusedIndicatorColor = colorResource(id = R.color.text_color)
         )
-
     )
-
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -259,8 +272,10 @@ fun TitleTextFieldPost(postTitle: String, onTextChanged: (String) -> Unit) {
     )
 }
 
+@Preview()
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocationCardPost() {
+fun LocationCardPost(onClickGoToMapScreen: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -276,15 +291,56 @@ fun LocationCardPost() {
                 .padding(16.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            Text(text = "Ubicación")
+            Text(
+                text = "Ubicación",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                fontWeight = FontWeight.SemiBold
+            )
             Spacer(modifier = Modifier.size(16.dp))
             Text(
-                text = "Universidad Centroamericana José Simeón Cañas")
+                text = "Universidad Centroamericana José Simeón Cañas"
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+
+
+            Card(
+                onClick = onClickGoToMapScreen,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(id = R.drawable.mapbutton),
+                        contentDescription = "Logo",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Ir a mapa",
+                            textAlign = TextAlign.Center,
+                            color = colorResource(id = R.color.text_color),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
     }
-
 }
-
 
 
 @Composable
@@ -296,8 +352,8 @@ fun CameraPreview(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     Surface {
-        Box (modifier = Modifier.fillMaxWidth()) {
-            AndroidView(factory = {context ->
+        Box(modifier = Modifier.fillMaxWidth()) {
+            AndroidView(factory = { context ->
                 PreviewView(context).apply {
                     scaleType = PreviewView.ScaleType.FILL_CENTER
                     implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -314,16 +370,27 @@ fun CameraPreview(
                 modifier = Modifier.fillMaxWidth(),
                 update = {
                 }
-
             )
-            Row(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp)){
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 20.dp)
+            ) {
                 IconButton(onClick = { viewModel.makePhoto(context) }) {
-                    Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
-                        id = R.color.white), modifier = Modifier.size(40.dp) )
+                  
+                    Icon(
+                        imageVector = Icons.Default.Camera,
+                        contentDescription = "Capture",
+                        tint = colorResource(
+                            id = R.color.white
+                        ),
+                        modifier = Modifier.size(32.dp)
+                    )
+
+
                 }
             }
         }
     }
 }
+

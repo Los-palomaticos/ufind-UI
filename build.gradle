@@ -10,6 +10,16 @@ buildscript {
         reflect_version = "1.8.22"
         glide_version = "1.0.0-alpha.1"
     }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.42'
+
+    }
 }
 plugins {
     id 'com.android.application' version '8.0.1' apply false

@@ -18,4 +18,6 @@ sealed class OptionsRoutes(val route:String){
     object WalletScreen: OptionsRoutes("WalletProfileScreen")
 
     object Home: OptionsRoutes("Home")
+
+    object MapScreen: OptionsRoutes("MapScreen")
 }
