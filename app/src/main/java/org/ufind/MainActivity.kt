@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            val viewModel: MainViewModel = viewModel<MainViewModel>()
+            val viewModel: MainViewModel = viewModel<MainViewModel>(factory = MainViewModel.Factory)
             val dataStoreManager = DataStoreManager(LocalContext.current)
             val startDestination = viewModel.startDestination.collectAsStateWithLifecycle()
 
@@ -32,10 +32,15 @@ class MainActivity : ComponentActivity() {
                     val user = dataStoreManager.getUserData()
                     user.collect{
                         setToken(it.token)
-                        if(it.token != "")
-                            viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
-                        else
+                        if(it.token == "")
                             viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)
+                        else {
+                            viewModel.validateToken()
+                            if (!viewModel.isUserValid.value)
+                                viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)
+                            else
+                                viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
+                        }
                     }
                 }
             }
