@@ -13,6 +13,7 @@ import org.ufind.ui.screen.settings.SettingsScreen
 import org.ufind.ui.screen.settings.SettingsSecurityScreen
 import org.ufind.ui.screen.home.post.add.AddPostScreen
 import org.ufind.ui.screen.home.post.PostScreen
+import org.ufind.ui.screen.map.MapScreen
 import org.ufind.ui.screen.wallet.WalletProfileScreen
 
 
@@ -69,6 +70,10 @@ fun BottomNavGraph(navController: NavHostController) {
         composable(route = OptionsRoutes.WalletScreen.route) {
             WalletProfileScreen()
         }
+        composable(route = OptionsRoutes.MapScreen.route){
+            MapScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
+        }
+
 
     }
 }

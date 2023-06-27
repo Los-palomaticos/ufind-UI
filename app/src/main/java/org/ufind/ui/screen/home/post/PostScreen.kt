@@ -152,7 +152,7 @@ fun AddPostFloatingButton(
         onClick = {
             viewModel.checkPermissions(context, launcher)
         },
-        modifier = modifier.padding(0.dp, 42.dp),
+        modifier = modifier.padding(0.dp, 10.dp).size(64.dp),
         backgroundColor = colorResource(id = R.color.text_color)
     ) {
         Icon(Icons.Filled.Add, contentDescription = "", tint = Color.White)

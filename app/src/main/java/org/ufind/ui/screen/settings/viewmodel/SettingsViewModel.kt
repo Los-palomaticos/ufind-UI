@@ -35,7 +35,7 @@ class SettingsViewModel(val repository: UserRepository, private val routeNavigat
         routeNavigator.navigateToRoute(OptionsRoutes.SettingsAccountScreen.route)
     }
     fun navigateBack() {
-        routeNavigator.popToRoute(BottomBarScreen.Profile.route)
+        routeNavigator.navigateToRoute(BottomBarScreen.Profile.route)
     }
     companion object {
         val Factory = viewModelFactory {

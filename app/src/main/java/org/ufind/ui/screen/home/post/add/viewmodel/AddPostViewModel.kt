@@ -159,6 +159,11 @@ class AddPostViewModel(
             photoFile.delete()
         }
     }
+
+    fun navigateToMapScreen(){
+        routeNavigator.navigateToRoute(OptionsRoutes.MapScreen.route)
+    }
+
     private fun getPath(uri: Uri, context: Context): String {
         var path = ""
         val data = arrayOf(MediaStore.Images.Media.DATA)
@@ -171,6 +176,7 @@ class AddPostViewModel(
         }
         return path
     }
+
     companion object {
         val Factory = viewModelFactory {
             initializer {
