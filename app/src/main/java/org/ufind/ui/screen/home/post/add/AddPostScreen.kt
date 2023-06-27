@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -160,10 +161,16 @@ fun BodyAddPost(
                     AsyncImage(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(250.dp), model = photo.value, contentDescription = null
+                            .height(350.dp), model = photo.value, contentDescription = null
                     )
-                    Button(onClick = { viewModel.resumeCamera() }) {
-                        Text(text = "De nuevo")
+                    Row(modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 20.dp)){
+                        IconButton(onClick = { viewModel.resumeCamera() }) {
+                            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
+                                id = R.color.white), modifier = Modifier.size(40.dp))
+
+                        }
                     }
                 }
             }
@@ -314,7 +321,7 @@ fun CameraPreview(
                 .padding(bottom = 20.dp)){
                 IconButton(onClick = { viewModel.makePhoto(context) }) {
                     Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
-                        id = R.color.white), modifier = Modifier.size(32.dp) )
+                        id = R.color.white), modifier = Modifier.size(40.dp) )
                 }
             }
         }
