@@ -558,7 +558,7 @@ fun LocationOptions() {
                 }
             }
         }
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(28.dp))
         ButtonSaveLocation(locationEdificios, locationEdificiosAdmin, locationCommonZone, locationAulasOrMagna)
     }
 }
