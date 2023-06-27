@@ -134,7 +134,7 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
             contentDescription = "",
             Modifier.padding(16.dp, 0.dp)
                 .clickable {
-                    enviarCorreoGmail(context, "correo@example.com", "Asunto del correo")
+                    enviarCorreoGmail(context, "correo@example.com", "Post de Ufind  ")
                 }
         )
 
