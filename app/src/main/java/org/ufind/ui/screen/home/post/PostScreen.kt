@@ -86,7 +86,7 @@ fun PageHeaderLineDivider() {
 @Composable
 fun ImageLogo(size: Int, modifier: Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.ic_ufind),
+        painter = painterResource(id = R.drawable.ufind_logo),
         contentDescription = "Logo",
         modifier = modifier.size(size.dp),
         contentScale = ContentScale.Fit
