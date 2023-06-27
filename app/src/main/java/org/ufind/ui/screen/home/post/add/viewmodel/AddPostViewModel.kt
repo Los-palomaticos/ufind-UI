@@ -93,9 +93,7 @@ class AddPostViewModel(
         var camera = cameraProvider.get().bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture, preview)
     }
     fun makePhoto(context: Context) {
-//        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(File("")).build()
         imageCapture.let { imageCapture ->
-            // Create time stamped name and MediaStore entry.
             val photoName = SimpleDateFormat("y-mm-dd", Locale.US).format(System.currentTimeMillis())
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, photoName)

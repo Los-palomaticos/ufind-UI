@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
@@ -53,6 +55,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import org.ufind.R
 import org.ufind.data.BottomBarScreen
 import org.ufind.data.OptionsRoutes
@@ -126,6 +130,7 @@ fun HandleUiState(uiState: AddPostUiState) {
         else -> {}
     }
 }
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BodyAddPost(
         uiState: AddPostUiState,
@@ -153,23 +158,32 @@ fun BodyAddPost(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HandleUiState(uiState = uiState)
-            if (photo.value == "")
-                CameraPreview(viewModel = viewModel)
-            else {
-                viewModel.stopCamera()
-                Box {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(350.dp), model = photo.value, contentDescription = null
-                    )
+            Surface {
+                Box(modifier = Modifier.height(583.dp)){
+                    if (photo.value == "")
+                        CameraPreview(viewModel = viewModel)
+                    else {
+                        viewModel.stopCamera()
+                        AsyncImage(
+                            model = photo.value,
+                            contentScale = ContentScale.Fit,
+                            contentDescription = null
+                        )
+                    }
                     Row(modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 20.dp)){
-                        IconButton(onClick = { viewModel.resumeCamera() }) {
-                            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
-                                id = R.color.white), modifier = Modifier.size(40.dp))
+                        if (photo.value == "") {
+                            IconButton(onClick = { viewModel.makePhoto(context) }) {
+                                Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
+                                    id = R.color.white), modifier = Modifier.size(40.dp) )
+                            }
+                        } else {
+                            IconButton(onClick = { viewModel.resumeCamera() }) {
+                                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
+                                    id = R.color.white), modifier = Modifier.size(40.dp))
 
+                            }
                         }
                     }
                 }
@@ -289,41 +303,25 @@ fun LocationCardPost() {
 
 @Composable
 fun CameraPreview(
-    modifier: Modifier = Modifier,
     viewModel: AddPostViewModel
 ) {
     viewModel.setCameraProvider(LocalContext.current)
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    Surface {
-        Box (modifier = Modifier.fillMaxWidth()) {
-            AndroidView(factory = {context ->
-                PreviewView(context).apply {
-                    scaleType = PreviewView.ScaleType.FILL_CENTER
-                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-                    post {
-                        viewModel.cameraProvider.addListener(
-                            {
-                                viewModel.bindPreview(lifecycleOwner, this)
-                            },
-                            ContextCompat.getMainExecutor(context)
-                        )
-                    }
-                }
-            },
-                modifier = Modifier.fillMaxWidth(),
-                update = {
-                }
+    AndroidView(factory = {context ->
+        PreviewView(context).apply {
 
-            )
-            Row(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp)){
-                IconButton(onClick = { viewModel.makePhoto(context) }) {
-                    Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
-                        id = R.color.white), modifier = Modifier.size(40.dp) )
-                }
+            scaleType = PreviewView.ScaleType.FIT_CENTER
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            post {
+                viewModel.cameraProvider.addListener(
+                    {
+                        viewModel.bindPreview(lifecycleOwner, this)
+                    },
+                    ContextCompat.getMainExecutor(context)
+                )
             }
         }
-    }
+    },
+    update = {
+    }, modifier = Modifier.fillMaxSize())
 }

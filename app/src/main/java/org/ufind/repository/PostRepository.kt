@@ -41,8 +41,12 @@ class PostRepository(private val api: PostService) {
         } catch (e: ConnectException){
             ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
         } catch (e: HttpException) {
-            val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
-            ApiResponse.ErrorWithMessage(errorBody.errorMessages)
+            if (e.code() == 413) {
+                ApiResponse.ErrorWithMessage(listOf("El tamaño de la imagen es muy grande"))
+            } else {
+                val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
+                ApiResponse.ErrorWithMessage(errorBody.errorMessages)
+            }
         } catch (e: IOException) {
             ApiResponse.Error(e)
         } finally {
