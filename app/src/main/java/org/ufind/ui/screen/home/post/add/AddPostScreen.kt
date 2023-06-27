@@ -213,6 +213,7 @@ fun ButtonAddPost(uiState: AddPostUiState, onClickBackToUserInterface: () -> Uni
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DescriptionTextFieldPost(postDescription: String, onTextChanged: (String) -> Unit) {
@@ -234,10 +235,9 @@ fun DescriptionTextFieldPost(postDescription: String, onTextChanged: (String) ->
             focusedIndicatorColor = colorResource(id = R.color.text_color),
             unfocusedIndicatorColor = colorResource(id = R.color.text_color)
         )
-
     )
-
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -363,7 +363,6 @@ fun CameraPreview(
                 modifier = Modifier.fillMaxWidth(),
                 update = {
                 }
-
             )
             Row(
                 modifier = Modifier
