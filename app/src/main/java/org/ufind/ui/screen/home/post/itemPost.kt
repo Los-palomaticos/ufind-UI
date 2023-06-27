@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -130,11 +131,11 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
 
     Row(Modifier.fillMaxWidth()) {
         Image(
-            imageVector = Icons.Filled.Comment,
+            imageVector = Icons.Filled.Chat,
             contentDescription = "",
             Modifier.padding(16.dp, 0.dp)
                 .clickable {
-                    enviarCorreoGmail(context, "correo@example.com", "Post de Ufind  ")
+                    enviarCorreoGmail(context, "${post.publisher.email}", "Post de Ufind  ")
                 }
         )
 
