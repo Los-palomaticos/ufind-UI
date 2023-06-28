@@ -11,7 +11,7 @@
     android:name="android.hardware.camera"
     android:required="false" />
     <application
-        android:name=".UfindApplication"
+        android:name="social.ufind.UfindApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -29,7 +29,7 @@
 <!--            android:value="${GOOGLE_MAPS_API_KEY}" />-->
         <activity
             android:windowSoftInputMode="adjustResize"
-            android:name="org.ufind.MainActivity"
+            android:name="social.ufind.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Ufind">
             <intent-filter>
