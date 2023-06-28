@@ -4,8 +4,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
 
     <uses-feature
     android:name="android.hardware.camera"
@@ -21,12 +21,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ufind"
         tools:targetApi="31">
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="${GOOGLE_MAPS_API_KEY}" />
+<!--        <meta-data-->
+<!--            android:name="com.google.android.gms.version"-->
+<!--            android:value="@integer/google_play_services_version" />-->
+<!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="${GOOGLE_MAPS_API_KEY}" />-->
         <activity
             android:windowSoftInputMode="adjustResize"
             android:name="org.ufind.MainActivity"

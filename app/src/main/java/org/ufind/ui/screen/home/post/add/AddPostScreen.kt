@@ -203,9 +203,9 @@ fun BodyAddPost(
                 viewModel.description.value = it
             }
             Spacer(Modifier.size(32.dp))
-            LocationCardPost {
-                viewModel.navigateToMapScreen()
-            }
+//            LocationCardPost {
+//                viewModel.navigateToMapScreen()
+//            }
             Spacer(Modifier.size(32.dp))
             ButtonAddPost(uiState) {
                 viewModel.addPost(context)
