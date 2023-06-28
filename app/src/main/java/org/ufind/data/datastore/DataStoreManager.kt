@@ -6,8 +6,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.ufind.R
 import org.ufind.data.model.UserModel
 
 private const val USER_DATASTORE="USER"
@@ -22,7 +24,6 @@ class DataStoreManager(private val context: Context) {
             preferences[TOKEN] = userModel.token
             preferences[PHOTO] = userModel.photo
             preferences[USERNAME] = userModel.username
-
         }
     }
     fun getUserData(): Flow<UserModel> = context.dataStore.data.map { user ->
@@ -34,6 +35,19 @@ class DataStoreManager(private val context: Context) {
             username = user[USERNAME] ?: ""
         )
     }
+    suspend fun savePostPhotoUri (name: String) {
+        context.dataStore.edit {
+            it[POST_PHOTO_URI] = name
+        }
+    }
+    fun getPostPhotoUri(): Flow<String> = context.dataStore.data.map{
+        it[POST_PHOTO_URI]?:""
+    }
+    suspend fun clearPostPhotoUri() {
+        context.dataStore.edit {
+            it[POST_PHOTO_URI] = ""
+        }
+    }
     suspend fun clearDataStore() = context.dataStore.edit {
         it.clear()
     }
@@ -43,5 +57,6 @@ class DataStoreManager(private val context: Context) {
         val PHOTO = stringPreferencesKey("PHOTO")
         val TOKEN = stringPreferencesKey("TOKEN")
         val USERNAME = stringPreferencesKey("USERNAME")
+        val POST_PHOTO_URI = stringPreferencesKey("POST_PHOTO_NAME")
     }
 }

@@ -30,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +40,6 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -53,15 +51,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
 import org.ufind.data.OptionsRoutes
 import org.ufind.navigation.NavRoute
-import org.ufind.ui.screen.login.LoginUiState
 import org.ufind.ui.screen.signup.viewmodel.SignUpViewModel
-import org.ufind.ui.screen.userhomescreen.ImageLogo
+import org.ufind.ui.screen.home.post.ImageLogo
 
-object SignUpScreen: NavRoute<SignUpViewModel> {
+object SignUpScreen : NavRoute<SignUpViewModel> {
     override val route: String
         get() = OptionsRoutes.SignUp.route
+
     @Composable
-    override fun viewModel(): SignUpViewModel = viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
+    override fun viewModel(): SignUpViewModel =
+        viewModel<SignUpViewModel>(factory = SignUpViewModel.Factory)
+
     @Composable
     override fun Content(viewModel: SignUpViewModel) {
         SignUpScreen(viewModel)
@@ -74,7 +74,6 @@ object SignUpScreen: NavRoute<SignUpViewModel> {
 fun SignUpScreen(
     viewModel: SignUpViewModel
 ) {
-//    viewModel.handleUiStatus(LocalContext.current)
     Box(
         Modifier
             .fillMaxSize()
@@ -87,10 +86,11 @@ fun SignUpScreen(
         }
     }
 }
+
 @Composable
-fun handleUiStatus(viewModel: SignUpViewModel) {
+fun HandleUiStatus(viewModel: SignUpViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    if(uiState.value is SignUpUiState.ErrorWithMessage){
+    if (uiState.value is SignUpUiState.ErrorWithMessage) {
         (uiState.value as SignUpUiState.ErrorWithMessage).messages.forEach { message ->
             Text(
                 text = message,
@@ -99,19 +99,18 @@ fun handleUiStatus(viewModel: SignUpViewModel) {
         }
     }
 }
+
 @Composable
 fun SignUpBody(modifier: Modifier, viewModel: SignUpViewModel) {
-    val uiState = viewModel.uiState.collectAsState()
-
-//    LaunchedEffect(uiState) {
-//        viewModel.changeErrorMessage()
-//    }
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+//        modifier = modifier.verticalScroll(rememberScrollState())
+    ) {
 
         ImageLogo(150, Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
 
-        handleUiStatus(viewModel=viewModel)
+        HandleUiStatus(viewModel = viewModel)
 
         CreatedUserName(viewModel.username.value) {
             viewModel.username.value = it
@@ -266,7 +265,7 @@ fun RepeatPassword(repeatedPassword: String, onTextChanged: (String) -> Unit) {
 @Composable
 fun SignUpButton(
     signUpEnable: Boolean,
-    onClick: () -> Unit ={}
+    onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
@@ -307,7 +306,7 @@ fun SignUpFooter(modifier: Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun UserLogInOption(onClickLogInScreen: () -> Unit={}) {
+fun UserLogInOption(onClickLogInScreen: () -> Unit = {}) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
