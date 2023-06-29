@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
 import androidx.compose.foundation.layout.*
@@ -32,24 +31,23 @@ import social.ufind.data.OptionsRoutes
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.UserModel
 import social.ufind.navigation.NavRoute
+import social.ufind.ui.screen.home.user.viewmodel.UserProfileViewModel
 import social.ufind.ui.screen.settings.ProfileGoToButtons
 import social.ufind.ui.screen.settings.SettingsScreen
 import social.ufind.ui.screen.settings.viewmodel.SettingsViewModel
 
 
-object SettingsScreen: NavRoute<SettingsViewModel> {
-    override val route: String
-        get() = OptionsRoutes.SettingsScreen.route
-    @Composable
-    override fun viewModel(): SettingsViewModel =
-        androidx.lifecycle.viewmodel.compose.viewModel(factory = SettingsViewModel.Factory)
-    @Composable
-    override fun Content(viewModel: SettingsViewModel) {
-        SettingsScreen(viewModel)
-    }
+//object UserProfileScreen: NavRoute<UserProfileViewModel> {
+//    override val route: String
+//        get() = OptionsRoutes.SettingsScreen.route
+//
+//  //  override fun Content(viewModel: UserProfileViewModel) {
+//  //  }
+//    @Composable
+//    override fun viewModel(): UserProfileViewModel =
+//        androidx.lifecycle.viewmodel.compose.viewModel(factory = UserProfileViewModel.Factory)
+//}
 
-}
-@Preview(showBackground = true)
 @Composable
 fun UserProfileScreen(
     onClickProfileSettings: () -> Unit = {},
@@ -115,7 +113,7 @@ fun ImageWithTexts(user: UserModel) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = user.username, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Edad")
+            Text(text = user.photo)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Institución")
             Spacer(modifier = Modifier.height(8.dp))
