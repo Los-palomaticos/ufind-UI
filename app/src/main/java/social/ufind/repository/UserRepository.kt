@@ -79,6 +79,8 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
     suspend fun logout() {
         dataStoreManager.clearDataStore()
     }
-    fun getUserData() = dataStoreManager.getUserData()
+  fun getInformationUser(){
 
+    dataStoreManager.getUserData()
+    }
 }

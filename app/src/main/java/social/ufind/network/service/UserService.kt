@@ -15,6 +15,8 @@ interface UserService {
     @POST("user/login")
     suspend fun login(@Body credentials: LoginRequest): LoginResponse
 
+    @GET("user/getUser")
+    suspend fun getInformationUser(): GeneralResponse<String>
     @GET("user/validateToken")
     suspend fun validateToken(): GeneralResponse<String>
 }

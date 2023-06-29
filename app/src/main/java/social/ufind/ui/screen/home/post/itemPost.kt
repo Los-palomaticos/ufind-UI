@@ -127,7 +127,8 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
         Image(
             imageVector = Icons.Filled.Chat,
             contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
+            Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
                     enviarCorreoGmail(context, "${post.publisher.email}", "Post de Ufind  ")
                 }
@@ -136,7 +137,8 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
         Image(
             imageVector = if (isSaved.value) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
             contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
+            Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
                     isSaved.value = !isSaved.value
                 }
@@ -146,7 +148,8 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
             imageVector = Icons.Filled.Share,
             contentDescription = "Compartir",
             tint = Color.Black,
-            modifier = Modifier.padding(16.dp, 0.dp)
+            modifier = Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
                     scope.launch {
                         descargarYCompartirImagen()
@@ -198,7 +201,11 @@ private fun compartirContenido(context: Context, texto: String, file: File) {
     try {
         context.startActivity(shareIntent)
     } catch (e: ActivityNotFoundException) {
-        Toast.makeText(context, "No se encontraron aplicaciones de compartir disponibles", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            "No se encontraron aplicaciones de compartir disponibles",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 

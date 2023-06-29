@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import social.ufind.ui.screen.home.MainChatScreen
 import social.ufind.ui.screen.home.SavedPostScreen
-import social.ufind.ui.screen.home.UserProfileScreen
+import social.ufind.ui.screen.home.user.UserProfileScreen
 import social.ufind.ui.screen.home.post.PostScreen
 import social.ufind.ui.screen.home.post.add.AddPostScreen
 import social.ufind.ui.screen.map.MapScreen
