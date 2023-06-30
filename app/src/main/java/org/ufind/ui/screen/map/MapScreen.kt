@@ -90,7 +90,6 @@ fun MapScreen(onClickGoToAddPost: () -> Unit = {}) {
 }
 
 
-
 @Composable
 fun MapScreenHeader(onClickGoToAddPost: () -> Unit = {}) {
     Card(
@@ -559,7 +558,12 @@ fun LocationOptions() {
             }
         }
         Spacer(modifier = Modifier.size(28.dp))
-        ButtonSaveLocation(locationEdificios, locationEdificiosAdmin, locationCommonZone, locationAulasOrMagna)
+        ButtonSaveLocation(
+            locationEdificios,
+            locationEdificiosAdmin,
+            locationCommonZone,
+            locationAulasOrMagna
+        )
     }
 }
 
@@ -572,7 +576,7 @@ fun ButtonSaveLocation(
 ) {
     Button(
         onClick = {
-                  //TODO("DEPENDIENDO DE QUE CAMPO NO SEA "" UNA STRING VACIA ENTONCES SE MANDARÁ COMO INFORMACIÓN PARA LA UBICACIÓN DEL POST")
+            //TODO("DEPENDIENDO DE QUE CAMPO NO SEA "" UNA STRING VACIA ENTONCES SE MANDARÁ COMO INFORMACIÓN PARA LA UBICACIÓN DEL POST")
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
