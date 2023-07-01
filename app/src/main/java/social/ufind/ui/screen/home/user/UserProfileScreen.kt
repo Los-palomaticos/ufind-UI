@@ -21,20 +21,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Text
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import social.ufind.data.OptionsRoutes
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.UserModel
-import social.ufind.navigation.NavRoute
-import social.ufind.ui.screen.home.user.viewmodel.UserProfileViewModel
 import social.ufind.ui.screen.settings.ProfileGoToButtons
-import social.ufind.ui.screen.settings.SettingsScreen
-import social.ufind.ui.screen.settings.viewmodel.SettingsViewModel
 
 
 //object UserProfileScreen: NavRoute<UserProfileViewModel> {
@@ -54,6 +52,7 @@ fun UserProfileScreen(
     onClickWalletButton: () -> Unit = {}
 ) {
     val data = DataStoreManager(LocalContext.current)
+    val selectedImage = remember { mutableStateOf("") }
 
     val user by data.getUserData().collectAsState(initial = UserModel(0, "", "", "", ""))
 
@@ -62,7 +61,7 @@ fun UserProfileScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        ProfileBody(user, onClickProfileSettings, onClickWalletButton)
+        ProfileBody(user, onClickProfileSettings, onClickWalletButton, selectedImage)
     }
 }
 
@@ -70,7 +69,8 @@ fun UserProfileScreen(
 fun ProfileBody(
     user: UserModel,
     onClickProfileSettings: () -> Unit = {},
-    onClickWalletButton: () -> Unit = {}
+    onClickWalletButton: () -> Unit = {},
+    selectedImage: MutableState<String>
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())

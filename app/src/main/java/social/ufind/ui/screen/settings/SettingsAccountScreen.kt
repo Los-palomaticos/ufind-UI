@@ -30,10 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,17 +44,21 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.ufind.R
+import social.ufind.data.datastore.DataStoreManager
+import social.ufind.data.model.UserModel
 
 @Preview
 @Composable
 fun SettingsAccountScreen(onClickSettingsScreen: () -> Unit = {}) {
+    val data = DataStoreManager(LocalContext.current)
 
-    AccountScreen(onClickSettingsScreen)
-
+    val user by data.getUserData().collectAsState(initial = UserModel(0, "", "", "", ""))
+    AccountScreen(user,onClickSettingsScreen)
 }
 
 @Composable
-fun AccountScreen(onClickSettingsScreen: () -> Unit = {}) {
+fun AccountScreen( user: UserModel,
+    onClickSettingsScreen: () -> Unit = {}) {
     var newInstitution by rememberSaveable {
         mutableStateOf("")
     }
@@ -93,7 +99,7 @@ fun AccountScreen(onClickSettingsScreen: () -> Unit = {}) {
             //  Cambiar nombre de usuario
             ChangeAccountSettingsCard(title = "Nombre de usuario",
                 value = newUserName,
-                placeHolderText = "Chompi",
+                placeHolderText = user.username,
                 onTextChanged = { newUserName = it })
             Spacer(modifier = Modifier.height(32.dp))
 
