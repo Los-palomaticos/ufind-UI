@@ -129,6 +129,7 @@ fun HandleUiState(uiState: AddPostUiState) {
         else -> {}
     }
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BodyAddPost(
@@ -158,7 +159,7 @@ fun BodyAddPost(
         ) {
             HandleUiState(uiState = uiState)
             Surface {
-                Box(modifier = Modifier.height(583.dp)){
+                Box(modifier = Modifier.height(583.dp)) {
                     if (photo.value == "")
                         CameraPreview(viewModel = viewModel)
                     else {
@@ -169,18 +170,32 @@ fun BodyAddPost(
                             contentDescription = null
                         )
                     }
-                    Row(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 20.dp)){
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 20.dp)
+                    ) {
                         if (photo.value == "") {
                             IconButton(onClick = { viewModel.makePhoto(context) }) {
-                                Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
-                                    id = R.color.white), modifier = Modifier.size(40.dp) )
+                                Icon(
+                                    imageVector = Icons.Default.Camera,
+                                    contentDescription = "Capture",
+                                    tint = colorResource(
+                                        id = R.color.white
+                                    ),
+                                    modifier = Modifier.size(40.dp)
+                                )
                             }
                         } else {
                             IconButton(onClick = { viewModel.resumeCamera() }) {
-                                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
-                                    id = R.color.white), modifier = Modifier.size(40.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Capturar de nuevo",
+                                    tint = colorResource(
+                                        id = R.color.white
+                                    ),
+                                    modifier = Modifier.size(40.dp)
+                                )
 
                             }
                         }
@@ -194,9 +209,10 @@ fun BodyAddPost(
                 viewModel.description.value = it
             }
             Spacer(Modifier.size(32.dp))
-//            LocationCardPost {
-//                viewModel.navigateToMapScreen()
-//            }
+            LocationCardPost {
+                viewModel.navigateToMapScreen()
+            }
+
             Spacer(Modifier.size(32.dp))
             ButtonAddPost(uiState) {
                 viewModel.addPost(context)
@@ -271,7 +287,6 @@ fun TitleTextFieldPost(postTitle: String, onTextChanged: (String) -> Unit) {
             focusedIndicatorColor = colorResource(id = R.color.text_color),
             unfocusedIndicatorColor = colorResource(id = R.color.text_color)
         )
-
     )
 }
 
@@ -353,7 +368,7 @@ fun CameraPreview(
     viewModel.setCameraProvider(LocalContext.current)
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    AndroidView(factory = {context ->
+    AndroidView(factory = { context ->
         PreviewView(context).apply {
 
             scaleType = PreviewView.ScaleType.FIT_CENTER
@@ -368,6 +383,7 @@ fun CameraPreview(
             }
         }
     },
-    update = {
-    }, modifier = Modifier.fillMaxSize())
+        update = {
+        }, modifier = Modifier.fillMaxSize()
+    )
 }
