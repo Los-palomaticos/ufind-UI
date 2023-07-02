@@ -136,7 +136,6 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
             focusedIndicatorColor = colorResource(id = R.color.primary_color),
             unfocusedIndicatorColor = Color.Transparent
         )
-
     )
 }
 

@@ -14,4 +14,7 @@
     <color name="text_color">#001233</color>
     <color name="disabled_color">#979DAC</color>
     <color name="textfield_color">#F1F1F1</color>
+    <color name="send_text">#0466C8</color>
+    <color name="chat_remitent">#7D8597</color>
+
 </resources>

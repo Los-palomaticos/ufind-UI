@@ -4,13 +4,23 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import social.ufind.navigation.RouteNavigator
+import social.ufind.navigation.UfindNavigator
+
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import social.ufind.UfindApplication
+import social.ufind.data.BottomBarScreen
+import social.ufind.repository.UserRepository
 import social.ufind.ui.screen.chat.Constants
 import java.lang.IllegalArgumentException
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(private val routeNavigator: RouteNavigator = UfindNavigator()) : ViewModel(),
+    RouteNavigator by routeNavigator {
     init {
         getMessages()
     }
@@ -66,7 +76,13 @@ class ChatViewModel : ViewModel() {
                 updateMessages(list)
             }
     }
-    private fun updateMessages(list: MutableList<Map<String,Any>>){
+
+    private fun updateMessages(list: MutableList<Map<String, Any>>) {
         _messages.value = list.asReversed()
     }
+
+    fun goBackToMessagesList() {
+        routeNavigator.navigateToRoute(BottomBarScreen.Chat.route)
+    }
+
 }

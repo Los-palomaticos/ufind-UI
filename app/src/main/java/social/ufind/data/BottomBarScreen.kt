@@ -18,7 +18,7 @@ sealed class BottomBarScreen(
         title = "Home",
         icon = Icons.Default.Home
     )    object Chat: social.ufind.data.BottomBarScreen(
-        route = "chat",
+        route = "MainChatScreen",
         title = "Chat",
         icon = Icons.Default.Chat
     )    object SavedPosts: social.ufind.data.BottomBarScreen(
