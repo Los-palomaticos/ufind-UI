@@ -37,8 +37,7 @@ fun BottomNavGraph(navController: NavHostController) {
         composable(route = BottomBarScreen.Chat.route) {
             MainChatScreen(onClick = {navController.navigate(OptionsRoutes.ChatScreen.route)})
         }
-
-        composable(route=OptionsRoutes.ChatScreen.route){
+        composable(route= OptionsRoutes.ChatScreen.route){
             ChatScreen(onClickGoToMainChatScreen = {navController.navigate(BottomBarScreen.Chat.route)})
         }
         AddPostScreen.composable(this, navController)
