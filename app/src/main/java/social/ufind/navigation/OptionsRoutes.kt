@@ -1,4 +1,4 @@
-package social.ufind.data
+package social.ufind.navigation
 
 sealed class OptionsRoutes(val route:String){
     object LogInOrSignUpOptions: OptionsRoutes("LogInOrSignUpOptions")

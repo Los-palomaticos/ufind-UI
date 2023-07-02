@@ -8,8 +8,10 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.PartMap
+import retrofit2.http.Query
 import social.ufind.data.model.PostModel
 import social.ufind.network.dto.GeneralResponse
+import social.ufind.network.dto.post.GetAllPostsResponse
 
 @Dao
 interface PostService {
@@ -21,5 +23,8 @@ interface PostService {
     ): GeneralResponse<String>
 
     @GET("post/getAll")
-    suspend fun getAll(): GeneralResponse<List<PostModel>>
+    suspend fun getAll(
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int,
+    ): GetAllPostsResponse
 }

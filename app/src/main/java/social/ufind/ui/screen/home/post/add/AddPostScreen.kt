@@ -1,6 +1,8 @@
 package social.ufind.ui.screen.home.post.add
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.view.PreviewView
@@ -33,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,9 +54,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import org.ufind.R
-import social.ufind.data.OptionsRoutes
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.navigation.NavRoute
 import social.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
 import social.ufind.ui.screen.settings.HeaderConfigurationCard
@@ -129,7 +131,6 @@ fun HandleUiState(uiState: AddPostUiState) {
         else -> {}
     }
 }
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BodyAddPost(
     uiState: AddPostUiState,
@@ -158,33 +159,15 @@ fun BodyAddPost(
         ) {
             HandleUiState(uiState = uiState)
             Surface {
-                Box(modifier = Modifier.height(583.dp)){
-                    if (photo.value == "")
-                        CameraPreview(viewModel = viewModel)
-                    else {
+                Box(modifier = Modifier.fillMaxWidth()){
+                    if (photo.value != "")
                         viewModel.stopCamera()
-                        AsyncImage(
-                            model = photo.value,
-                            contentScale = ContentScale.Fit,
-                            contentDescription = null
-                        )
-                    }
-                    Row(modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 20.dp)){
-                        if (photo.value == "") {
-                            IconButton(onClick = { viewModel.makePhoto(context) }) {
-                                Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
-                                    id = R.color.white), modifier = Modifier.size(40.dp) )
-                            }
-                        } else {
-                            IconButton(onClick = { viewModel.resumeCamera() }) {
-                                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
-                                    id = R.color.white), modifier = Modifier.size(40.dp))
 
-                            }
-                        }
-                    }
+                    CameraPreview(
+                        viewModel = viewModel,
+                        photo = photo
+                    )
+
                 }
             }
             Spacer(Modifier.size(64.dp))
@@ -348,26 +331,55 @@ fun LocationCardPost(onClickGoToMapScreen: () -> Unit = {}) {
 
 @Composable
 fun CameraPreview(
-    viewModel: AddPostViewModel
+    viewModel: AddPostViewModel,
+    photo: State<String>
 ) {
     viewModel.setCameraProvider(LocalContext.current)
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    Box(
+        modifier = Modifier.height(500.dp)
+    ) {
+        if (photo.value == "") {
+            AndroidView(factory = {
+                PreviewView(context).apply {
+                    scaleType = PreviewView.ScaleType.FIT_CENTER
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                }
+            },
+                update = {
+                    Log.d("APP_TAG", "UPDATE")
+                    // bind camera again if photo is empty
+                    if (photo.value == "") {
+                        viewModel.bindCamera(previewView = it, lifecycleOwner = lifecycleOwner, context = context)
+                    }
+                }, modifier = Modifier.fillMaxWidth())
+        }
+        else {
+            viewModel.stopCamera()
+            AsyncImage(
+                model = photo.value,
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth(),
+                contentDescription = null
+            )
+        }
+        Row(modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 20.dp)){
+            if (photo.value == "") {
+                IconButton(onClick = { viewModel.makePhoto(context) }) {
+                    Icon(imageVector = Icons.Default.Camera, contentDescription = "Capture", tint = colorResource(
+                        id = R.color.white), modifier = Modifier.size(40.dp) )
+                }
+            } else {
+                IconButton(onClick = { viewModel.resumeCamera() }) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Capturar de nuevo", tint = colorResource(
+                        id = R.color.white), modifier = Modifier.size(40.dp))
 
-    AndroidView(factory = {context ->
-        PreviewView(context).apply {
-
-            scaleType = PreviewView.ScaleType.FIT_CENTER
-            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-            post {
-                viewModel.cameraProvider.addListener(
-                    {
-                        viewModel.bindPreview(lifecycleOwner, this)
-                    },
-                    ContextCompat.getMainExecutor(context)
-                )
+                }
             }
         }
-    },
-    update = {
-    }, modifier = Modifier.fillMaxSize())
+    }
 }

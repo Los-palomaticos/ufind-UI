@@ -67,8 +67,10 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$gson_version"
     // room
     implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-paging:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
+
     implementation("androidx.room:room-ktx:$room_version")
     // datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
@@ -82,8 +84,19 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     // glide
     implementation("com.github.bumptech.glide:compose:$glide_version")
+
     // reflect
     implementation("org.jetbrains.kotlin:kotlin-reflect:$reflect_version")
+
+    // swipe refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.25.1")
+
+    // paging
+    implementation("androidx.paging:paging-runtime-ktx:3.1.1")
+    implementation("androidx.paging:paging-compose:3.2.0-rc01")
+
+    // compressor
+    implementation("id.zelory:compressor:$compressor_version")
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     constraints {

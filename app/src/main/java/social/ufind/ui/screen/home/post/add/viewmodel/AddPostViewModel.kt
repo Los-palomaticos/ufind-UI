@@ -12,6 +12,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -20,11 +21,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.common.util.concurrent.ListenableFuture
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.default
+import id.zelory.compressor.constraint.destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.ufind.R
-import social.ufind.data.OptionsRoutes
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
@@ -47,7 +51,7 @@ class AddPostViewModel(
     val photoPath = MutableStateFlow<String>("")
     val description = mutableStateOf("")
     val title = mutableStateOf("")
-    val cameraPermissionGranted = mutableStateOf(false)
+    val preview: Preview = Preview.Builder().build()
 
     private val _uiState  = MutableStateFlow<AddPostUiState>(AddPostUiState.Resume)
 
@@ -73,15 +77,21 @@ class AddPostViewModel(
     fun setCameraProvider(context: Context) {
         cameraProvider = ProcessCameraProvider.getInstance(context)
     }
-    fun bindPreview(
-        lifecycleOwner: LifecycleOwner,
+    private fun bindPreview(
         previewView: PreviewView,
+        lifecycleOwner: LifecycleOwner
     ) {
-        val preview: Preview = Preview.Builder()
-            .build()
-
         preview.setSurfaceProvider(previewView.surfaceProvider)
         var camera = cameraProvider.get().bindToLifecycle(lifecycleOwner, cameraSelector, imageCapture, preview)
+    }
+
+    fun bindCamera(previewView: PreviewView, lifecycleOwner: LifecycleOwner, context: Context) {
+        cameraProvider.addListener(
+            {
+                bindPreview(previewView, lifecycleOwner)
+            },
+            ContextCompat.getMainExecutor(context)
+        )
     }
     fun makePhoto(context: Context) {
         imageCapture.let { imageCapture ->
@@ -129,9 +139,13 @@ class AddPostViewModel(
         _uiState.value = AddPostUiState.Sending
         val photoFile = File(photoPath.value)
         viewModelScope.launch {
+            val compressedPhoto = Compressor.compress(context, photoFile) {
+                default()
+                destination(photoFile)
+            }
             val response = repository.addPost(
                 title = title.value,
-                photo = photoFile,
+                photo = compressedPhoto,
                 description = description.value
             )
             _uiState.value = AddPostUiState.Resume

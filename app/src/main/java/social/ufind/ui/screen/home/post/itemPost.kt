@@ -3,8 +3,10 @@ package social.ufind.ui.screen.home.post
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,13 +40,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ufind.R
-import social.ufind.data.model.PostModel
+import social.ufind.data.model.PostWithAuthorAndPhotos
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -51,7 +60,7 @@ import java.net.URL
 
 //@Preview(showBackground = true)
 @Composable
-fun ItemPost(post: PostModel) {
+fun ItemPost(post: PostWithAuthorAndPhotos?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +79,7 @@ fun ItemPost(post: PostModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Por ${post.publisher.username}",
+                "Por ${post!!.publisher.username}",
                 color = colorResource(id = R.color.disabled_color),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Start,
@@ -78,19 +87,19 @@ fun ItemPost(post: PostModel) {
             )
             Spacer(Modifier.size(16.dp))
             Text(
-                text = post.title,
+                text = post.post.title,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Start),
             )
             Spacer(Modifier.size(16.dp))
             Text(
-                text = post.description,
+                text = post.post.description,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.align(Alignment.Start)
             )
             Spacer(Modifier.size(16.dp))
-            PostImage(url = post.photos.first(), modifier = Modifier.fillMaxWidth())
+            PostImage(url = post.photos.first().photo, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.size(16.dp))
             BottomBarPostIcons(context = LocalContext.current, post = post)
         }
@@ -105,20 +114,33 @@ fun PostImage(
 ) {
     GlideImage(
         model = url,
-        contentDescription = "Imagen de post",
         modifier = modifier,
-    )
+        contentScale = ContentScale.Fit,
+        alignment = Alignment.Center,
+        contentDescription = "Imagen de post"
+//        imageOptions = ImageOptions(
+//            contentScale = ContentScale.Fit,
+//            alignment = Alignment.Center
+//        ),
+//        loading = {
+//            LinearProgressIndicator()
+//        }
+    ) {
+        it.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .error(R.drawable.no_image)
+
+    }
 }
 
 @Composable
-fun BottomBarPostIcons(context: Context, post: PostModel) {
+fun BottomBarPostIcons(context: Context, post: PostWithAuthorAndPhotos) {
     val isSaved = remember { mutableStateOf(false) } //para guardar icono
 
     val scope = rememberCoroutineScope() //guarda estado de corrutina
 
     val descargarYCompartirImagen: suspend () -> Unit = {
         val imagenDescargada = withContext(Dispatchers.IO) {
-            descargarImagen(context, post.photos.first())
+            descargarImagen(context, post.photos.first().photo)
         }
         compartirContenido(context, "Mira Este Objeto Perdido", imagenDescargada)
     }
@@ -127,16 +149,18 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
         Image(
             imageVector = Icons.Filled.Chat,
             contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
+            Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
-                    enviarCorreoGmail(context, "${post.publisher.email}", "Post de Ufind  ")
+                    enviarCorreoGmail(context, post.publisher.email, "Post de Ufind  ")
                 }
         )
 
         Image(
             imageVector = if (isSaved.value) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
             contentDescription = "",
-            Modifier.padding(16.dp, 0.dp)
+            Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
                     isSaved.value = !isSaved.value
                 }
@@ -146,7 +170,8 @@ fun BottomBarPostIcons(context: Context, post: PostModel) {
             imageVector = Icons.Filled.Share,
             contentDescription = "Compartir",
             tint = Color.Black,
-            modifier = Modifier.padding(16.dp, 0.dp)
+            modifier = Modifier
+                .padding(16.dp, 0.dp)
                 .clickable {
                     scope.launch {
                         descargarYCompartirImagen()

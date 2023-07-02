@@ -29,7 +29,7 @@ class UfindApplication:Application(), CameraXConfig.Provider {
         val service = with(RetrofitInstance) {
             getPostService()
         }
-        PostRepository(api = service)
+        PostRepository(api = service, database = database)
     }
     override fun getCameraXConfig(): CameraXConfig {
         return CameraXConfig.Builder.fromConfig(Camera2Config.defaultConfig())
