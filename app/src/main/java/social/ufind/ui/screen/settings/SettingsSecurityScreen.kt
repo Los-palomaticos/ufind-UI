@@ -112,13 +112,17 @@ fun HeaderConfigurationCard(
     onClick: () -> Unit
 ) {
     Card(
-
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.textfield_color)
+            containerColor = colorResource(id = R.color.white)
         )
-    ) {
+           ) {
         Row(
             modifier = Modifier
                 .padding(8.dp)

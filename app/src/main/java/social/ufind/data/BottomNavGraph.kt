@@ -7,7 +7,7 @@ import social.ufind.ui.screen.chat.ChatScreen
 import social.ufind.ui.screen.chat.chatviewmodel.ChatViewModel
 import social.ufind.ui.screen.home.MainChatScreen
 import social.ufind.ui.screen.home.SavedPostScreen
-import social.ufind.ui.screen.home.UserProfileScreen
+import social.ufind.ui.screen.home.user.UserProfileScreen
 import social.ufind.ui.screen.home.post.PostScreen
 import social.ufind.ui.screen.home.post.add.AddPostScreen
 import social.ufind.ui.screen.map.MapScreen

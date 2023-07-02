@@ -6,6 +6,7 @@ import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.Payload
 import social.ufind.data.model.UserModel
 import social.ufind.network.ApiResponse
+import social.ufind.network.dto.GeneralResponse
 import social.ufind.network.dto.login.LoginRequest
 import social.ufind.network.dto.login.LoginResponse
 import social.ufind.network.dto.signup.SignUpRequest
@@ -79,7 +80,20 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
     suspend fun logout() {
         dataStoreManager.clearDataStore()
     }
-    fun getUserData() = dataStoreManager.getUserData()
+    suspend fun getInformationUser():ApiResponse<String>{
+      return try {
+          val response = api.getInformationUser()
+          ApiResponse.Success(response.message)
+      } catch(e: HttpException) {
+          val errorResponse = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
 
+
+          ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
+      } catch (e: ConnectException) {
+          ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+      } catch (e: Exception) {
+          ApiResponse.Error(e)
+      }
+    }
 
 }

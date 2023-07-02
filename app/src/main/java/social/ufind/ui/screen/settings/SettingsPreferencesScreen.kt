@@ -1,5 +1,6 @@
 package social.ufind.ui.screen.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -66,7 +70,12 @@ fun PreferencesScreen(onClickSettingsScreen: () -> Unit = {}) {
                 titleS2 = "Tu perfil sera público"
             )
             Spacer(modifier = Modifier.height(16.dp))
-
+            // Segundo componente
+            LanguaguePreferences(
+                titleS = "Cambiar Idioma",
+                titleS2 = "Elige el idioma que prefieres"
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -118,6 +127,47 @@ fun CustomCardCheckPreferences(titleS: String, titleS2: String) {
                     ),
                 modifier = Modifier.clip(MaterialTheme.shapes.small)
             )
+        }
+    }
+}
+
+@Composable
+fun LanguaguePreferences(titleS: String, titleS2: String) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(16.dp)
+            )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = titleS,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = titleS2,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+            }
+            Image(
+                imageVector = Icons.Filled.Language,
+                contentDescription = "",
+                Modifier
+                    .padding(16.dp, 0.dp)
+                  )
         }
     }
 }
