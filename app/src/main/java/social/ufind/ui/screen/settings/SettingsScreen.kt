@@ -16,8 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.TrackChanges
+import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -99,11 +103,15 @@ fun HeaderConfiguration(onClickGoToProfileScreen: () -> Unit = {}) {
 @Composable
 fun HeaderConfigurationCardScreen(title: String, onClickGoToProfileScreen: () -> Unit = {}) {
     Card(
-
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+
+            .shadow(
+                elevation = 3.dp,
+                shape = MaterialTheme.shapes.medium
+            ),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.textfield_color)
+            containerColor = colorResource(id = R.color.white)
         )
     ) {
         Row(
@@ -119,7 +127,6 @@ fun HeaderConfigurationCardScreen(title: String, onClickGoToProfileScreen: () ->
                     tint = colorResource(id = R.color.text_color),
                     modifier = Modifier.size(24.dp)
                 )
-
             }
             Column(
                 modifier = Modifier.padding(start = 16.dp)
@@ -137,20 +144,20 @@ fun ConfigurationsButtons(
     Column {
         ConfigurationButton(
             text = "Seguridad",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            icon = Icons.Default.Security,// Ejemplo de un icono predefinido de Jetpack Compose
             onClick = { viewModel.navigateToSecurity() }
         )
 
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Preferencias",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            icon = Icons.Default.TrackChanges,// Ejemplo de un icono predefinido de Jetpack Compose
             onClick = { viewModel.navigateToPreferences() }
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Cuenta",
-            icon = Icons.Default.ArrowRight,// Ejemplo de un icono predefinido de Jetpack Compose
+            icon = Icons.Default.AccountTree,// Ejemplo de un icono predefinido de Jetpack Compose
             onClick = { viewModel.navigateToAccount() }
         )
     }

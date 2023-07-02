@@ -1,4 +1,4 @@
-package social.ufind.ui.screen.home
+package social.ufind.ui.screen.home.user
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
 import androidx.compose.foundation.layout.*
@@ -22,47 +21,72 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.elevatedButtonElevation
 import androidx.compose.material3.Text
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import social.ufind.data.datastore.DataStoreManager
+import social.ufind.data.model.UserModel
 import social.ufind.ui.screen.settings.ProfileGoToButtons
 
-@Preview(showBackground = true)
+
+//object UserProfileScreen: NavRoute<UserProfileViewModel> {
+//    override val route: String
+//        get() = OptionsRoutes.SettingsScreen.route
+//
+//  //  override fun Content(viewModel: UserProfileViewModel) {
+//  //  }
+//    @Composable
+//    override fun viewModel(): UserProfileViewModel =
+//        androidx.lifecycle.viewmodel.compose.viewModel(factory = UserProfileViewModel.Factory)
+//}
+
 @Composable
 fun UserProfileScreen(
     onClickProfileSettings: () -> Unit = {},
     onClickWalletButton: () -> Unit = {}
 ) {
+    val data = DataStoreManager(LocalContext.current)
+    val selectedImage = remember { mutableStateOf("") }
+
+    val user by data.getUserData().collectAsState(initial = UserModel(0, "", "", "", ""))
+
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        ProfileBody(onClickProfileSettings, onClickWalletButton)
-
-
+        ProfileBody(user, onClickProfileSettings, onClickWalletButton, selectedImage)
     }
 }
 
 @Composable
-fun ProfileBody(onClickProfileSettings: () -> Unit = {}, onClickWalletButton: () -> Unit = {}) {
+fun ProfileBody(
+    user: UserModel,
+    onClickProfileSettings: () -> Unit = {},
+    onClickWalletButton: () -> Unit = {},
+    selectedImage: MutableState<String>
+) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        UserInfo()
+        UserInfo(user)
         EditProfileButton()
         Spacer(Modifier.size(16.dp))
         ProfileGoToButtons(onClickProfileSettings, onClickWalletButton)
 
     }
-
-
 }
 
 @Composable
-fun UserInfo() {
+fun UserInfo(user: UserModel) {
     Box {
-        ImageWithTexts()
+        ImageWithTexts(user)
 
 
     }
@@ -70,7 +94,7 @@ fun UserInfo() {
 }
 
 @Composable
-fun ImageWithTexts() {
+fun ImageWithTexts(user: UserModel) {
     Row(modifier = Modifier.padding(16.dp)) {
         // Image
         Image(
@@ -87,15 +111,15 @@ fun ImageWithTexts() {
 
         // Text Column
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Nombre", fontWeight = FontWeight.Bold)
+            Text(text = user.username, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Edad")
+            Text(text = user.photo)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Institución")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Residencia")
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "00000000@example.com")
+            Text(text = user.email)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "10000 UPoints")
 
