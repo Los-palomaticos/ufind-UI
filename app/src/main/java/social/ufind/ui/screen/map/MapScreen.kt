@@ -572,7 +572,7 @@ fun ButtonSaveLocation(
 ) {
     Button(
         onClick = {
-                  //TODO("DEPENDIENDO DE QUE CAMPO NO SEA "" UNA STRING VACIA ENTONCES SE MANDARÁ COMO INFORMACIÓN PARA LA UBICACIÓN DEL POST")
+                  sendPostLocation()
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
@@ -584,6 +584,11 @@ fun ButtonSaveLocation(
     ) {
         Text("Guardar ubicación")
     }
+}
+
+
+fun sendPostLocation(){
+
 }
 
 @Composable

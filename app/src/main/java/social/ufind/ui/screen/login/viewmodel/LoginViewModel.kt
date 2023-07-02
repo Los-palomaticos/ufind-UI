@@ -1,5 +1,6 @@
 package social.ufind.ui.screen.login.viewmodel
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ class LoginViewModel(
         get() = _uiState
 
     fun login() {
+        signInFirebase(email.value, password.value)
         resetState()
         viewModelScope.launch {
             when (val response = repository.login(LoginRequest(email.value, password.value))) {
@@ -39,11 +42,24 @@ class LoginViewModel(
                     clear()
                     resetState()
                 }
-                is ApiResponse.ErrorWithMessage -> _uiState.value = LoginUiState.ErrorWithMessage(response.messages)
+
+                is ApiResponse.ErrorWithMessage -> _uiState.value =
+                    LoginUiState.ErrorWithMessage(response.messages)
 
                 is ApiResponse.Error -> _uiState.value = LoginUiState.Error(response.exception)
             }
         }
+    }
+
+    private fun signInFirebase(email: String, password: String) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("SignIn", "signInWithEmailAndPassword is successful")
+                } else {
+                    Log.d("SignInError", "signInWithEmailAndPassword: ${task.result.toString()}")
+                }
+            }
     }
 
     fun checkData() {

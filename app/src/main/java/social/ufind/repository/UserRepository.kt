@@ -87,6 +87,7 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
       } catch(e: HttpException) {
           val errorResponse = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
 
+
           ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
       } catch (e: ConnectException) {
           ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
@@ -94,4 +95,5 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
           ApiResponse.Error(e)
       }
     }
+
 }

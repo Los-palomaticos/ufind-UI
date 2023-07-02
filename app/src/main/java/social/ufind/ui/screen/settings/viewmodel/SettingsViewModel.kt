@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import social.ufind.data.OptionsRoutes
 import social.ufind.navigation.RouteNavigator
@@ -16,6 +17,7 @@ class SettingsViewModel(val repository: UserRepository, private val routeNavigat
     RouteNavigator by routeNavigator
 {
     fun logout() {
+        logOutFireBase()
         viewModelScope.launch {
             repository.logout()
         }
@@ -34,6 +36,11 @@ class SettingsViewModel(val repository: UserRepository, private val routeNavigat
     }
     fun navigateBack() {
         routeNavigator.navigateToRoute(social.ufind.data.BottomBarScreen.Profile.route)
+    }
+
+    fun logOutFireBase(){
+        val firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth.signOut()
     }
     companion object {
         val Factory = viewModelFactory {
