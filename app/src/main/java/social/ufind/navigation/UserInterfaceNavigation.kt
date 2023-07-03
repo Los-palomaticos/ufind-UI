@@ -1,4 +1,4 @@
-package social.ufind.ui.navigation
+package social.ufind.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.material.BottomNavigation
@@ -26,17 +26,18 @@ fun UserInterfaceNavigation() {
     val scaffoldState = rememberScaffoldState()
 
     val navigationItem = listOf(
-        social.ufind.data.BottomBarScreen.Home,
-        social.ufind.data.BottomBarScreen.Chat,
-        social.ufind.data.BottomBarScreen.SavedPosts,
-        social.ufind.data.BottomBarScreen.Profile
+        BottomBarScreen.Home,
+        BottomBarScreen.Chat,
+        BottomBarScreen.SavedPosts,
+        BottomBarScreen.Profile
     )
     val showBottomBar =
         navController.currentBackStackEntryAsState().value?.destination?.route in navigationItem.map { it.route }
     androidx.compose.material.Scaffold(
         scaffoldState = scaffoldState,
         bottomBar = { if(showBottomBar) {
-            BottomNavigationBar(navController, navigationItem)}
+            BottomNavigationBar(navController, navigationItem)
+        }
         }
     ) {
         BottomNavGraph(navController = navController)
@@ -50,7 +51,7 @@ fun currentRoute(navController: NavHostController): String? {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController, navigationItem: List<social.ufind.data.BottomBarScreen>) {
+fun BottomNavigationBar(navController: NavHostController, navigationItem: List<BottomBarScreen>) {
     androidx.compose.material.BottomAppBar(backgroundColor = Color.White) {
         BottomNavigation(
             backgroundColor = Color.White, contentColor = colorResource(

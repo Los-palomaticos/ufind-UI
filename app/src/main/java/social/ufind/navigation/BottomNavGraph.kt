@@ -3,8 +3,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import social.ufind.navigation.BottomBarScreen
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.ui.screen.chat.ChatScreen
-import social.ufind.ui.screen.chat.chatviewmodel.ChatViewModel
 import social.ufind.ui.screen.home.MainChatScreen
 import social.ufind.ui.screen.home.SavedPostScreen
 import social.ufind.ui.screen.home.user.UserProfileScreen
@@ -21,11 +22,11 @@ import social.ufind.ui.screen.wallet.WalletProfileScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = social.ufind.data.BottomBarScreen.Home.route ){
+    NavHost(navController = navController, startDestination = BottomBarScreen.Home.route ){
 //        composable(route= BottomBarScreen.Home.route){
 //            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
 //        }
-        composable(route = social.ufind.data.BottomBarScreen.Profile.route) {
+        composable(route = BottomBarScreen.Profile.route) {
             UserProfileScreen(
                 onClickProfileSettings = { navController.navigate(OptionsRoutes.SettingsScreen.route) },
                 onClickWalletButton = { navController.navigate(OptionsRoutes.WalletScreen.route) }

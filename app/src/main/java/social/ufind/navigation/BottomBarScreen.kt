@@ -1,11 +1,10 @@
-package social.ufind.data
+package social.ufind.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.SavedSearch
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen(
@@ -13,19 +12,19 @@ sealed class BottomBarScreen(
     val title: String,
     val icon: ImageVector
 ) {
-    object Home: social.ufind.data.BottomBarScreen(
+    object Home: BottomBarScreen(
         route = "home",
         title = "Home",
         icon = Icons.Default.Home
-    )    object Chat: social.ufind.data.BottomBarScreen(
+    )    object Chat: BottomBarScreen(
         route = "MainChatScreen",
         title = "Chat",
         icon = Icons.Default.Chat
-    )    object SavedPosts: social.ufind.data.BottomBarScreen(
+    )    object SavedPosts: BottomBarScreen(
         route = "savedPosts",
         title = "Guardados",
         icon = Icons.Default.Bookmark
-    )    object Profile: social.ufind.data.BottomBarScreen(
+    )    object Profile: BottomBarScreen(
         route = "profile",
         title = "Perfil",
         icon = Icons.Default.Person

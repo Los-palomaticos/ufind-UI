@@ -1,9 +1,9 @@
 package social.ufind
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,12 +16,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import kotlinx.coroutines.launch
 import social.ufind.UfindApplication.Companion.setToken
-import social.ufind.data.OptionsRoutes
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.navigation.NavigationComponent
+import social.ufind.ui.theme.UfindTheme
 import social.ufind.viewmodel.MainViewModel
-
-
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -54,7 +53,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            NavigationComponent(navHostController = navController, startDestination = startDestination.value)
+            UfindTheme(useDarkTheme = isSystemInDarkTheme()) {
+                NavigationComponent(navHostController = navController, startDestination = startDestination.value)
+            }
         }
     }
 }

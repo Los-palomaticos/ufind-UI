@@ -10,21 +10,25 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.filled.Add
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,23 +38,27 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.ufind.R
-import social.ufind.data.model.PostModel
+import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.navigation.NavRoute
+import social.ufind.navigation.BottomBarScreen
 import social.ufind.ui.screen.home.post.PostScreen.observeLifecycleEvents
 import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
 object PostScreen: NavRoute<PostViewModel> {
     override val route: String
-        get() = social.ufind.data.BottomBarScreen.Home.route
+        get() = BottomBarScreen.Home.route
     @Composable
-    override fun viewModel(): PostViewModel {
-        val vm = viewModel<PostViewModel>(factory = PostViewModel.Factory)
-        return vm
-    }
+    override fun viewModel(): PostViewModel = viewModel<PostViewModel>(factory = PostViewModel.Factory)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
     override fun Content(viewModel: PostViewModel) {
@@ -99,35 +107,122 @@ fun PostScreen(
     viewModel: PostViewModel
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val isRefreshing = viewModel.isRefreshing.collectAsState().value
     viewModel.observeLifecycleEvents(lifecycle = lifecycle)
-    val listPosts = viewModel.listOfPosts.collectAsStateWithLifecycle()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        PageHeader()
-        Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.Start).padding(0.dp, 16.dp))
-        Box(
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+    val lazyPagingItems = viewModel.listOfPosts.collectAsLazyPagingItems()
+
+    SwipeRefresh(state = swipeRefreshState, onRefresh = { viewModel.refresh() }) {
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 8.dp)
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PostList(listPosts.value)
-            AddPostFloatingButton(viewModel = viewModel, Modifier.align(Alignment.BottomEnd))
-
-
+            PageHeader()
+            Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier
+                .align(Alignment.Start)
+                .padding(0.dp, 16.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                HandlePrependStatus(lazyPagingItems = lazyPagingItems)
+                Column {
+                    HandleRefreshStatus(lazyPagingItems)
+                    PostList(
+                        lazyPagingItems = lazyPagingItems,
+                        viewModel=viewModel
+                    )
+                }
+                HandleAppendStatus(lazyPagingItems = lazyPagingItems)
+                AddPostFloatingButton(viewModel = viewModel, Modifier.align(Alignment.BottomEnd))
+            }
         }
     }
 }
 
 @Composable
-fun PostList(posts: List<PostModel>) {
+fun HandleRefreshStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>) {
+    when(lazyPagingItems.loadState.refresh){
+        is LoadState.Loading -> {
+            Row(modifier= Modifier
+                .zIndex(.75f)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
-    LazyColumn{
-        items(posts){post ->
-            ItemPost(post = post)
+        is LoadState.Error-> {
+            Text("Error de conexión...", Modifier.zIndex(.5f))
+        }
+        is LoadState.NotLoading -> {
+        }
+    }
+}
+
+@Composable
+fun HandlePrependStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>) {
+    when(lazyPagingItems.loadState.prepend){
+        is LoadState.Loading -> {
+            Row(modifier= Modifier
+                .zIndex(.75f)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is LoadState.Error-> {
+            Text("Error de conexión...", Modifier.zIndex(.5f))
+        }
+        is LoadState.NotLoading -> {
+        }
+    }
+}
+@Composable
+fun HandleAppendStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>) {
+    when(lazyPagingItems.loadState.append){
+        is LoadState.Loading -> {
+            Row(modifier= Modifier
+                .zIndex(.75f)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is LoadState.Error-> {
+            Text("Error de conexión...", Modifier.zIndex(.5f))
+        }
+        is LoadState.NotLoading -> {
+        }
+    }
+}
+@Composable
+fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewModel: PostViewModel){
+    val scrollState = rememberLazyListState()
+    if (lazyPagingItems.itemCount == 0) {
+        viewModel.refresh()
+    }
+    LazyColumn(
+        state = scrollState
+    ){
+        items(
+            count = lazyPagingItems.itemCount,
+            key=lazyPagingItems.itemKey { it.post.id }
+        ){index ->
+            ItemPost(post = lazyPagingItems[index], viewModel= viewModel)
         }
     }
 }
@@ -151,7 +246,9 @@ fun AddPostFloatingButton(
         onClick = {
             viewModel.checkPermissions(context, launcher)
         },
-        modifier = modifier.padding(0.dp, 10.dp).size(64.dp),
+        modifier = modifier
+            .padding(0.dp, 10.dp)
+            .size(64.dp),
         backgroundColor = colorResource(id = R.color.text_color)
     ) {
         Icon(Icons.Filled.Add, contentDescription = "", tint = Color.White)

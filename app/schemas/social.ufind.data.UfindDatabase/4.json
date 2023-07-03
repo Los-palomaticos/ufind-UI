@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "e2bef8d9f183a4a7b40b99454a96c4f0",
+    "version": 4,
+    "identityHash": "1440f6d1420e72efcb50db228fddf574",
     "entities": [
       {
         "tableName": "user",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "post",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `likes` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `location` TEXT NOT NULL, `locationDescription` TEXT NOT NULL, `complete` INTEGER NOT NULL, `reported` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `publisher` TEXT NOT NULL, `photos` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `likes` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `location` TEXT NOT NULL, `locationDescription` TEXT, `complete` INTEGER NOT NULL, `reported` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -86,7 +86,7 @@
             "fieldPath": "locationDescription",
             "columnName": "locationDescription",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "complete",
@@ -105,18 +105,6 @@
             "columnName": "user_id",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "publisher",
-            "columnName": "publisher",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "photos",
-            "columnName": "photos",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -130,7 +118,7 @@
       },
       {
         "tableName": "photo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `photo` TEXT NOT NULL, `post_id` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `photo` TEXT NOT NULL, `post_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -152,7 +140,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -161,7 +149,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "PublisherModel",
+        "tableName": "publisher",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `username` TEXT NOT NULL, `reported` INTEGER NOT NULL, `email` TEXT NOT NULL, `banned` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -234,7 +222,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e2bef8d9f183a4a7b40b99454a96c4f0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1440f6d1420e72efcb50db228fddf574')"
     ]
   }
 }

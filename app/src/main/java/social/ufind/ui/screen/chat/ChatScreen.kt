@@ -31,13 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
-import social.ufind.data.OptionsRoutes
-import social.ufind.navigation.NavRoute
 import social.ufind.ui.screen.chat.chatviewmodel.ChatViewModel
 import social.ufind.ui.screen.home.post.PageHeaderLineDivider
-import social.ufind.ui.screen.settings.SettingsScreen
-import social.ufind.ui.screen.settings.viewmodel.SettingsViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

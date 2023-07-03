@@ -2,16 +2,23 @@ package social.ufind.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import social.ufind.data.OptionsRoutes
+import kotlinx.coroutines.launch
+import social.ufind.MainActivity
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.network.ApiResponse
 import social.ufind.repository.UserRepository
 
-class MainViewModel(val repository: UserRepository): ViewModel() {
+class MainViewModel(val repository: UserRepository): ViewModel(), DefaultLifecycleObserver {
     var startDestination = MutableStateFlow(OptionsRoutes.LogInOrSignUpOptions.route)
     private val _isUserValid = mutableStateOf(false)
     val isUserValid: State<Boolean>
@@ -25,6 +32,7 @@ class MainViewModel(val repository: UserRepository): ViewModel() {
             }
         }
     }
+    
     fun updateStartDestination(value: String) {
         startDestination.value = value
     }

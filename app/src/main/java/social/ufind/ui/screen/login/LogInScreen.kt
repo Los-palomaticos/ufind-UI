@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.ufind.R
-import social.ufind.data.OptionsRoutes
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.navigation.NavRoute
 import social.ufind.ui.screen.home.post.ImageLogo
 import social.ufind.ui.screen.login.viewmodel.LoginViewModel

@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.UserModel
 import social.ufind.ui.screen.settings.ProfileGoToButtons
@@ -83,24 +85,15 @@ fun ProfileBody(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun UserInfo(user: UserModel) {
-    Box {
-        ImageWithTexts(user)
-
-
-    }
-
-}
-
-@Composable
-fun ImageWithTexts(user: UserModel) {
     Row(modifier = Modifier.padding(16.dp)) {
         // Image
-        Image(
-            painter = painterResource(id = R.drawable.justinbieber), // Replace with your image resource
+        GlideImage(
+            model = user.photo, // Replace with your image resource
             contentDescription = "Profile Picture",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = Modifier
                 .size(150.dp)
                 .clip(CircleShape)
@@ -113,8 +106,6 @@ fun ImageWithTexts(user: UserModel) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = user.username, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = user.photo)
-            Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Institución")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Residencia")
@@ -126,7 +117,6 @@ fun ImageWithTexts(user: UserModel) {
         }
     }
 }
-
 @Composable
 fun EditProfileButton() {
     Button(

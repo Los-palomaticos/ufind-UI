@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import social.ufind.network.service.PostService
 import social.ufind.network.service.UserService
 
-const val BASE_URL = "https://ufind.social/api/"
+const val BASE_URL = "https://ufind.social/apitest/"
 object RetrofitInstance {
     private val client = OkHttpClient.Builder().apply{
         addInterceptor(
