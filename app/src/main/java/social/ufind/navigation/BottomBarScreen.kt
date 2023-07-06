@@ -17,7 +17,7 @@ sealed class BottomBarScreen(
         title = "Inicio",
         icon = Icons.Default.Home
     )    object Chat: BottomBarScreen(
-        route = "MainChatScreen",
+        route = "ContactsScreen",
         title = "Chat",
         icon = Icons.Default.Chat
     )    object SavedPosts: BottomBarScreen(

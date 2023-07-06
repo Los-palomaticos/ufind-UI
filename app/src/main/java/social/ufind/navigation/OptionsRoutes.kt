@@ -21,4 +21,5 @@ sealed class OptionsRoutes(val route:String){
 
     object MapScreen: OptionsRoutes("MapScreen")
     object ChatScreen: OptionsRoutes("ChatScreen")
+    object ChatScreen2: OptionsRoutes("ChatScreen2/user={user}")
 }

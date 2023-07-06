@@ -3,7 +3,9 @@ package social.ufind.repository
 import android.content.ContentValues
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -62,7 +64,7 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
         return try {
             val credentials = LoginRequest(email, password)
             val response = api.login(credentials)
-            signInFirebase(credentials)
+            signInFirebase(credentials, response.token)
             if (response.ok) {
                 saveUserToDataStore(response.token)
                 ApiResponse.Success("Inicio de sesión exitoso")
@@ -73,8 +75,10 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
             ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
         } catch(e: HttpException) {
             val errorResponse = SerializeErrorBody.getSerializedError(e, LoginResponse::class.java)
-
             ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
+        }catch (e: FirebaseAuthInvalidUserException) {
+            Log.d("APP_TAG", "failed to")
+            ApiResponse.Error(e)
         } catch(e:IOException) {
             ApiResponse.Error(e)
         }
@@ -97,15 +101,13 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
       } catch(e: HttpException) {
           val errorResponse = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
           ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
-      } catch (e: FirebaseAuthInvalidCredentialsException) {
-          ApiResponse.ErrorWithMessage(listOf("Invalid"))
       } catch (e: ConnectException) {
           ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
       } catch (e: Exception) {
           ApiResponse.Error(e)
       }
     }
-    private fun signInFirebase(credentials: LoginRequest) {
+    private fun signInFirebase(credentials: LoginRequest, token: String) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(credentials.email, credentials.password)
             .addOnCompleteListener { task ->
                 try {
@@ -118,7 +120,21 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
                         )
                     }
                 } catch (e: Exception) {
-                    Log.d("APP_TAG", "Error al iniciar sesión en firebase")
+                    Log.d("APP_TAG", e.toString())
+                }
+            }
+            .addOnFailureListener {
+                try {
+                    throw  it
+                } catch (e: FirebaseAuthInvalidUserException) {
+                    Log.d("APP_TAG", "Usario sin cuenta en firebase, creando cuenta en firebase...")
+                    val jwtDecoded = JWT.decoded(token)
+                    val payload = Gson().fromJson(jwtDecoded, Payload::class.java)
+
+                    val signUpCredentials = SignUpRequest(payload.data.username,credentials.email, credentials.password)
+                    createUserInFirebase(signUpCredentials)
+                } catch (e: Exception) {
+                    Log.d("APP_TAG", e.toString())
                 }
             }
     }

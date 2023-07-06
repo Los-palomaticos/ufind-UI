@@ -278,17 +278,45 @@ fun LocationCardPost(onClickGoToMapScreen: () -> Unit = {}) {
             Text(
                 text = "Ubicación",
                 textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                fontWeight = FontWeight.SemiBold
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.size(16.dp))
-            Text(
-                text = "Universidad Centroamericana José Simeón Cañas"
-            )
-            Spacer(modifier = Modifier.size(16.dp))
-
+            Spacer(modifier = Modifier.size(8.dp))
 
             Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+
+                Box(modifier = Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(id = R.drawable.mapbutton),
+                        contentDescription = "Logo",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Universidad Centroamericana José Simeón Cañas",
+                            textAlign = TextAlign.Center,
+                            color = colorResource(id = R.color.text_color),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+/*            Card(
                 onClick = onClickGoToMapScreen,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -321,7 +349,7 @@ fun LocationCardPost(onClickGoToMapScreen: () -> Unit = {}) {
                         )
                     }
                 }
-            }
+            }*/
         }
     }
 }
