@@ -1,12 +1,9 @@
 package social.ufind.repository
 
-import android.R
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -16,10 +13,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import social.ufind.data.UfindDatabase
 import social.ufind.data.mediator.PostMediator
-import social.ufind.data.model.PostModel
+import social.ufind.data.mediator.SavedPostsMediator
 import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.network.ApiResponse
 import social.ufind.network.dto.GeneralResponse
+import social.ufind.network.dto.post.SavePostRequest
 import social.ufind.network.service.PostService
 import social.ufind.utils.SerializeErrorBody
 import java.io.File
@@ -74,7 +72,7 @@ class PostRepository(
             val flow = Pager(
                 config= PagingConfig(
                     pageSize = size,
-                    prefetchDistance = 2
+                    prefetchDistance = (0.2*size).toInt()
                 ),
                 remoteMediator = PostMediator(database, api)
             ) {
@@ -87,6 +85,44 @@ class PostRepository(
             val errorResponse = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
             ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
         } catch (e: IOException) {
+            ApiResponse.Error(e)
+        }
+    }
+    @OptIn(ExperimentalPagingApi::class)
+    fun getSavedPosts(size: Int): ApiResponse<Flow<PagingData<PostWithAuthorAndPhotos>>> {
+        return try {
+            val flow = Pager(
+                config = PagingConfig(
+                    pageSize = size,
+                    prefetchDistance = (0.2*size).toInt()
+                ),
+                remoteMediator = SavedPostsMediator(database, api)
+            ) {
+                postDao.getSavedPosts()
+            }.flow
+            ApiResponse.Success(flow)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        }
+    }
+    suspend fun savePost(id: Int): ApiResponse<String> {
+        return try {
+            val response = api.savePost(SavePostRequest(id))
+            ApiResponse.Success(response.message)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        } catch (e: Exception) {
+            ApiResponse.Error(e)
+        }
+    }
+
+    suspend fun deleteSavedPost(id: Int): ApiResponse<String> {
+        return try {
+            val response = api.deleteSavedPost(SavePostRequest(id))
+            ApiResponse.Success(response.message)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        } catch (e: Exception) {
             ApiResponse.Error(e)
         }
     }

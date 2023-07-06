@@ -22,7 +22,7 @@ import social.ufind.data.model.UserModel
         PhotoModel::class,
         PublisherModel::class,
         RemoteKey::class
-    ], version=5)
+    ], version=7)
 abstract class UfindDatabase: RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun postDao(): PostDao

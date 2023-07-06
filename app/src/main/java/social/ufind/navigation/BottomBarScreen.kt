@@ -14,7 +14,7 @@ sealed class BottomBarScreen(
 ) {
     object Home: BottomBarScreen(
         route = "home",
-        title = "Home",
+        title = "Inicio",
         icon = Icons.Default.Home
     )    object Chat: BottomBarScreen(
         route = "MainChatScreen",

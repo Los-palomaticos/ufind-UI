@@ -1,6 +1,7 @@
-package social.ufind.ui.screen.home.post
+package social.ufind.ui.screen.home.post.itempost
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,16 +27,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -46,21 +54,51 @@ import org.ufind.R
 import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
+fun Modifier.advancedShadow(
+    color: Color = Color.Black,
+    alpha: Float = 1f,
+    cornersRadius: Dp = 0.dp,
+    shadowBlurRadius: Dp = 0.dp,
+    offsetY: Dp = 0.dp,
+    offsetX: Dp = 0.dp
+) = drawBehind {
 
-//@Preview(showBackground = true)
+    val shadowColor = color.copy(alpha = alpha).toArgb()
+    val transparentColor = color.copy(alpha = 0f).toArgb()
+
+    drawIntoCanvas {
+        val paint = Paint()
+        val frameworkPaint = paint.asFrameworkPaint()
+        frameworkPaint.color = transparentColor
+        frameworkPaint.setShadowLayer(
+            shadowBlurRadius.toPx(),
+            offsetX.toPx(),
+            offsetY.toPx(),
+            shadowColor
+        )
+        it.drawRoundRect(
+            0f,
+            0f,
+            this.size.width,
+            this.size.height,
+            cornersRadius.toPx(),
+            cornersRadius.toPx(),
+            paint
+        )
+    }
+}
 @Composable
-fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
+fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, viewModel: ItemPostViewModelMethods) {
     val isOptionsExpanded = remember{ mutableStateOf(false) }
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth()
+            .padding(vertical = 8.dp).advancedShadow(shadowBlurRadius = 4.dp, alpha = 0.2f, cornersRadius = 12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+//        elevation = CardDefaults.elevatedCardElevation(
+//            focusedElevation = 4.dp
+//        )
     ) {
         Column(
             Modifier
@@ -74,7 +112,7 @@ fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Por ${post!!.publisher.username}",
+                    "Por ${post?.publisher?.username}",
                     color = colorResource(id = R.color.disabled_color),
                     fontSize = 14.sp,
                     textAlign = TextAlign.Start
@@ -91,19 +129,19 @@ fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
             }
             Spacer(Modifier.size(16.dp))
             Text(
-                text = post!!.post.title,
+                text = post?.post?.title?:"",
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Start),
             )
             Spacer(Modifier.size(16.dp))
             Text(
-                text = post.post.description,
+                text = post?.post?.description?:"",
                 textAlign = TextAlign.Start,
                 modifier = Modifier.align(Alignment.Start)
             )
             Spacer(Modifier.size(16.dp))
-            PostImage(url = post.photos.first().photo, modifier = Modifier.fillMaxWidth())
+            PostImage(url = post?.photos?.first()?.photo?:"", modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.size(16.dp))
             BottomBarPostIcons(context = LocalContext.current, post = post, viewModel= viewModel)
 
@@ -171,19 +209,12 @@ fun PostImage(
 
 @Composable
 fun BottomBarPostIcons(
-    context: Context, post: PostWithAuthorAndPhotos,
-    viewModel: PostViewModel
+    context: Context,
+    post: PostWithAuthorAndPhotos?,
+    viewModel: ItemPostViewModelMethods
 ) {
-    val isSaved = remember { mutableStateOf(false) } //para guardar icono
-
+    val isSaved = rememberSaveable{ mutableStateOf(post?.post?.isSaved) } //para guardar icono
     val scope = rememberCoroutineScope() // guarda el estado de la corrutina
-
-    val descargarYCompartirImagen: suspend () -> Unit = {
-        val imagenDescargada = withContext(Dispatchers.IO) {
-            viewModel.descargarImagen(context, post.photos.first().photo)
-        }
-        viewModel.compartirContenido(context, "Mira Este Objeto Perdido", imagenDescargada)
-    }
 
     Row(
         modifier = Modifier
@@ -191,28 +222,37 @@ fun BottomBarPostIcons(
             .padding(end = 16.dp)
     ) {
         Image(
-            imageVector = if (isSaved.value) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+            imageVector = if (isSaved.value == true) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
             contentDescription = "",
             modifier = Modifier
                 .padding(end = 16.dp)
                 .weight(1f)
                 .align(Alignment.CenterVertically)
                 .clickable {
-                    isSaved.value = !isSaved.value
+                    isSaved.value = !isSaved.value!!
+                    if (isSaved.value!!) {
+                        if (post != null) {
+                            viewModel.savePost(post.post.id)
+                        }
+                    }
+                    else {
+                        if (post != null) {
+                            viewModel.deleteSavedPost(post.post.id)
+                        }
+                    }
                 }
         )
-
-        Spacer(modifier = Modifier.weight(1f))
-
         Image(
             imageVector = Icons.Filled.Mail,
             contentDescription = "",
             Modifier
                 .padding(end = 16.dp)
-                .weight(1f)
+                .weight(2f)
                 .align(Alignment.CenterVertically)
                 .clickable {
-                    viewModel.enviarCorreo(context, post.publisher.email, "Post de Ufind")
+                    if (post != null) {
+                        viewModel.enviarCorreo(context, post.publisher.email, "Post de Ufind")
+                    }
                 }
         )
 
@@ -225,7 +265,7 @@ fun BottomBarPostIcons(
                 .align(Alignment.CenterVertically)
                 .clickable {
                     scope.launch {
-                        descargarYCompartirImagen()
+                        descargarYCompartirImagen(post = post,context= context, viewModel = viewModel)
                     }
                 }
         )
@@ -242,5 +282,16 @@ fun BottomBarPostIcons(
                     // Acción para el chat
                 }
         )
+    }
+}
+
+suspend fun descargarYCompartirImagen(post: PostWithAuthorAndPhotos?, context: Context, viewModel: ItemPostViewModelMethods) {
+    val imagenDescargada = withContext(Dispatchers.IO) {
+        post?.photos?.first()?.let { viewModel.descargarImagen(context, it.photo) }
+    }
+    if (imagenDescargada != null) {
+        if (post != null) {
+            viewModel.compartirContenido(context, "Mira Este Objeto Perdido ${post.post.title}", imagenDescargada)
+        }
     }
 }

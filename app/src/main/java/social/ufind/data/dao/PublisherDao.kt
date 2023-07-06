@@ -10,7 +10,7 @@ import social.ufind.data.model.PublisherModel
 @Dao
 interface PublisherDao {
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(publishers: List<PublisherModel>)
 
     @Query ("DELETE FROM publisher")
