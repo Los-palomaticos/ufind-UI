@@ -101,9 +101,8 @@ fun UserContact(user: User, onClickGotoNewChat: () -> Unit = {}, navController: 
                 firebaseViewModel.creteChatWith(user)
                 val gson: Gson = GsonBuilder().create()
                 val userJson = gson.toJson(user)
-                /* Replacing {user} with userJson */
                 navController.navigate(
-                    OptionsRoutes.ChatScreen2.route//Just modify your route accordingly
+                    OptionsRoutes.ChatScreen2.route
                         .replace(
                             oldValue = "{user}",
                             newValue = userJson

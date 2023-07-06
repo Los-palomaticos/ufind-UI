@@ -52,11 +52,8 @@ fun MainChatScreenBody(onClick: () -> Unit = {}) {
             MainChatTopBar()
             MainChatBody(onClick)
         }
-
     }
-
 }
-
 @Composable
 fun MainChatBody(onClick: () -> Unit = {}) {
     Column() {
