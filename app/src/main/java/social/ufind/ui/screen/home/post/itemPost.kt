@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,9 +50,80 @@ import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
 
 //@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
-    val isOptionsExpanded = remember{ mutableStateOf(false) }
+    val numDialogsToShow = 3
+    val currentDialogIndex = remember { mutableStateOf(0) }
+    val isOptionsExpanded = remember { mutableStateOf(false) }
+    val areTermsAccepted = rememberSaveable { mutableStateOf(false) } // Utilizamos rememberSaveable para mantener el estado incluso si la Composable se vuelve a crear
+
+    // Función para mostrar el siguiente diálogo
+    fun showNextDialog() {
+        if (currentDialogIndex.value < numDialogsToShow - 1) {
+            currentDialogIndex.value++
+        } else {
+            areTermsAccepted.value = true
+        }
+    }
+
+    // Mostrar los diálogos de términos y condiciones solo si no se han aceptado previamente
+    if (!areTermsAccepted.value && currentDialogIndex.value < numDialogsToShow) {
+        when (currentDialogIndex.value) {
+            0 -> {
+                AlertDialog(
+                    onDismissRequest = { isOptionsExpanded.value = false },
+                    title = { Text(text = "Términos y Condiciones") },
+                    text = {
+                        Text(
+                            text = "Antes de empezar totalmente con Ufind, echale un vistazo a los terminos y" +
+                                    " condiciones para que estes seguro de como se utilizan tus datos y toda la informacion necesaria " +
+                                    " https://politicaddeprivacidadufind.blogspot.com/2023/07/terminos-y-condiciones-de-ufind.html."
+                        )
+                    },
+                    confirmButton = {
+                        Button(onClick = { showNextDialog() }) {
+                            Text(text = "Continuar")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { /* Agrega aquí la lógica para retroceder en la aplicación */ }) {
+                            Text(text = "Cancelar")
+                        }
+                    }
+                )
+            }
+            1 -> {
+                AlertDialog(
+                    onDismissRequest = { isOptionsExpanded.value = false },
+                    title = { Text(text = "Como Publicar Fotos") },
+                    text = { Text(text = "Aquí van los segundos términos y condiciones.") },
+                    confirmButton = {
+                        Button(onClick = { showNextDialog() }) {
+                            Text(text = "Continuar")
+                        }
+                    }
+                )
+            }
+            2 -> {
+                AlertDialog(
+                    onDismissRequest = { isOptionsExpanded.value = false },
+                    title = { Text(text = "Mantente Respetuoso en todo momento") },
+                    text = { Text(text = "Aquí van los terceros términos y condiciones.") },
+                    confirmButton = {
+                        Button(onClick = {
+                            areTermsAccepted.value = true // Marcar los términos como aceptados
+                            showNextDialog()
+                        }) {
+                            Text(text = "Aceptar")
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
