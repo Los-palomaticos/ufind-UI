@@ -8,7 +8,7 @@ data class PostsResponse(
     val next: Int?,
     val previous: Int
 )
-data class GetAllPostsResponse(
+data class GetPostsResponse(
     val message: PostsResponse,
     val ok: Boolean,
     @SerializedName("errors") val errorMessages: List<String>,

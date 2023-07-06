@@ -8,7 +8,7 @@ import social.ufind.data.model.PhotoModel
 
 @Dao
 interface PhotoDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(photoModel: PhotoModel)
 
     @Query("DELETE FROM photo")

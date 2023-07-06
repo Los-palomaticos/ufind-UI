@@ -37,7 +37,6 @@ class SignUpViewModel(
         get() = _uiState
 
     fun signup() {
-        createUserInFirebase(email.value, password.value)
         resetState()
         viewModelScope.launch {
             when (val response = repository.signup(username.value, email.value, password.value)) {
@@ -48,11 +47,11 @@ class SignUpViewModel(
                     routeNavigator.navigateToRoute(OptionsRoutes.LogIn.route)
                 }
 
-                is ApiResponse.ErrorWithMessage -> _uiState.value = response.messages?.let {
+                is ApiResponse.ErrorWithMessage -> _uiState.value = response.messages.let {
                     SignUpUiState.ErrorWithMessage(
                         it
                     )
-                }!!
+                }
 
                 is ApiResponse.Error -> _uiState.value = SignUpUiState.Error(response.exception)
             }
@@ -83,40 +82,6 @@ class SignUpViewModel(
     fun navigateToLogin() {
         navigateToRoute(OptionsRoutes.LogIn.route)
     }
-
-    private fun createUserInFirebase(email: String, password: String) {
-            FirebaseAuth.getInstance()
-                .createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener{
-                    Log.d(TAG, "Inside_OnCompleteListener")
-                    Log.d(TAG, "isSuccessful = ${it.isSuccessful}")
-                    val displayName = it.result.user?.email?.split("@")?.get(0)
-                    createUserInDataBase(displayName)
-
-                }
-                .addOnFailureListener(){
-                    Log.d(TAG, "Inside_OnFailureListener")
-                    Log.d(TAG, "Exception = ${it.message}")
-                    Log.d(TAG, "Exception = ${it.localizedMessage}")
-                }
-    }
-
-    private fun createUserInDataBase(displayName: String?) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        val user = mutableMapOf<String, Any>()
-        user["user_id"] = userId.toString()
-        user["display_name"] = displayName.toString()
-        FirebaseFirestore.getInstance().collection("users")
-            .add(user)
-            .addOnSuccessListener {
-                Log.d("BDFire", "Creado ${it.id}")
-            }
-            .addOnFailureListener{
-                Log.d("BDFire", "Ocurrió un error")
-            }
-
-    }
-
 
     companion object {
         val Factory = viewModelFactory {

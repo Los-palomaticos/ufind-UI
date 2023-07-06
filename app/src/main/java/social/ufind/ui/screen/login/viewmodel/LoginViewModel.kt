@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,10 +34,9 @@ class LoginViewModel(
         get() = _uiState
 
     fun login() {
-        signInFirebase(email.value, password.value)
         resetState()
         viewModelScope.launch {
-            when (val response = repository.login(LoginRequest(email.value, password.value))) {
+            when (val response = repository.login(email.value, password.value)) {
                 is ApiResponse.Success -> {
                     _uiState.value = LoginUiState.Success(response.data)
                     clear()
@@ -49,17 +49,6 @@ class LoginViewModel(
                 is ApiResponse.Error -> _uiState.value = LoginUiState.Error(response.exception)
             }
         }
-    }
-
-    private fun signInFirebase(email: String, password: String) {
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("SignIn", "signInWithEmailAndPassword is successful")
-                } else {
-                    Log.d("SignInError", "signInWithEmailAndPassword: ${task.result.toString()}")
-                }
-            }
     }
 
     fun checkData() {

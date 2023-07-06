@@ -1,6 +1,5 @@
 package social.ufind.ui.screen.home.post.viewmodel
 
-
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -42,6 +41,8 @@ import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
 import social.ufind.network.ApiResponse
 import social.ufind.repository.PostRepository
+import social.ufind.ui.screen.home.post.itempost.ItemPostViewModel
+import social.ufind.ui.screen.home.post.itempost.ItemPostViewModelMethods
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -49,14 +50,19 @@ import java.net.URL
 
 class PostViewModel(
     private val repository: PostRepository,
+    val itemPostMethods: ItemPostViewModelMethods = ItemPostViewModel(repository),
     private val routeNavigator: RouteNavigator = UfindNavigator()
-): ViewModel(), RouteNavigator by routeNavigator, DefaultLifecycleObserver {
+): ViewModel(), RouteNavigator by routeNavigator, ItemPostViewModelMethods by itemPostMethods, DefaultLifecycleObserver {
     private var _posts = MutableStateFlow<PagingData<PostWithAuthorAndPhotos>>(PagingData.empty())
     val listOfPosts: Flow<PagingData<PostWithAuthorAndPhotos>>
         get() = _posts
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
+
+    val isSaved = mutableStateOf(false)
+    private val pageSize = 5
+
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         Log.d("APP_TAG", "CREATED")
@@ -68,7 +74,7 @@ class PostViewModel(
     }
     private fun getAll() {
         viewModelScope.launch {
-            when(val response = repository.getAll(10)) {
+            when(val response = repository.getAll(pageSize)) {
                 is ApiResponse.Success -> {
                     response.data.cachedIn(viewModelScope).collect{
                         _posts.value = it
@@ -95,85 +101,6 @@ class PostViewModel(
         routeNavigator.navigateToRoute(OptionsRoutes.AddPostScreen.route)
     }
 
-    fun descargarImagen(context: Context, url: String): File {
-        val fileName = "imagen_compartida.jpg" // Puedes cambiar el nombre del archivo si lo deseas
-        val file = File(context.cacheDir, fileName)
-
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.connectTimeout = 10000
-        connection.readTimeout = 10000
-        connection.connect()
-
-        val inputStream = connection.inputStream
-        val outputStream = FileOutputStream(file)
-        val buffer = ByteArray(1024)
-        var bytesRead: Int
-
-        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-            outputStream.write(buffer, 0, bytesRead)
-        }
-
-        outputStream.close()
-        inputStream.close()
-        return file
-    }
-    fun compartirContenido(context: Context, texto: String, file: File) {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "image/*"
-
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-
-        intent.putExtra(Intent.EXTRA_TEXT, texto)
-
-        val shareIntent = Intent.createChooser(intent, "Compartir a través de")
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        try {
-            context.startActivity(shareIntent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                context,
-                "No se encontraron aplicaciones de compartir disponibles",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    fun enviarCorreo(context: Context, destinatario: String, asunto: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:")
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario))
-        intent.putExtra(Intent.EXTRA_SUBJECT, asunto)
-
-        val packageManager = context.packageManager
-        val activities = packageManager.queryIntentActivities(intent, 0)
-
-        if (activities.isNotEmpty()) {
-            val emailApps = ArrayList<ResolveInfo>()
-            for (resolveInfo in activities) {
-                val packageName = resolveInfo.activityInfo.packageName
-                if (packageName != null && packageName.contains("com.google.android.gm")) {
-                    emailApps.add(resolveInfo)
-                }
-            }
-
-            if (emailApps.isNotEmpty()) {
-                intent.`package` = "com.google.android.gm" // Establecer el paquete de Gmail
-                context.startActivity(intent)
-            } else {
-                // Abrir el selector de aplicaciones de correo electrónico
-                val chooserIntent = Intent.createChooser(intent, "Seleccionar aplicación de correo")
-                if (chooserIntent.resolveActivity(packageManager) != null) {
-                    context.startActivity(chooserIntent)
-                } else {
-                    Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } else {
-            Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
-        }
-    }
     companion object {
         val Factory = viewModelFactory {
             initializer {

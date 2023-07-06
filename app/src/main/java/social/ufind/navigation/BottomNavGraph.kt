@@ -7,7 +7,7 @@ import social.ufind.navigation.BottomBarScreen
 import social.ufind.navigation.OptionsRoutes
 import social.ufind.ui.screen.chat.ChatScreen
 import social.ufind.ui.screen.home.MainChatScreen
-import social.ufind.ui.screen.home.SavedPostScreen
+import social.ufind.ui.screen.home.savedpost.SavedPostScreen
 import social.ufind.ui.screen.home.user.UserProfileScreen
 import social.ufind.ui.screen.home.post.PostScreen
 import social.ufind.ui.screen.home.post.add.AddPostScreen
@@ -32,9 +32,7 @@ fun BottomNavGraph(navController: NavHostController) {
                 onClickWalletButton = { navController.navigate(OptionsRoutes.WalletScreen.route) }
             )
         }
-        composable(route = BottomBarScreen.SavedPosts.route) {
-            SavedPostScreen()
-        }
+        SavedPostScreen.composable(this, navController)
         composable(route = BottomBarScreen.Chat.route) {
             MainChatScreen(onClick = {navController.navigate(OptionsRoutes.ChatScreen.route)})
         }
