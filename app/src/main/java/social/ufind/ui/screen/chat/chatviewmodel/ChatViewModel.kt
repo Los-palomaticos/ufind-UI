@@ -68,7 +68,6 @@ class ChatViewModel(private val routeNavigator: RouteNavigator = UfindNavigator(
                         val data = doc.data
                         data[Constants.IS_CURRENT_USER] =
                             Firebase.auth.currentUser?.uid.toString() == data[Constants.SENT_BY].toString()
-
                         list.add(data)
                     }
                 }

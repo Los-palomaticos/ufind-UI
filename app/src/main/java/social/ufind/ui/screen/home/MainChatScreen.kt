@@ -73,7 +73,7 @@ fun MainChatTopBar() {
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 3.dp,
+                elevation = 2.dp,
                 shape = RoundedCornerShape(16.dp)
             ),
         colors = CardDefaults.cardColors(
@@ -83,7 +83,7 @@ fun MainChatTopBar() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -135,7 +135,7 @@ fun UserCard(message: String, subMessage: String, time: String, onClick: () -> U
             )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(14.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically

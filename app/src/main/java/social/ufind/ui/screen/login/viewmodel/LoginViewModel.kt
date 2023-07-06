@@ -12,6 +12,8 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import social.ufind.firebase.authViewModel
+import social.ufind.firebase.firebaseViewModel
 import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
 import social.ufind.network.ApiResponse
@@ -33,7 +35,17 @@ class LoginViewModel(
         get() = _uiState
 
     fun login() {
-        signInFirebase(email.value, password.value)
+        authViewModel.loginWithEmailAndPass(
+            email.value,
+            password.value
+        ) { isSuccessful ->
+            if (isSuccessful) {
+                Log.d("SignIn", "signInWithEmailAndPassword is successful")
+            } else {
+                Log.d("SignInError", "signInWithEmailAndPassword error")
+            }
+        }
+
         resetState()
         viewModelScope.launch {
             when (val response = repository.login(LoginRequest(email.value, password.value))) {

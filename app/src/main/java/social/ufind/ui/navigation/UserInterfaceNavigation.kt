@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.ufind.R
 import social.ufind.data.BottomNavGraph
+import social.ufind.firebase.model.User
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

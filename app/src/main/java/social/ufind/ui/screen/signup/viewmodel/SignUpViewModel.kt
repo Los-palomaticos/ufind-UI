@@ -10,11 +10,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import social.ufind.data.OptionsRoutes
+import social.ufind.firebase.authViewModel
+import social.ufind.firebase.firebaseViewModel
+import social.ufind.firebase.model.User
 import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
 import social.ufind.network.ApiResponse
@@ -37,7 +42,12 @@ class SignUpViewModel(
         get() = _uiState
 
     fun signup() {
-        createUserInFirebase(email.value, password.value)
+        authViewModel.registerWithEmailAndPass(
+            email.value,
+            password.value,
+            username.value
+        )
+
         resetState()
         viewModelScope.launch {
             when (val response = repository.signup(username.value, email.value, password.value)) {
