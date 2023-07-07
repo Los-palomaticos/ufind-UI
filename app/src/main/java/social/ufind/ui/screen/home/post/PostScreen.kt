@@ -253,16 +253,6 @@ fun HandleAppendStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>
 @Composable
 fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewModel: PostViewModel){
     val scrollState = rememberLazyListState(0, 10)
-//    val coroutineScope = rememberCoroutineScope()
-
-
-//    LaunchedEffect(lazyPagingItems.loadState.mediator?.refresh) {
-//        if (scrollState.canScrollBackward) {
-//            coroutineScope.launch {
-//                scrollState.animateScrollToItem(0)
-//            }
-//        }
-//    }
 
     if (lazyPagingItems.itemCount == 0) {
         viewModel.refresh()

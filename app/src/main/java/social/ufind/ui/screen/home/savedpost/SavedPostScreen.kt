@@ -1,6 +1,5 @@
 package social.ufind.ui.screen.home.savedpost
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -78,8 +77,10 @@ fun SavedPostScreen(viewModel: SavedPostViewModel){
             ) {
                 Column {
                     HandleRefreshStatus(lazyPagingItems)
+                    HandlePrependStatus(lazyPagingItems = lazyPagingItems)
                     HandleItemUiState(viewModel)
                     PostList(lazyPagingItems = lazyPagingItems, viewModel = viewModel)
+                    HandleAppendStatus(lazyPagingItems = lazyPagingItems)
                 }
             }
         }
@@ -145,6 +146,50 @@ fun HandleRefreshStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos
             if (lazyPagingItems.itemCount == 0) {
                 Text("No tienes publicaciones guardadas", Modifier.zIndex(.5f))
             }
+        }
+    }
+}
+
+
+@Composable
+fun HandlePrependStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>) {
+    when(lazyPagingItems.loadState.prepend){
+        is LoadState.Loading -> {
+            Row(modifier= Modifier
+                .zIndex(.75f)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is LoadState.Error-> {
+            Text("Error de conexión...", Modifier.zIndex(.5f))
+        }
+        is LoadState.NotLoading -> {
+        }
+    }
+}
+@Composable
+fun HandleAppendStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>) {
+    when(lazyPagingItems.loadState.append){
+        is LoadState.Loading -> {
+            Row(modifier= Modifier
+                .zIndex(.75f)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is LoadState.Error-> {
+            Text("Error de conexión...", Modifier.zIndex(.5f))
+        }
+        is LoadState.NotLoading -> {
         }
     }
 }
