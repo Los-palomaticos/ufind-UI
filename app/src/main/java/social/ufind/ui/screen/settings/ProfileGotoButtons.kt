@@ -15,10 +15,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.ufind.R
-
-@Preview()
+@Preview
 @Composable
-fun ProfileGoToButtons(onClickProfileSettings: () -> Unit = {},onClickWalletButton: () -> Unit = {}) {
+fun ProfileGoToButtons(
+    onClickProfileSettings: () -> Unit = {},
+    onClickWalletButton:  () -> Unit = {}
+) {
     Row(Modifier.fillMaxWidth()) {
         GoToSettingsProfileButton(onClickProfileSettings)
         Spacer(modifier = Modifier.size(8.dp))
@@ -41,7 +43,7 @@ fun GoToWalletButton(onClickWalletButton: () -> Unit = {}) {
 
 @Composable
 fun GoToSettingsProfileButton(onClickProfileSettings: () -> Unit = {}) {
-    IconButton(onClick = onClickProfileSettings) {
+    IconButton(onClick = { onClickProfileSettings() }) {
         androidx.compose.material3.Icon(
             Icons.Filled.Settings,
             contentDescription = "",

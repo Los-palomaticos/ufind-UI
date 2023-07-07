@@ -28,15 +28,7 @@ import social.ufind.ui.screen.wallet.WalletProfileScreen
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomBarScreen.Home.route ){
-//        composable(route= BottomBarScreen.Home.route){
-//            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-//        }
-        composable(route = BottomBarScreen.Profile.route) {
-            UserProfileScreen(
-                onClickProfileSettings = { navController.navigate(OptionsRoutes.SettingsScreen.route) },
-                onClickWalletButton = { navController.navigate(OptionsRoutes.WalletScreen.route) }
-            )
-        }
+
         composable(OptionsRoutes.ChatScreen2.route) { navBackStackEntry ->
             // Creating gson object
             val gson: Gson = GsonBuilder().create()
@@ -46,7 +38,6 @@ fun BottomNavGraph(navController: NavHostController) {
             val userObject = gson.fromJson(userJson, User::class.java)
             ChatScreen2(otherUser = userObject) { navController.navigate(BottomBarScreen.Chat.route) }
         }
-        SavedPostScreen.composable(this, navController)
         composable(route = BottomBarScreen.Chat.route) {
             //MainChatScreen(onClick = {navController.navigate(OptionsRoutes.ChatScreen.route)})
             ContactsScreen (onClickGotoNewChat = { navController.navigate(OptionsRoutes.ChatScreen2.route) }, navController = navController)
@@ -56,17 +47,14 @@ fun BottomNavGraph(navController: NavHostController) {
         composable(route= OptionsRoutes.ChatScreen.route){
             ChatScreen(onClickGoToMainChatScreen = {navController.navigate(BottomBarScreen.Chat.route)})
         }
-        AddPostScreen.composable(this, navController)
-        PostScreen.composable(this, navController)
-//        composable(route = OptionsRoutes.PostScreen.route) {
-//            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-//        }
 
+        PostScreen.composable(this, navController)
+        AddPostScreen.composable(this, navController)
+        SavedPostScreen.composable(this, navController)
+        UserProfileScreen.composable(this, navController)
         SettingsScreen.composable(this, navController)
 
-//        composable(route = OptionsRoutes.PostScreen.route) {
-//            PostScreen { navController.navigate(OptionsRoutes.AddPostScreen.route) }
-//        }
+
         composable(route = OptionsRoutes.SettingsPreferencesScreen.route) {
             SettingsPreferencesScreen { navController.navigate(OptionsRoutes.SettingsScreen.route) }
         }

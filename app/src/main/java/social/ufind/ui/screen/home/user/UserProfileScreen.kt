@@ -30,28 +30,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.UserModel
+import social.ufind.navigation.BottomBarScreen
+import social.ufind.navigation.NavRoute
+import social.ufind.navigation.OptionsRoutes
+import social.ufind.ui.screen.home.user.viewmodel.UserProfileViewModel
 import social.ufind.ui.screen.settings.ProfileGoToButtons
 
 
-//object UserProfileScreen: NavRoute<UserProfileViewModel> {
-//    override val route: String
-//        get() = OptionsRoutes.SettingsScreen.route
-//
-//  //  override fun Content(viewModel: UserProfileViewModel) {
-//  //  }
-//    @Composable
-//    override fun viewModel(): UserProfileViewModel =
-//        androidx.lifecycle.viewmodel.compose.viewModel(factory = UserProfileViewModel.Factory)
-//}
+object UserProfileScreen: NavRoute<UserProfileViewModel> {
+    override val route: String
+        get() = BottomBarScreen.Profile.route
+    @Composable
+    override fun viewModel(): UserProfileViewModel = viewModel(factory = UserProfileViewModel.Factory)
+    @Composable
+    override fun Content(viewModel: UserProfileViewModel) {
+        UserProfileScreen(viewModel)
+    }
+}
 
 @Composable
 fun UserProfileScreen(
-    onClickProfileSettings: () -> Unit = {},
-    onClickWalletButton: () -> Unit = {}
+    viewModel: UserProfileViewModel
 ) {
     val data = DataStoreManager(LocalContext.current)
     val selectedImage = remember { mutableStateOf("") }
@@ -63,16 +67,15 @@ fun UserProfileScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        ProfileBody(user, onClickProfileSettings, onClickWalletButton, selectedImage)
+        ProfileBody(user, viewModel)
     }
 }
 
 @Composable
 fun ProfileBody(
     user: UserModel,
-    onClickProfileSettings: () -> Unit = {},
-    onClickWalletButton: () -> Unit = {},
-    selectedImage: MutableState<String>
+    viewModel: UserProfileViewModel,
+//    selectedImage: MutableState<String>
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
@@ -80,7 +83,10 @@ fun ProfileBody(
         UserInfo(user)
         EditProfileButton()
         Spacer(Modifier.size(16.dp))
-        ProfileGoToButtons(onClickProfileSettings, onClickWalletButton)
+        ProfileGoToButtons(
+            { viewModel.navigateToSettings() },
+            { viewModel.navigateToWallet() }
+        )
 
     }
 }
@@ -93,12 +99,18 @@ fun UserInfo(user: UserModel) {
         GlideImage(
             model = user.photo, // Replace with your image resource
             contentDescription = "Profile Picture",
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(150.dp)
                 .clip(CircleShape)
-
-        )
+        ) {
+            it.error(R.drawable.no_image)
+//            TODO: AGREGAR IMAGEN DE CARGA
+//            it.thumbnail(
+//                it.clone()
+//                    .load(R.drawable.)
+//            )
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 

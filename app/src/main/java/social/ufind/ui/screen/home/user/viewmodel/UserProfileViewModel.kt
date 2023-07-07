@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.launch
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
 import social.ufind.repository.UserRepository
@@ -23,6 +24,13 @@ class UserProfileViewModel(val repository: UserRepository, private val routeNavi
         }
     }
 
+    fun navigateToSettings() {
+        routeNavigator.navigateToRoute(OptionsRoutes.SettingsScreen.route)
+    }
+
+    fun navigateToWallet() {
+        routeNavigator.navigateToRoute(OptionsRoutes.WalletScreen.route)
+    }
     companion object {
         val Factory = viewModelFactory {
             initializer {
