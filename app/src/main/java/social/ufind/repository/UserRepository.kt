@@ -3,16 +3,14 @@ package social.ufind.repository
 import android.content.ContentValues
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import retrofit2.HttpException
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.model.Payload
 import social.ufind.data.model.UserModel
+import social.ufind.firebase.authViewModel
 import social.ufind.network.ApiResponse
 import social.ufind.network.dto.GeneralResponse
 import social.ufind.network.dto.login.LoginRequest
@@ -46,7 +44,7 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
         return try {
             val credentials = SignUpRequest(username, email, password)
             val response = api.signup(credentials)
-            createUserInFirebase(credentials)
+            authViewModel.registerWithEmailAndPass(email, password, username)
             if (response.ok)
                 ApiResponse.Success(response.message)
             else
@@ -64,7 +62,8 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
         return try {
             val credentials = LoginRequest(email, password)
             val response = api.login(credentials)
-            signInFirebase(credentials, response.token)
+            authViewModel.loginWithEmailAndPass(email, password, response.token)
+
             if (response.ok) {
                 saveUserToDataStore(response.token)
                 ApiResponse.Success("Inicio de sesión exitoso")
@@ -76,9 +75,6 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
         } catch(e: HttpException) {
             val errorResponse = SerializeErrorBody.getSerializedError(e, LoginResponse::class.java)
             ApiResponse.ErrorWithMessage(errorResponse.errorMessages)
-        }catch (e: FirebaseAuthInvalidUserException) {
-            Log.d("APP_TAG", "failed to")
-            ApiResponse.Error(e)
         } catch(e:IOException) {
             ApiResponse.Error(e)
         }
@@ -106,79 +102,5 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
       } catch (e: Exception) {
           ApiResponse.Error(e)
       }
-    }
-    private fun signInFirebase(credentials: LoginRequest, token: String) {
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(credentials.email, credentials.password)
-            .addOnCompleteListener { task ->
-                try {
-                    if (task.isSuccessful) {
-                        Log.d("SignIn", "signInWithEmailAndPassword is successful")
-                    } else {
-                        Log.d(
-                            "SignInError",
-                            "signInWithEmailAndPassword: ${task.result.toString()}"
-                        )
-                    }
-                } catch (e: Exception) {
-                    Log.d("APP_TAG", e.toString())
-                }
-            }
-            .addOnFailureListener {
-                try {
-                    throw  it
-                } catch (e: FirebaseAuthInvalidUserException) {
-                    Log.d("APP_TAG", "Usario sin cuenta en firebase, creando cuenta en firebase...")
-                    val jwtDecoded = JWT.decoded(token)
-                    val payload = Gson().fromJson(jwtDecoded, Payload::class.java)
-
-                    val signUpCredentials = SignUpRequest(payload.data.username,credentials.email, credentials.password)
-                    createUserInFirebase(signUpCredentials)
-                } catch (e: Exception) {
-                    Log.d("APP_TAG", e.toString())
-                }
-            }
-    }
-    private fun createUserInFirebase(credentials: SignUpRequest) {
-
-            FirebaseAuth.getInstance()
-                .createUserWithEmailAndPassword(credentials.email, credentials.password)
-                .addOnCompleteListener{
-                    try {
-
-                        Log.d(ContentValues.TAG, "Inside_OnCompleteListener")
-                        Log.d(ContentValues.TAG, "isSuccessful = ${it.isSuccessful}")
-                        val displayName = it.result.user?.email?.split("@")?.get(0)
-                        createUserInDataBase(displayName)
-                    } catch (e: Exception) {
-                        Log.d("APP_TAG", "error al registrarse con firebase")
-                    }
-                }
-                .addOnFailureListener(){
-                    Log.d(ContentValues.TAG, "Inside_OnFailureListener")
-                    Log.d(ContentValues.TAG, "Exception = ${it.message}")
-                    Log.d(ContentValues.TAG, "Exception = ${it.localizedMessage}")
-                }
-    }
-
-    private fun createUserInDataBase(displayName: String?) {
-
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-        val user = mutableMapOf<String, Any>()
-        user["user_id"] = userId.toString()
-        user["display_name"] = displayName.toString()
-
-        FirebaseFirestore.getInstance().collection("users")
-            .add(user)
-            .addOnSuccessListener {
-                try{
-                    Log.d("BDFire", "Creado ${it.id}")
-                } catch (e: Exception) {
-                    Log.d("BDFire", "Error al crear usuario")
-                }
-            }
-            .addOnFailureListener{
-                Log.d("BDFire", "Ocurrió un error")
-            }
-
     }
 }
