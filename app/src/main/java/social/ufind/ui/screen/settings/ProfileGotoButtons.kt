@@ -1,5 +1,6 @@
 package social.ufind.ui.screen.settings
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +19,11 @@ import org.ufind.R
 @Preview
 @Composable
 fun ProfileGoToButtons(
+    modifier: Modifier = Modifier,
     onClickProfileSettings: () -> Unit = {},
     onClickWalletButton:  () -> Unit = {}
 ) {
-    Row(Modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         GoToSettingsProfileButton(onClickProfileSettings)
         Spacer(modifier = Modifier.size(8.dp))
         GoToWalletButton(onClickWalletButton)

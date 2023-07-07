@@ -41,4 +41,10 @@ interface PostService {
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): GetPostsResponse
+
+    @GET("post/getUserPosts")
+    suspend fun getUserPosts(
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
+    ): GetPostsResponse
 }

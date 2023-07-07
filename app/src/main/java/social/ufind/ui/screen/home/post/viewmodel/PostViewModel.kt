@@ -67,14 +67,19 @@ class PostViewModel(
         super.onCreate(owner)
         Log.d("APP_TAG", "CREATED")
     }
-
+    private fun changeRefreshState() {
+        _isRefreshing.value = !_isRefreshing.value
+    }
     fun refresh() {
+        changeRefreshState()
         Log.d("APP_TAG", "Refrescando")
         getAll()
     }
     private fun getAll() {
         viewModelScope.launch {
-            when(val response = repository.getAll(pageSize)) {
+            val response = repository.getAll(pageSize)
+            changeRefreshState()
+            when(response) {
                 is ApiResponse.Success -> {
                     response.data.cachedIn(viewModelScope).collect{
                         _posts.value = it
@@ -88,6 +93,7 @@ class PostViewModel(
                 }
             }
         }
+//        _isRefreshing.value = false
     }
     fun checkPermissions(context: Context, launcher: ManagedActivityResultLauncher<String, Boolean>) {
         val permission = android.Manifest.permission.CAMERA

@@ -7,6 +7,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraXConfig
 import social.ufind.data.UfindDatabase
 import social.ufind.data.datastore.DataStoreManager
+import social.ufind.data.model.UserModel
 import social.ufind.network.retrofit.RetrofitInstance
 import social.ufind.repository.PostRepository
 import social.ufind.repository.UserRepository
@@ -39,7 +40,12 @@ class UfindApplication:Application(), CameraXConfig.Provider {
 
     companion object {
         private var TOKEN = ""
-
+        private var USER: UserModel = UserModel(0,"","","","")
+        fun setUser(user: UserModel) {
+            USER = user
+        }
+        fun getUser(): UserModel = USER
+        fun getUserId(): Int = USER.id
         fun setToken(token: String) {
             social.ufind.UfindApplication.Companion.TOKEN = token
         }

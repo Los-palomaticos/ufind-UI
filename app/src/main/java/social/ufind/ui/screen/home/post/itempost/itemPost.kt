@@ -55,6 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ufind.R
+import social.ufind.UfindApplication
 import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
@@ -101,10 +102,7 @@ fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, view
             .advancedShadow(shadowBlurRadius = 4.dp, alpha = 0.2f, cornersRadius = 12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
-        ),
-//        elevation = CardDefaults.elevatedCardElevation(
-//            focusedElevation = 4.dp
-//        )
+        )
     ) {
         Column(
             Modifier
@@ -225,7 +223,7 @@ fun BottomBarPostIcons(
 ) {
     val isSaved = rememberSaveable{ mutableStateOf(post?.post?.isSaved) } //para guardar icono
     val scope = rememberCoroutineScope() // guarda el estado de la corrutina
-
+    val userId: Int = UfindApplication.getUserId()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,19 +249,21 @@ fun BottomBarPostIcons(
                     }
                 }
         )
-        Image(
-            imageVector = Icons.Filled.Mail,
-            contentDescription = "",
-            Modifier
-                .padding(end = 16.dp)
-                .weight(2f)
-                .align(Alignment.CenterVertically)
-                .clickable {
-                    if (post != null) {
-                        viewModel.enviarCorreo(context, post.publisher.email, "Post de Ufind")
+        if (post?.post?.user_id != userId) {
+            Image(
+                imageVector = Icons.Filled.Mail,
+                contentDescription = "",
+                Modifier
+                    .padding(end = 16.dp)
+                    .weight(2f)
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        if (post != null) {
+                            viewModel.enviarCorreo(context, post.publisher.email, "Post de Ufind")
+                        }
                     }
-                }
-        )
+            )
+        }
 
         Image(
             imageVector = Icons.Filled.Share,
@@ -282,19 +282,20 @@ fun BottomBarPostIcons(
                     }
                 }
         )
-
-        Icon(
-            imageVector = Icons.Filled.Send,
-            contentDescription = "Chat",
-            tint = Color.Black,
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .weight(1f)
-                .align(Alignment.CenterVertically)
-                .clickable {
-                    // Acción para el chat
-                }
-        )
+        if (post?.post?.user_id != userId) {
+            Icon(
+                imageVector = Icons.Filled.Send,
+                contentDescription = "Chat",
+                tint = Color.Black,
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        // Acción para el chat
+                    }
+            )
+        }
     }
 }
 

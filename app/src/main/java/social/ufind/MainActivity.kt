@@ -16,9 +16,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
-import com.ramcosta.composedestinations.DestinationsNavHost
 import kotlinx.coroutines.launch
 import social.ufind.UfindApplication.Companion.setToken
+import social.ufind.UfindApplication.Companion.setUser
 import social.ufind.navigation.OptionsRoutes
 import social.ufind.data.datastore.DataStoreManager
 import social.ufind.navigation.NavigationComponent
@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 lifecycleScope.launch {
                     val user = dataStoreManager.getUserData()
                     user.collect{
+                        setUser(it)
                         setToken(it.token)
                         if(it.token == "")
                             viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)

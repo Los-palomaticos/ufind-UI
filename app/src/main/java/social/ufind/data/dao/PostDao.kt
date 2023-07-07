@@ -23,7 +23,8 @@ interface PostDao {
 
     @Query("SELECT * FROM post WHERE isSaved = 1 ORDER BY id DESC")
     fun getSavedPosts(): PagingSource<Int, PostWithAuthorAndPhotos>
-
+    @Query("SELECT * FROM post WHERE user_id = :id ORDER BY id DESC")
+    fun getUserPosts(id: Int): PagingSource<Int, PostWithAuthorAndPhotos>
     @Query("DELETE FROM post WHERE isSaved = 1")
     suspend fun clearSaved()
 

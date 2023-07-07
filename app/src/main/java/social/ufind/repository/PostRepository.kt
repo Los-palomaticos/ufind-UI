@@ -11,9 +11,11 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import social.ufind.UfindApplication
 import social.ufind.data.UfindDatabase
 import social.ufind.data.mediator.PostMediator
 import social.ufind.data.mediator.SavedPostsMediator
+import social.ufind.data.mediator.UserPostsMediator
 import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.network.ApiResponse
 import social.ufind.network.dto.GeneralResponse
@@ -99,6 +101,23 @@ class PostRepository(
                 remoteMediator = SavedPostsMediator(database, api)
             ) {
                 postDao.getSavedPosts()
+            }.flow
+            ApiResponse.Success(flow)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        }
+    }
+    @OptIn(ExperimentalPagingApi::class)
+    fun getUserPosts(size: Int) : ApiResponse<Flow<PagingData<PostWithAuthorAndPhotos>>> {
+        return try {
+            val flow = Pager(
+                config = PagingConfig(
+                    pageSize = size,
+                    prefetchDistance = (0.2*size).toInt()
+                ),
+                remoteMediator = UserPostsMediator(database, api)
+            ){
+                postDao.getUserPosts(UfindApplication.getUserId())
             }.flow
             ApiResponse.Success(flow)
         } catch (e: ConnectException) {

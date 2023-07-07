@@ -33,14 +33,19 @@ class SavedPostViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
-
+    private fun changeRefreshState() {
+        _isRefreshing.value = !_isRefreshing.value
+    }
 
     fun refresh() {
+        changeRefreshState()
         getSavedPosts()
     }
     private fun getSavedPosts() {
         viewModelScope.launch {
-            when(val response = repository.getSavedPosts(10)) {
+            val response = repository.getSavedPosts(10)
+            changeRefreshState()
+            when(response) {
                 is ApiResponse.Success -> {
                     response.data.cachedIn(viewModelScope).collect{
                         _postsList.value = it
