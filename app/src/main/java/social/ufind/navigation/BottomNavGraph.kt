@@ -1,15 +1,12 @@
-package social.ufind.data
+package social.ufind.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import social.ufind.navigation.BottomBarScreen
-import social.ufind.navigation.OptionsRoutes
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import social.ufind.firebase.model.User
 import social.ufind.ui.screen.chat.ChatScreen
-import social.ufind.ui.screen.home.MainChatScreen
 import social.ufind.ui.screen.home.savedpost.SavedPostScreen
 import social.ufind.ui.screen.home.user.UserProfileScreen
 import social.ufind.ui.screen.home.post.PostScreen

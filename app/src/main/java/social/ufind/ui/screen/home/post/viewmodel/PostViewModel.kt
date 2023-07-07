@@ -89,7 +89,6 @@ class PostViewModel(
             }
         }
     }
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun checkPermissions(context: Context, launcher: ManagedActivityResultLauncher<String, Boolean>) {
         val permission = android.Manifest.permission.CAMERA
         if(ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)

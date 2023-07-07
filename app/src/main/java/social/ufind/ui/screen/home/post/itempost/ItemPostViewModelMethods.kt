@@ -3,8 +3,11 @@ package social.ufind.ui.screen.home.post.itempost
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PackageInfoFlags
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -71,37 +74,19 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
     }
 
     override fun enviarCorreo(context: Context, destinatario: String, asunto: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:")
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario))
-        intent.putExtra(Intent.EXTRA_SUBJECT, asunto)
+        try {
+            val emailSelectorIntent = Intent(Intent.ACTION_SENDTO)
+            emailSelectorIntent.data = Uri.parse("mailto:")
 
-        val packageManager = context.packageManager
-        val activities = packageManager.queryIntentActivities(intent, 0)
+            val emailIntent = Intent(Intent.ACTION_SEND)
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario))
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, asunto)
+            emailIntent.selector = emailSelectorIntent
 
-        if (activities.isNotEmpty()) {
-            val emailApps = ArrayList<ResolveInfo>()
-            for (resolveInfo in activities) {
-                val packageName = resolveInfo.activityInfo.packageName
-                if (packageName != null && packageName.contains("com.google.android.gm")) {
-                    emailApps.add(resolveInfo)
-                }
-            }
-
-            if (emailApps.isNotEmpty()) {
-                intent.`package` = "com.google.android.gm" // Establecer el paquete de Gmail
-                context.startActivity(intent)
-            } else {
-                // Abrir el selector de aplicaciones de correo electrónico
-                val chooserIntent = Intent.createChooser(intent, "Seleccionar aplicación de correo")
-                if (chooserIntent.resolveActivity(packageManager) != null) {
-                    context.startActivity(chooserIntent)
-                } else {
-                    Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } else {
+            context.startActivity(emailIntent)
+        } catch (e: Exception) {
             Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
+            Log.d("ItemPostViewModel", e.toString())
         }
     }
 
@@ -122,14 +107,14 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
         } catch (e: ActivityNotFoundException) {
             Toast.makeText(
                 context,
-                "No se encontraron aplicaciones de compartir disponibles",
+                "No se encontraron aplicaciones para compartir",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
     override fun descargarImagen(context: Context, url: String): File {
-        val fileName = "imagen_compartida.jpg" // Puedes cambiar el nombre del archivo si lo deseas
+        val fileName = "imagen.jpg" // Puedes cambiar el nombre del archivo si lo deseas
         val file = File(context.cacheDir, fileName)
 
         val connection = URL(url).openConnection() as HttpURLConnection

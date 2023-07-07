@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,9 +46,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,8 +95,10 @@ fun Modifier.advancedShadow(
 fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, viewModel: ItemPostViewModelMethods) {
     val isOptionsExpanded = remember{ mutableStateOf(false) }
     Card(
-        modifier = modifier.fillMaxWidth()
-            .padding(vertical = 8.dp).advancedShadow(shadowBlurRadius = 4.dp, alpha = 0.2f, cornersRadius = 12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .advancedShadow(shadowBlurRadius = 4.dp, alpha = 0.2f, cornersRadius = 12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
@@ -203,7 +209,11 @@ fun PostImage(
     ) {
         it.diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .error(R.drawable.no_image)
-
+            .thumbnail(
+                it.clone()
+                    .load(R.drawable.default_image_loading)
+                    .transition(withCrossFade())
+            )
     }
 }
 
@@ -234,8 +244,7 @@ fun BottomBarPostIcons(
                         if (post != null) {
                             viewModel.savePost(post.post.id)
                         }
-                    }
-                    else {
+                    } else {
                         if (post != null) {
                             viewModel.deleteSavedPost(post.post.id)
                         }
@@ -265,7 +274,11 @@ fun BottomBarPostIcons(
                 .align(Alignment.CenterVertically)
                 .clickable {
                     scope.launch {
-                        descargarYCompartirImagen(post = post,context= context, viewModel = viewModel)
+                        descargarYCompartirImagen(
+                            post = post,
+                            context = context,
+                            viewModel = viewModel
+                        )
                     }
                 }
         )
@@ -291,7 +304,7 @@ suspend fun descargarYCompartirImagen(post: PostWithAuthorAndPhotos?, context: C
     }
     if (imagenDescargada != null) {
         if (post != null) {
-            viewModel.compartirContenido(context, "Mira Este Objeto Perdido ${post.post.title}", imagenDescargada)
+            viewModel.compartirContenido(context, "Mira este objeto perdido:  *${post.post.title}*", imagenDescargada)
         }
     }
 }
