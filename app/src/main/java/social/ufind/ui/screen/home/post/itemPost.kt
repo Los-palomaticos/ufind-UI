@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -49,80 +50,13 @@ import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
 
+
 //@Preview(showBackground = true)
 //@Preview(showBackground = true)
 @Composable
 fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
-    val numDialogsToShow = 3
-    val currentDialogIndex = remember { mutableStateOf(0) }
+
     val isOptionsExpanded = remember { mutableStateOf(false) }
-    val areTermsAccepted = rememberSaveable { mutableStateOf(false) } // Utilizamos rememberSaveable para mantener el estado incluso si la Composable se vuelve a crear
-
-    // Función para mostrar el siguiente diálogo
-    fun showNextDialog() {
-        if (currentDialogIndex.value < numDialogsToShow - 1) {
-            currentDialogIndex.value++
-        } else {
-            areTermsAccepted.value = true
-        }
-    }
-
-    // Mostrar los diálogos de términos y condiciones solo si no se han aceptado previamente
-    if (!areTermsAccepted.value && currentDialogIndex.value < numDialogsToShow) {
-        when (currentDialogIndex.value) {
-            0 -> {
-                AlertDialog(
-                    onDismissRequest = { isOptionsExpanded.value = false },
-                    title = { Text(text = "Términos y Condiciones") },
-                    text = {
-                        Text(
-                            text = "Antes de empezar totalmente con Ufind, echale un vistazo a los terminos y" +
-                                    " condiciones para que estes seguro de como se utilizan tus datos y toda la informacion necesaria " +
-                                    " https://politicaddeprivacidadufind.blogspot.com/2023/07/terminos-y-condiciones-de-ufind.html."
-                        )
-                    },
-                    confirmButton = {
-                        Button(onClick = { showNextDialog() }) {
-                            Text(text = "Continuar")
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = { /* Agrega aquí la lógica para retroceder en la aplicación */ }) {
-                            Text(text = "Cancelar")
-                        }
-                    }
-                )
-            }
-            1 -> {
-                AlertDialog(
-                    onDismissRequest = { isOptionsExpanded.value = false },
-                    title = { Text(text = "Como Publicar Fotos") },
-                    text = { Text(text = "Aquí van los segundos términos y condiciones.") },
-                    confirmButton = {
-                        Button(onClick = { showNextDialog() }) {
-                            Text(text = "Continuar")
-                        }
-                    }
-                )
-            }
-            2 -> {
-                AlertDialog(
-                    onDismissRequest = { isOptionsExpanded.value = false },
-                    title = { Text(text = "Mantente Respetuoso en todo momento") },
-                    text = { Text(text = "Aquí van los terceros términos y condiciones.") },
-                    confirmButton = {
-                        Button(onClick = {
-                            areTermsAccepted.value = true // Marcar los términos como aceptados
-                            showNextDialog()
-                        }) {
-                            Text(text = "Aceptar")
-                        }
-                    }
-                )
-            }
-        }
-    }
-
 
     Card(
         modifier = Modifier
@@ -181,44 +115,51 @@ fun ItemPost(post: PostWithAuthorAndPhotos?, viewModel: PostViewModel) {
             BottomBarPostIcons(context = LocalContext.current, post = post, viewModel= viewModel)
 
             if (isOptionsExpanded.value) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
-                    )
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Opciones",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                AlertDialog(
+                    onDismissRequest = { isOptionsExpanded.value = false },
+                    title = { Text(text = "Opciones") },
+                    text = {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Button(
+                                onClick = {
+                                    // Acción al hacer clic en "Borrar publicación"
+                                    isOptionsExpanded.value = false
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                            ) {
+                                Text(text = "Borrar publicación")
+                            }
+                            Button(
+                                onClick = {
+                                    // Acción al hacer clic en el botón "Reportar publicación"
+                                    isOptionsExpanded.value = false
+                                    // Agrega aquí el código que deseas ejecutar al hacer clic en el botón
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                            ) {
+                                // Contenido del botón (por ejemplo, texto)
+                                Text(text = "Reportar publicación")
+                            }
+                        }
+                    },
+                    confirmButton = {
                         Button(
                             onClick = {
-                                // Acción al hacer clic en "Borrar publicación"
                                 isOptionsExpanded.value = false
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp)
+                            colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
                         ) {
-                            Text(text = "Borrar publicación")
+                            Text(text = "Aceptar")
                         }
-                        Button(
-                            onClick = {
-                                // Acción al hacer clic en "Reportar publicación"
-                                isOptionsExpanded.value = false
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Reportar publicación")
-                        }
-                    }
-                }
+                    },
+                    dismissButton = null
+                )
             }
+
         }
     }
 }
