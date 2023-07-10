@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import social.ufind.UfindApplication
 import social.ufind.network.ApiResponse
 import social.ufind.repository.PostRepository
 import java.io.File
@@ -24,16 +25,24 @@ import java.net.URL
 
 interface ItemPostViewModelMethods {
     val itemUiState: StateFlow<ItemUiState>
+    val _isOptionsExpanded: MutableStateFlow<Boolean>
+    val isOptionsExpanded: StateFlow<Boolean>
+        get() = _isOptionsExpanded
     fun savePost(post_id: Int)
     fun deleteSavedPost(id: Int)
     fun resetState ()
+    fun deletePost(id: Int)
+    fun reportPost(id: Int)
+    fun isOwner(publisherId: Int): Boolean
     fun enviarCorreo(context: Context, destinatario: String, asunto: String)
     fun descargarImagen(context: Context, url: String): File
     fun compartirContenido(context: Context, texto: String, file: File)
 }
 
 class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostViewModelMethods {
+    private val userId = UfindApplication.getUserId()
     private val _itemUiState = MutableStateFlow<ItemUiState>(ItemUiState.Resume)
+    override val _isOptionsExpanded: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val itemUiState: StateFlow<ItemUiState>
         get() = _itemUiState
     override fun resetState () {
@@ -55,7 +64,42 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
         }
         resetState()
     }
+    override fun isOwner(publisherId: Int): Boolean {
+        Log.d("APP_TAG", publisherId.toString())
+        Log.d("APP_TAG", userId.toString())
+        return (userId == publisherId)
+    }
+    override fun deletePost(id: Int) {
+        viewModelScope.launch {
+            when (val response = repository.deletePost(id)) {
+                is ApiResponse.Success -> {
+                    _itemUiState.value = ItemUiState.Success(response.data)
+                }
+                is ApiResponse.ErrorWithMessage -> {
+                    _itemUiState.value = ItemUiState.ErrorWithMessage(response.messages)
+                }
+                is ApiResponse.Error -> {
+                    _itemUiState.value = ItemUiState.Error(response.exception)
+                }
+            }
+        }
+    }
 
+    override fun reportPost(id: Int) {
+        viewModelScope.launch {
+            when (val response = repository.reportPost(id)) {
+                is ApiResponse.Success -> {
+                    _itemUiState.value = ItemUiState.Success(response.data)
+                }
+                is ApiResponse.ErrorWithMessage -> {
+                    _itemUiState.value = ItemUiState.ErrorWithMessage(response.messages)
+                }
+                is ApiResponse.Error -> {
+                    _itemUiState.value = ItemUiState.Error(response.exception)
+                }
+            }
+        }
+    }
     override fun deleteSavedPost(id: Int) {
         viewModelScope.launch {
             when(val response =  repository.deleteSavedPost(id)) {

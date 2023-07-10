@@ -1,6 +1,7 @@
 package social.ufind.ui.screen.home.post.itempost
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,11 +46,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ufind.R
@@ -91,6 +95,7 @@ fun Modifier.advancedShadow(
 @Composable
 fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, viewModel: ItemPostViewModelMethods) {
     val isOptionsExpanded = remember{ mutableStateOf(false) }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -146,55 +151,69 @@ fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, view
             BottomBarPostIcons(context = LocalContext.current, post = post, viewModel= viewModel)
 
             if (isOptionsExpanded.value) {
-                AlertDialog(
-                    onDismissRequest = { isOptionsExpanded.value = false },
-                    title = { Text(text = "Opciones") },
-                    text = {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Button(
-                                onClick = {
-                                    // Acción al hacer clic en "Borrar publicación"
-                                    isOptionsExpanded.value = false
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
-                                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
-                            ) {
-                                Text(text = "Borrar publicación")
-                            }
-                            Button(
-                                onClick = {
-                                    // Acción al hacer clic en el botón "Reportar publicación"
-                                    isOptionsExpanded.value = false
-                                    // Agrega aquí el código que deseas ejecutar al hacer clic en el botón
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
-                            ) {
-                                // Contenido del botón (por ejemplo, texto)
-                                Text(text = "Reportar publicación")
-                            }
-                        }
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                isOptionsExpanded.value = false
-                            },
-                            colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
-                        ) {
-                            Text(text = "Aceptar")
-                        }
-                    },
-                    dismissButton = null
-                )
+                if (post != null) {
+                    PostOptions(
+                        viewModel = viewModel,
+                        isOptionsExpanded = isOptionsExpanded,
+                        id=post.post.id,
+                        publisherId = post.post.user_id
+                    )
+                }
             }
 
         }
     }
 }
-
+@Composable
+fun PostOptions (viewModel: ItemPostViewModelMethods, isOptionsExpanded: MutableState<Boolean>, id: Int, publisherId: Int) {
+    AlertDialog(
+        onDismissRequest = { isOptionsExpanded.value = false },
+        title = { Text(text = "Opciones") },
+        text = {
+            Column(modifier = Modifier.padding(16.dp)) {
+                if (viewModel.isOwner(publisherId)) {
+                    Button(
+                        onClick = {
+                            Log.d("APP_TAG", id.toString())
+                            viewModel.deletePost(id)
+                            isOptionsExpanded.value = false
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                    ) {
+                        Text(text = "Borrar publicación")
+                    }
+                }
+                Button(
+                    onClick = {
+                        // Acción al hacer clic en el botón "Reportar publicación"
+                        viewModel.reportPost(id)
+                        isOptionsExpanded.value = false
+                        // Agrega aquí el código que deseas ejecutar al hacer clic en el botón
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                ) {
+                    // Contenido del botón (por ejemplo, texto)
+                    Text(text = "Reportar publicación")
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    isOptionsExpanded.value = false
+                },
+                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+            ) {
+                Text(text = "Aceptar")
+            }
+        },
+        dismissButton = null
+    )
+}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PostImage(
