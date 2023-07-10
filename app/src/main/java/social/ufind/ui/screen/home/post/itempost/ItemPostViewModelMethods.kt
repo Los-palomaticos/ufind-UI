@@ -12,10 +12,16 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import social.ufind.UfindApplication
+import social.ufind.navigation.BottomBarScreen
+import social.ufind.navigation.OptionsRoutes
+import social.ufind.navigation.RouteNavigator
+import social.ufind.navigation.UfindNavigator
 import social.ufind.network.ApiResponse
 import social.ufind.repository.PostRepository
 import java.io.File
@@ -37,9 +43,14 @@ interface ItemPostViewModelMethods {
     fun enviarCorreo(context: Context, destinatario: String, asunto: String)
     fun descargarImagen(context: Context, url: String): File
     fun compartirContenido(context: Context, texto: String, file: File)
+    fun navigateToChat(userJson: String)
 }
 
-class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostViewModelMethods {
+class ItemPostViewModel(
+    val repository: PostRepository,
+): ViewModel(), ItemPostViewModelMethods{
+    private val routeNavigator: UfindNavigator = UfindNavigator()
+
     private val userId = UfindApplication.getUserId()
     private val _itemUiState = MutableStateFlow<ItemUiState>(ItemUiState.Resume)
     override val _isOptionsExpanded: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -65,8 +76,6 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
         resetState()
     }
     override fun isOwner(publisherId: Int): Boolean {
-        Log.d("APP_TAG", publisherId.toString())
-        Log.d("APP_TAG", userId.toString())
         return (userId == publisherId)
     }
     override fun deletePost(id: Int) {
@@ -178,6 +187,18 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
         outputStream.close()
         inputStream.close()
         return file
+    }
+
+    override fun navigateToChat(userJson: String) {
+        Log.d("APP_TAG", "hola")
+//        routeNavigator.navigateToRoute(BottomBarScreen.SavedPosts.route)
+//        routeNavigator.navigateToRoute(
+//            OptionsRoutes.ChatScreen2.route
+//            .replace(
+//                oldValue = "{user}",
+//                newValue = userJson
+//            )
+//        )
     }
 
 }
