@@ -252,7 +252,7 @@ fun HandleAppendStatus(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewModel: PostViewModel){
-    val scrollState = rememberLazyListState(0, 10)
+    val scrollState = rememberLazyListState()
 
     if (lazyPagingItems.itemCount == 0) {
         viewModel.refresh()
@@ -271,7 +271,6 @@ fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewMode
     HandleAppendStatus(lazyPagingItems = lazyPagingItems)
 }
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AddPostFloatingButton(
     viewModel: PostViewModel,
