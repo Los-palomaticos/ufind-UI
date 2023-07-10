@@ -66,7 +66,6 @@ fun MainChatBody(onClick: () -> Unit = {}) {
 @Composable
 fun MainChatTopBar() {
     Card(
-
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
@@ -74,7 +73,7 @@ fun MainChatTopBar() {
                 shape = RoundedCornerShape(16.dp)
             ),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.textfield_color)
+            containerColor = colorResource(id = R.color.text_color)
         )
     ) {
         Row(
@@ -97,12 +96,14 @@ fun MainChatTopBar() {
                 text = "Chats",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = Color.White
             )
-
         }
     }
 }
+
+
 
 @Composable
 fun PostList(onClick: () -> Unit) {

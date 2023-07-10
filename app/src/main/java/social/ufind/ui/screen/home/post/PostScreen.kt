@@ -175,7 +175,7 @@ fun PostScreen(
 //                    Text(text = "Cancelar")
 //                }
 //            },
-            modifier = Modifier.width(300.dp)
+            modifier = Modifier.width(500.dp)
         )
     }
 
