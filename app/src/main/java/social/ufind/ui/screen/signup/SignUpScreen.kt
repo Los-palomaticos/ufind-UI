@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -79,11 +81,17 @@ fun SignUpScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        SignUpBody(modifier = Modifier.align(Alignment.Center), viewModel = viewModel)
-        SignUpFooter(modifier = Modifier.align(BottomCenter)) {
+        Column(
+            Modifier.align(Alignment.Center).fillMaxHeight()
+        ) {
+            SignUpBody(modifier = Modifier.align(Alignment.CenterHorizontally), viewModel = viewModel)
+        }
+        SignUpFooter(modifier = Modifier.align(Alignment.BottomCenter)) {
             viewModel.navigateToLogin()
         }
     }
+
+
 }
 
 @Composable

@@ -1,7 +1,6 @@
 package social.ufind.ui.screen.home.post.itempost
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +17,11 @@ import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,15 +38,12 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -57,7 +54,6 @@ import kotlinx.coroutines.withContext
 import org.ufind.R
 import social.ufind.UfindApplication
 import social.ufind.data.model.PostWithAuthorAndPhotos
-import social.ufind.ui.screen.home.post.viewmodel.PostViewModel
 
 fun Modifier.advancedShadow(
     color: Color = Color.Black,
@@ -150,44 +146,51 @@ fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, view
             BottomBarPostIcons(context = LocalContext.current, post = post, viewModel= viewModel)
 
             if (isOptionsExpanded.value) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
-                    )
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Opciones",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                AlertDialog(
+                    onDismissRequest = { isOptionsExpanded.value = false },
+                    title = { Text(text = "Opciones") },
+                    text = {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Button(
+                                onClick = {
+                                    // Acción al hacer clic en "Borrar publicación"
+                                    isOptionsExpanded.value = false
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                            ) {
+                                Text(text = "Borrar publicación")
+                            }
+                            Button(
+                                onClick = {
+                                    // Acción al hacer clic en el botón "Reportar publicación"
+                                    isOptionsExpanded.value = false
+                                    // Agrega aquí el código que deseas ejecutar al hacer clic en el botón
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
+                            ) {
+                                // Contenido del botón (por ejemplo, texto)
+                                Text(text = "Reportar publicación")
+                            }
+                        }
+                    },
+                    confirmButton = {
                         Button(
                             onClick = {
-                                // Acción al hacer clic en "Borrar publicación"
                                 isOptionsExpanded.value = false
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp)
+                            colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
                         ) {
-                            Text(text = "Borrar publicación")
+                            Text(text = "Aceptar")
                         }
-                        Button(
-                            onClick = {
-                                // Acción al hacer clic en "Reportar publicación"
-                                isOptionsExpanded.value = false
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = "Reportar publicación")
-                        }
-                    }
-                }
+                    },
+                    dismissButton = null
+                )
             }
+
         }
     }
 }
