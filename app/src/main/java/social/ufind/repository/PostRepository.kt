@@ -1,5 +1,6 @@
 package social.ufind.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -19,6 +20,7 @@ import social.ufind.data.mediator.UserPostsMediator
 import social.ufind.data.model.PostWithAuthorAndPhotos
 import social.ufind.network.ApiResponse
 import social.ufind.network.dto.GeneralResponse
+import social.ufind.network.dto.post.PostOptionsRequest
 import social.ufind.network.dto.post.SavePostRequest
 import social.ufind.network.service.PostService
 import social.ufind.utils.SerializeErrorBody
@@ -67,7 +69,39 @@ class PostRepository(
         }
 
     }
-
+    suspend fun deletePost(id: Int): ApiResponse<String> {
+        return try {
+            val response = api.deletePost(PostOptionsRequest(id))
+            ApiResponse.Success(response.message)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        } catch (e: HttpException) {
+            val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
+            ApiResponse.ErrorWithMessage(errorBody.errorMessages)
+        } catch (e: Exception) {
+            Log.d("APP_TAG", e.message.toString())
+            ApiResponse.Error(e)
+        }
+    }
+    suspend fun reportPost(id: Int): ApiResponse<String> {
+        return try {
+            val response = api.reportPost(PostOptionsRequest(id))
+            ApiResponse.Success(response.message)
+        } catch (e: ConnectException) {
+            ApiResponse.ErrorWithMessage(ApiResponse.connectionErrorMessage)
+        } catch (e: HttpException) {
+            Log.d("APP_TAG", e.code().toString())
+            Log.d("APP_TAG", e.message())
+            if (e.code() == 400) {
+                ApiResponse.ErrorWithMessage<String>(listOf("Error interno"))
+            }
+            val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
+            ApiResponse.ErrorWithMessage(errorBody.errorMessages)
+        } catch (e: Exception) {
+            Log.d("APP_TAG", e.message.toString())
+            ApiResponse.Error(e)
+        }
+    }
     @OptIn(ExperimentalPagingApi::class)
     fun getAll(size: Int): ApiResponse<Flow<PagingData<PostWithAuthorAndPhotos>>> {
         return try {

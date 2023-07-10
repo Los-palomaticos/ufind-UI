@@ -4,14 +4,18 @@ import androidx.room.Dao
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Query
 import social.ufind.network.dto.GeneralResponse
 import social.ufind.network.dto.post.GetPostsResponse
+import social.ufind.network.dto.post.PostOptionsRequest
 import social.ufind.network.dto.post.SavePostRequest
 
 @Dao
@@ -47,4 +51,13 @@ interface PostService {
         @Query("limit") limit: Int,
         @Query("offset") offset: Int
     ): GetPostsResponse
+
+    @PUT("post/report")
+    suspend fun reportPost(
+        @Body body: PostOptionsRequest
+    ): GeneralResponse<String>
+    @HTTP(method = "DELETE", path = "post/delete", hasBody = true)
+    suspend fun deletePost(
+        @Body body: PostOptionsRequest
+    ): GeneralResponse<String>
 }
