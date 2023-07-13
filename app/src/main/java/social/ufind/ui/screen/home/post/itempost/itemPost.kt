@@ -58,12 +58,16 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ufind.R
 import social.ufind.UfindApplication
 import social.ufind.data.model.PostWithAuthorAndPhotos
+import social.ufind.firebase.firebaseViewModel
+import social.ufind.firebase.model.User
 
 fun Modifier.advancedShadow(
     color: Color = Color.Black,
@@ -344,7 +348,13 @@ fun BottomBarPostIcons(
                     .weight(1f)
                     .align(Alignment.CenterVertically)
                     .clickable {
-                        // Acción para el chat
+                        if (post != null) {
+                            val user = User(post.publisher.email, post.publisher.username)
+                            firebaseViewModel.creteChatWith(user)
+                            val gson: Gson = GsonBuilder().create()
+                            val userJson = gson.toJson(user)
+                            viewModel.navigateToChat(userJson)
+                        }
                     }
             )
         }

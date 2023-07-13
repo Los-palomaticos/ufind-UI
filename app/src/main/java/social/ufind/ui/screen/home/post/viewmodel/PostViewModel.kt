@@ -106,6 +106,16 @@ class PostViewModel(
         routeNavigator.navigateToRoute(OptionsRoutes.AddPostScreen.route)
     }
 
+    override fun navigateToChat(userJson: String) {
+        routeNavigator.navigateToRoute(
+            OptionsRoutes.ChatScreen2.route
+            .replace(
+                oldValue = "{user}",
+                newValue = userJson
+            )
+        )
+    }
+
     companion object {
         val Factory = viewModelFactory {
             initializer {
