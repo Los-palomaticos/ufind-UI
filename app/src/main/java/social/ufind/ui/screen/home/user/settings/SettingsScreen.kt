@@ -19,6 +19,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.ChangeCircle
+import androidx.compose.material.icons.filled.ManageAccounts
+import androidx.compose.material.icons.filled.Panorama
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.AlertDialogDefaults.containerColor
@@ -151,13 +154,13 @@ fun ConfigurationsButtons(
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Preferencias",
-            icon = Icons.Default.TrackChanges,// Ejemplo de un icono predefinido de Jetpack Compose
+            icon = Icons.Default.ChangeCircle,// Ejemplo de un icono predefinido de Jetpack Compose
             onClick = { viewModel.navigateToPreferences() }
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ConfigurationButton(
             text = "Cuenta",
-            icon = Icons.Default.AccountTree,// Ejemplo de un icono predefinido de Jetpack Compose
+            icon = Icons.Default.ManageAccounts,// Ejemplo de un icono predefinido de Jetpack Compose
             onClick = { viewModel.navigateToAccount() }
         )
     }

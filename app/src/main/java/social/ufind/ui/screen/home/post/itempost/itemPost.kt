@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
@@ -341,7 +342,7 @@ fun BottomBarPostIcons(
         )
         if (post?.post?.user_id != userId) {
             Icon(
-                imageVector = Icons.Filled.Send,
+                imageVector = Icons.Filled.Chat,
                 contentDescription = "Chat",
                 tint = Color.Black,
                 modifier = Modifier
