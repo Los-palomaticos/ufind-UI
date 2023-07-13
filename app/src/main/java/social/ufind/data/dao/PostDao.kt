@@ -15,7 +15,7 @@ interface PostDao {
     fun getAll() : PagingSource<Int, PostWithAuthorAndPhotos>
 
     @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(post: List<PostModel>)
 
     @Query ("DELETE FROM post")

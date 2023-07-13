@@ -69,6 +69,8 @@ class UserProfileViewModel(
                 is ApiResponse.Error -> {
 
                 }
+
+                else -> {}
             }
         }
     }

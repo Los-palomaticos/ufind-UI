@@ -53,7 +53,6 @@ object SavedPostScreen: NavRoute<SavedPostViewModel> {
 }
 @Composable
 fun SavedPostScreen(viewModel: SavedPostViewModel){
-    viewModel.refresh()
     val isRefreshing = viewModel.isRefreshing.collectAsStateWithLifecycle().value
     val lazyPagingItems = viewModel.postList.collectAsLazyPagingItems()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
@@ -67,7 +66,7 @@ fun SavedPostScreen(viewModel: SavedPostViewModel){
         ) {
             PageHeader()
             Text(text = "Publicaciones Guardadas", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier
-                .align(Alignment.Start)
+                .align(Alignment.CenterHorizontally)
                 .padding(0.dp, 16.dp))
             Box(
                 modifier = Modifier
@@ -75,12 +74,13 @@ fun SavedPostScreen(viewModel: SavedPostViewModel){
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Column {
-                    HandleRefreshStatus(lazyPagingItems)
-                    HandlePrependStatus(lazyPagingItems = lazyPagingItems)
+                Column(
+                    modifier=Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
                     HandleItemUiState(viewModel)
                     PostList(lazyPagingItems = lazyPagingItems, viewModel = viewModel)
-                    HandleAppendStatus(lazyPagingItems = lazyPagingItems)
                 }
             }
         }
@@ -91,16 +91,25 @@ fun SavedPostScreen(viewModel: SavedPostViewModel){
 @Composable
 fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewModel: SavedPostViewModel) {
     val state = rememberLazyListState(0)
+    if (lazyPagingItems.itemCount == 0) {
+        viewModel.refresh()
 
+    }
     LazyColumn(
         state = state
     ) {
+        item {
+            HandleRefreshStatus(lazyPagingItems)
+            HandlePrependStatus(lazyPagingItems = lazyPagingItems)
+        }
         items(
             count = lazyPagingItems.itemCount,
             key = lazyPagingItems.itemKey{it.post.id}
         ) {index ->
-
             ItemPost(post = lazyPagingItems[index], viewModel = viewModel, modifier = Modifier.animateItemPlacement())
+        }
+        item {
+            HandleAppendStatus(lazyPagingItems = lazyPagingItems)
         }
     }
 }

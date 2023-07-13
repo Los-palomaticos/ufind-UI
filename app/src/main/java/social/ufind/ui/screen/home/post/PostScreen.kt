@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -134,6 +135,7 @@ fun PostScreen(
     // Estado para realizar un seguimiento de si el AlertDialog ya se ha mostrado
     var isAlertDialogShown = viewModel.isAlertDialogShown.collectAsStateWithLifecycle().value
 
+    HandleItemUiState(viewModel)
     if (isAlertDialogShown) {
         AlertDialog(
             onDismissRequest = {
@@ -166,16 +168,6 @@ fun PostScreen(
                     Text(text = "Aceptar")
                 }
             },
-//            dismissButton = {
-//                Button(
-//                    onClick = {
-//                        isAlertDialogShown = false
-//                    },
-//                    colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))
-//                ) {
-//                    Text(text = "Cancelar")
-//                }
-//            },
             modifier = Modifier.width(300.dp)
         )
     }
@@ -189,22 +181,20 @@ fun PostScreen(
         ) {
             PageHeader()
             Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier
-                .align(Alignment.Start)
-                .padding(0.dp, 16.dp))
+                .align(Alignment.CenterHorizontally)
+                .padding(0.dp, 16.dp),
+                textAlign = TextAlign.Center
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Column {
-                    HandleRefreshStatus(lazyPagingItems)
-                    PostList(
-                        lazyPagingItems = lazyPagingItems,
-                        viewModel=viewModel
-                    )
-                    HandleItemUiState(viewModel)
-                }
+                PostList(
+                    lazyPagingItems = lazyPagingItems,
+                    viewModel=viewModel
+                )
                 AddPostFloatingButton(viewModel = viewModel, Modifier.align(Alignment.BottomEnd))
             }
         }
@@ -321,18 +311,28 @@ fun PostList(lazyPagingItems: LazyPagingItems<PostWithAuthorAndPhotos>, viewMode
     if (lazyPagingItems.itemCount == 0) {
         viewModel.refresh()
     }
-    HandlePrependStatus(lazyPagingItems = lazyPagingItems)
+
     LazyColumn(
+        modifier=Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
         state = scrollState
     ){
+        item {
+            HandleRefreshStatus(lazyPagingItems)
+            HandlePrependStatus(lazyPagingItems = lazyPagingItems)
+        }
         items(
             count = lazyPagingItems.itemCount,
             key = lazyPagingItems.itemKey { it.post.id }
         ){index ->
+
             ItemPost(post = lazyPagingItems[index], viewModel= viewModel, modifier = Modifier.animateItemPlacement())
+
+        }
+        item {
+            HandleAppendStatus(lazyPagingItems = lazyPagingItems)
         }
     }
-    HandleAppendStatus(lazyPagingItems = lazyPagingItems)
 }
 
 @Composable

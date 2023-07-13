@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -29,63 +30,21 @@ fun LoginOrSignUpOptions(
     onClickSignUpScreen: () -> Unit = {},
     onClickSignInScreen: () -> Unit = {}
 ) {
-    var isLoading by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        // Simula un tiempo de carga
-        delay(2000)
-        isLoading = false
-    }
-
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (isLoading) {
-            LoadingScreen()
-        } else {
-            LogInOrSignUpOptionsBody(
-                Modifier.align(Alignment.Center),
-                onClickSignUpScreen,
-                onClickSignInScreen
-            )
-        }
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    val transition = rememberInfiniteTransition()
-    val xOffset by transition.animateFloat(
-        initialValue = -100f,
-        targetValue = 100f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+        LogInOrSignUpOptionsBody(
+            Modifier
+                .widthIn(0.dp,500.dp)
+                .align(Alignment.Center),
+            onClickSignUpScreen,
+            onClickSignInScreen
         )
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.size(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.search),
-                contentDescription = "Icono de lupa",
-                modifier = Modifier
-                    .size(64.dp)
-                    .offset(x = xOffset.dp)
-            )
-        }
     }
 }
+
 
 @Composable
 fun LogInOrSignUpOptionsBody(
@@ -93,7 +52,7 @@ fun LogInOrSignUpOptionsBody(
     onClickSignUpScreen: () -> Unit ={},
     onClickSignInScreen: () -> Unit ={}
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         ImageLogo(size = 175, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
         GoToSignUpScreen(onClickSignUpScreen)

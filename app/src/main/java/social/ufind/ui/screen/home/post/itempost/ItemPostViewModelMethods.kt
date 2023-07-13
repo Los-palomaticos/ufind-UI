@@ -60,6 +60,8 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
                 is ApiResponse.Error -> {
                     _itemUiState.value = ItemUiState.Error(response.exception)
                 }
+
+                else -> {}
             }
         }
         resetState()
@@ -81,6 +83,8 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
                 is ApiResponse.Error -> {
                     _itemUiState.value = ItemUiState.Error(response.exception)
                 }
+
+                else -> {}
             }
         }
     }
@@ -97,6 +101,8 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
                 is ApiResponse.Error -> {
                     _itemUiState.value = ItemUiState.Error(response.exception)
                 }
+
+                else -> {}
             }
         }
     }
@@ -112,6 +118,8 @@ class ItemPostViewModel(val repository: PostRepository): ViewModel(), ItemPostVi
                 is ApiResponse.Error -> {
                     _itemUiState.value = ItemUiState.Error(response.exception)
                 }
+
+                else -> {}
             }
         }
         resetState()

@@ -110,7 +110,7 @@ class PostRepository(
             val flow = Pager(
                 config= PagingConfig(
                     pageSize = size,
-                    prefetchDistance = (0.2*size).toInt()
+                    prefetchDistance = (0.1*size).toInt()
                 ),
                 remoteMediator = PostMediator(database, api)
             ) {

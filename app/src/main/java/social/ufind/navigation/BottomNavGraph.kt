@@ -6,20 +6,20 @@ import androidx.navigation.compose.composable
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import social.ufind.firebase.model.User
-import social.ufind.ui.screen.chat.ChatScreen
+import social.ufind.ui.screen.home.chat.ChatScreen
 import social.ufind.ui.screen.home.savedpost.SavedPostScreen
 import social.ufind.ui.screen.home.user.UserProfileScreen
 import social.ufind.ui.screen.home.post.PostScreen
 import social.ufind.ui.screen.home.post.add.AddPostScreen
-import social.ufind.ui.screen.map.MapScreen
-import social.ufind.ui.screen.newchat.ChatScreen2
-import social.ufind.ui.screen.newchat.ContactsScreen
-import social.ufind.ui.screen.settings.SettingsAccountScreen
-import social.ufind.ui.screen.settings.SettingsChangePassword
-import social.ufind.ui.screen.settings.SettingsPreferencesScreen
-import social.ufind.ui.screen.settings.SettingsScreen
-import social.ufind.ui.screen.settings.SettingsSecurityScreen
-import social.ufind.ui.screen.wallet.WalletProfileScreen
+import social.ufind.ui.screen.home.post.add.map.MapScreen
+import social.ufind.ui.screen.home.chat.newchat.ChatScreen2
+import social.ufind.ui.screen.home.chat.newchat.ContactsScreen
+import social.ufind.ui.screen.home.user.settings.SettingsAccountScreen
+import social.ufind.ui.screen.home.user.settings.SettingsChangePassword
+import social.ufind.ui.screen.home.user.settings.SettingsPreferencesScreen
+import social.ufind.ui.screen.home.user.settings.SettingsScreen
+import social.ufind.ui.screen.home.user.settings.SettingsSecurityScreen
+import social.ufind.ui.screen.home.user.wallet.WalletProfileScreen
 
 
 @Composable

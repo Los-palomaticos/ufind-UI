@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.foundation.rememberScrollState
@@ -56,7 +58,7 @@ import org.ufind.R
 import social.ufind.navigation.OptionsRoutes
 import social.ufind.navigation.NavRoute
 import social.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
-import social.ufind.ui.screen.settings.HeaderConfigurationCard
+import social.ufind.ui.screen.home.user.settings.HeaderConfigurationCard
 
 
 object AddPostScreen : NavRoute<AddPostViewModel> {
@@ -86,18 +88,24 @@ fun AddPostScreen(viewModel: AddPostViewModel) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        HeaderAddPost(Modifier.align(Alignment.TopStart))
+        HeaderAddPost(modifier = Modifier.align(Alignment.TopStart), viewModel = viewModel)
         BodyAddPost(
             uiState = uiState.value,
             viewModel = viewModel,
             modifier = Modifier.align(Alignment.Center)
+                .fillMaxHeight()
+                .widthIn(0.dp, 500.dp)
         )
     }
 
 }
 
 @Composable
-fun HeaderAddPost(modifier: Modifier) {
+fun HeaderAddPost(modifier: Modifier, viewModel: AddPostViewModel) {
+    HeaderConfigurationCard(
+        title = "Crear publicación",
+        onClick = { viewModel.navigateBack() }
+    )
     Box(modifier = modifier) {
         Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
     }
@@ -145,12 +153,6 @@ fun BodyAddPost(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HeaderConfigurationCard(
-            title = "Crear publicación",
-            onClick = { viewModel.navigateBack() }
-        )
-        Spacer(modifier = Modifier.height(32.dp))
-
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.Center,

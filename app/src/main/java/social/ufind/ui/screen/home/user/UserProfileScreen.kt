@@ -23,6 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,7 +45,7 @@ import social.ufind.ui.screen.home.post.itempost.ItemPost
 import social.ufind.ui.screen.home.post.itempost.ItemPostViewModelMethods
 import social.ufind.ui.screen.home.post.itempost.ItemUiState
 import social.ufind.ui.screen.home.user.viewmodel.UserProfileViewModel
-import social.ufind.ui.screen.settings.ProfileGoToButtons
+import social.ufind.ui.screen.home.user.settings.ProfileGoToButtons
 
 
 object UserProfileScreen: NavRoute<UserProfileViewModel> {
@@ -72,14 +74,21 @@ fun UserProfileScreen(
         if (lazyPagingItems.itemCount == 0) {
             viewModel.refresh()
         }
+        HandleItemUiState(viewModel)
         LazyColumn(
             state = scrollState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 52.dp)
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 52.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item{
                 ProfileHeader(user, viewModel)
+                Text(text = "Publicaciones", fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(0.dp, 16.dp),
+                    textAlign = TextAlign.Center
+                )
                 HandlePrependStatus(lazyPagingItems = lazyPagingItems)
                 HandleRefreshStatus(lazyPagingItems = lazyPagingItems)
             }
@@ -89,9 +98,10 @@ fun UserProfileScreen(
             ){index ->
                 ItemPost(post = lazyPagingItems[index], viewModel= viewModel, modifier = Modifier.animateItemPlacement())
             }
+            item {
+                HandleAppendStatus(lazyPagingItems = lazyPagingItems)
+            }
         }
-        HandleItemUiState(viewModel)
-        HandleAppendStatus(lazyPagingItems = lazyPagingItems)
     }
 }
 @Composable

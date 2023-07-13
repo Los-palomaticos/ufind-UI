@@ -170,6 +170,8 @@ class AddPostViewModel(
                 is ApiResponse.Error -> {
                     _uiState.value = AddPostUiState.Error(response.exception)
                 }
+
+                else -> {}
             }
             photoFile.delete()
         }

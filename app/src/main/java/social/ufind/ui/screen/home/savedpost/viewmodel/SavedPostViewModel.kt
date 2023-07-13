@@ -57,8 +57,9 @@ class SavedPostViewModel(
                 }
                 is ApiResponse.Error -> {
                     Log.d("APP_TAG", response.exception.toString())
-
                 }
+
+                else -> {}
             }
         }
     }

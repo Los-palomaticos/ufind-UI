@@ -65,7 +65,7 @@ class PostViewModel(
             repository.setPostTutorialTrue()
         }
     }
-    fun getPostTutorialState() {
+    private fun getPostTutorialState() {
         viewModelScope.launch {
             val postTutorialState = repository.getPostTutorial()
             postTutorialState.collect{
@@ -89,6 +89,8 @@ class PostViewModel(
                 is ApiResponse.Error -> {
                     Log.d("APP_TAG", response.exception.toString())
                 }
+
+                else -> {}
             }
         }
 //        _isRefreshing.value = false

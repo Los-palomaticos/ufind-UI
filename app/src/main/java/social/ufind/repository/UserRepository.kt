@@ -22,6 +22,7 @@ import social.ufind.utils.JWT
 import social.ufind.utils.SerializeErrorBody
 import java.io.IOException
 import java.net.ConnectException
+import java.net.UnknownHostException
 import kotlin.Exception
 
 class UserRepository(private val api: UserService, private val dataStoreManager: DataStoreManager) {
@@ -83,8 +84,16 @@ class UserRepository(private val api: UserService, private val dataStoreManager:
         return try {
             val response = api.validateToken()
             ApiResponse.Success(response.ok)
+        } catch (e: ConnectException) {
+            Log.d("APP_TAG", e.toString())
+            ApiResponse.ConectionError()
+        } catch (e: UnknownHostException) {
+            ApiResponse.ConectionError()
+        } catch (e: HttpException) {
+            val errorBody = SerializeErrorBody.getSerializedError(e, GeneralResponse::class.java)
+            ApiResponse.ErrorWithMessage(errorBody.errorMessages)
         } catch (e: Exception) {
-            ApiResponse.Success(false)
+            ApiResponse.Error(e)
         }
     }
     suspend fun logout() {

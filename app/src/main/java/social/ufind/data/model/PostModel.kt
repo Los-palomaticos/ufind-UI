@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import org.checkerframework.common.aliasing.qual.Unique
 
 @Entity(tableName = "post")
 data class PostModel(

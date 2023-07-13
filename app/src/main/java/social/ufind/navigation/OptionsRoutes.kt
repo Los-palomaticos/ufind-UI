@@ -1,7 +1,9 @@
 package social.ufind.navigation
 
 sealed class OptionsRoutes(val route:String){
+    object LoadingScreen: OptionsRoutes("LoadingScreen")
     object LogInOrSignUpOptions: OptionsRoutes("LogInOrSignUpOptions")
+    object ConnectionError: OptionsRoutes("ConnectionError")
     object LogIn: OptionsRoutes("LogInScreen")
     object SignUp: OptionsRoutes("SignUpScreen")
     object UserInterface: OptionsRoutes("UserInterfaceNavigation")

@@ -5,12 +5,18 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -46,13 +52,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ufind.R
@@ -93,12 +99,16 @@ fun Modifier.advancedShadow(
     }
 }
 @Composable
-fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, viewModel: ItemPostViewModelMethods) {
+fun ItemPost(
+    modifier: Modifier = Modifier,
+    post: PostWithAuthorAndPhotos?,
+    viewModel: ItemPostViewModelMethods
+) {
     val isOptionsExpanded = remember{ mutableStateOf(false) }
 
     Card(
         modifier = modifier
-            .fillMaxWidth()
+            .widthIn(0.dp, 500.dp)
             .padding(vertical = 8.dp)
             .advancedShadow(shadowBlurRadius = 4.dp, alpha = 0.2f, cornersRadius = 12.dp),
         colors = CardDefaults.cardColors(
@@ -146,7 +156,7 @@ fun ItemPost(modifier: Modifier = Modifier, post: PostWithAuthorAndPhotos?, view
                 modifier = Modifier.align(Alignment.Start)
             )
             Spacer(Modifier.size(16.dp))
-            PostImage(url = post?.photos?.first()?.photo?:"", modifier = Modifier.fillMaxWidth())
+            PostImage(url = post?.photos?.first()?.photo?:"")
             Spacer(Modifier.size(16.dp))
             BottomBarPostIcons(context = LocalContext.current, post = post, viewModel= viewModel)
 
@@ -220,9 +230,14 @@ fun PostImage(
     url: String,
     modifier: Modifier = Modifier
 ) {
+    val isPreviewEnable = remember{ mutableStateOf(false) }
+
     GlideImage(
         model = url,
-        modifier = modifier,
+        modifier = modifier
+            .clickable {
+                isPreviewEnable.value = true
+            },
         contentScale = ContentScale.Fit,
         alignment = Alignment.Center,
         contentDescription = "Imagen de post"
@@ -235,8 +250,27 @@ fun PostImage(
                     .transition(withCrossFade())
             )
     }
+    if (isPreviewEnable.value) {
+        Dialog(
+            onDismissRequest = { isPreviewEnable.value = false },
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = false)
+            )
+        {
+            Box {
+                GlideImage(
+                    model = url,
+                    modifier = modifier
+                        .clickable {
+                            isPreviewEnable.value = true
+                        },
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.Center,
+                    contentDescription = "Imagen de post"
+                )
+            }
+        }
+    }
 }
-
 @Composable
 fun BottomBarPostIcons(
     context: Context,
@@ -248,14 +282,13 @@ fun BottomBarPostIcons(
     val userId: Int = UfindApplication.getUserId()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 16.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Image(
             imageVector = if (isSaved.value == true) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
             contentDescription = "",
             modifier = Modifier
-                .padding(end = 16.dp)
                 .weight(1f)
                 .align(Alignment.CenterVertically)
                 .clickable {
@@ -276,8 +309,7 @@ fun BottomBarPostIcons(
                 imageVector = Icons.Filled.Mail,
                 contentDescription = "",
                 Modifier
-                    .padding(end = 16.dp)
-                    .weight(2f)
+                    .weight(1f)
                     .align(Alignment.CenterVertically)
                     .clickable {
                         if (post != null) {
@@ -291,7 +323,6 @@ fun BottomBarPostIcons(
             imageVector = Icons.Filled.Share,
             contentDescription = "Compartir",
             Modifier
-                .padding(end = 16.dp)
                 .weight(1f)
                 .align(Alignment.CenterVertically)
                 .clickable {
@@ -310,7 +341,6 @@ fun BottomBarPostIcons(
                 contentDescription = "Chat",
                 tint = Color.Black,
                 modifier = Modifier
-                    .padding(end = 16.dp)
                     .weight(1f)
                     .align(Alignment.CenterVertically)
                     .clickable {
@@ -318,7 +348,7 @@ fun BottomBarPostIcons(
                     }
             )
         }
-    }
+        }
 }
 
 suspend fun descargarYCompartirImagen(post: PostWithAuthorAndPhotos?, context: Context, viewModel: ItemPostViewModelMethods) {
