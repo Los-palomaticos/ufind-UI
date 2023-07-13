@@ -2,10 +2,10 @@ package social.ufind.ui.screen.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,31 +63,47 @@ object LoginScreen : NavRoute<LoginViewModel> {
         LoginScreen(viewModel)
     }
 }
-
+@Preview
+@Composable
+fun Preview() {
+    LoginScreen(viewModel = viewModel<LoginViewModel>(factory = LoginViewModel.Factory))
+}
 //@Preview(showBackground = true)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
 ) {
-    Box(
-        Modifier
+    Column(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceAround
     ) {
-        Body(viewModel = viewModel, modifier = Modifier.align(Alignment.Center))
-        Footer(viewModel = viewModel, modifier = Modifier.align(Alignment.BottomCenter))
+        Body(viewModel = viewModel, modifier = Modifier
+            .fillMaxHeight().weight(7f))
+        Footer(viewModel = viewModel, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun handleUiState(viewModel: LoginViewModel) {
+fun HandleUiState(viewModel: LoginViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    if (uiState.value is LoginUiState.ErrorWithMessage) {
-        (uiState.value as LoginUiState.ErrorWithMessage).messages.forEach { message ->
-            Text(
-                text = message,
-                color = MaterialTheme.colorScheme.error
-            )
+    when (uiState.value) {
+        is LoginUiState.ErrorWithMessage -> {
+            viewModel.isValid.value = true
+            (uiState.value as LoginUiState.ErrorWithMessage).messages.forEach { message ->
+                Text(
+                    text = message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+        is LoginUiState.Sending -> {
+            viewModel.isValid.value = false
+        }
+        is LoginUiState.Resume -> {}
+        else -> {
+            viewModel.isValid.value = true
         }
     }
 }
@@ -94,12 +111,13 @@ fun handleUiState(viewModel: LoginViewModel) {
 @Composable
 fun Body(viewModel: LoginViewModel, modifier: Modifier) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center
     ) {
         ImageLogo(150, Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(8.dp))
 
-        handleUiState(viewModel = viewModel)
+        HandleUiState(viewModel = viewModel)
 
         Email(viewModel.email.value) {
             viewModel.email.value = it
@@ -204,7 +222,11 @@ fun Footer(
     modifier: Modifier,
     viewModel: LoginViewModel
 ) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
         Divider(
             Modifier
                 .background(Color(0xFFF9F9F9))
@@ -215,7 +237,7 @@ fun Footer(
         ForgottenPasswordButton {
             viewModel.navigateToRoute(OptionsRoutes.ForgottenPassword.route)
         }
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(12.dp))
         SignUp {
             viewModel.navigateToRoute(OptionsRoutes.SignUp.route)
         }

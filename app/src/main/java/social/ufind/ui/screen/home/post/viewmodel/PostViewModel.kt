@@ -1,38 +1,23 @@
 package social.ufind.ui.screen.home.post.viewmodel
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.net.Uri
-import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 import social.ufind.UfindApplication
 import social.ufind.navigation.OptionsRoutes
@@ -43,15 +28,11 @@ import social.ufind.network.ApiResponse
 import social.ufind.repository.PostRepository
 import social.ufind.ui.screen.home.post.itempost.ItemPostViewModel
 import social.ufind.ui.screen.home.post.itempost.ItemPostViewModelMethods
-import java.io.File
-import java.io.FileOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 class PostViewModel(
     private val repository: PostRepository,
     val itemPostMethods: ItemPostViewModelMethods = ItemPostViewModel(repository),
-    private val routeNavigator: RouteNavigator = UfindNavigator()
+    private val routeNavigator: RouteNavigator = UfindNavigator(),
 ): ViewModel(), RouteNavigator by routeNavigator, ItemPostViewModelMethods by itemPostMethods, DefaultLifecycleObserver {
     private var _posts = MutableStateFlow<PagingData<PostWithAuthorAndPhotos>>(PagingData.empty())
     val listOfPosts: Flow<PagingData<PostWithAuthorAndPhotos>>
@@ -60,11 +41,15 @@ class PostViewModel(
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
 
-    val isSaved = mutableStateOf(false)
+    private val _isAlertDialogShown = MutableStateFlow<Boolean>(false)
+    val isAlertDialogShown: StateFlow<Boolean>
+        get() = _isAlertDialogShown
+
     private val pageSize = 5
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
+        getPostTutorialState()
         Log.d("APP_TAG", "CREATED")
     }
     private fun changeRefreshState() {
@@ -74,6 +59,19 @@ class PostViewModel(
         changeRefreshState()
         Log.d("APP_TAG", "Refrescando")
         getAll()
+    }
+    fun setPostTutorialTrue () {
+        viewModelScope.launch {
+            repository.setPostTutorialTrue()
+        }
+    }
+    fun getPostTutorialState() {
+        viewModelScope.launch {
+            val postTutorialState = repository.getPostTutorial()
+            postTutorialState.collect{
+                _isAlertDialogShown.value = (it == "0")
+            }
+        }
     }
     private fun getAll() {
         viewModelScope.launch {

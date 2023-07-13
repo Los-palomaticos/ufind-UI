@@ -132,7 +132,7 @@ fun PostScreen(
     val lazyPagingItems = viewModel.listOfPosts.collectAsLazyPagingItems()
 
     // Estado para realizar un seguimiento de si el AlertDialog ya se ha mostrado
-    var isAlertDialogShown by remember { mutableStateOf(true) }
+    var isAlertDialogShown = viewModel.isAlertDialogShown.collectAsStateWithLifecycle().value
 
     if (isAlertDialogShown) {
         AlertDialog(
@@ -158,6 +158,7 @@ fun PostScreen(
             confirmButton = {
                 Button(
                     onClick = {
+                        viewModel.setPostTutorialTrue()
                         isAlertDialogShown = false
                     },
                     colors = ButtonDefaults.buttonColors(colorResource(id = R.color.text_color))

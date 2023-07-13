@@ -34,6 +34,7 @@ class SignUpViewModel(
 
     fun signup() {
         resetState()
+        _uiState.value = SignUpUiState.Sending
         viewModelScope.launch {
             when (val response = repository.signup(username.value, email.value, password.value)) {
                 is ApiResponse.Success -> {

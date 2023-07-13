@@ -32,6 +32,7 @@ class LoginViewModel(
 
     fun login() {
         resetState()
+        _uiState.value = LoginUiState.Sending
         viewModelScope.launch {
             when (val response = repository.login(email.value, password.value)) {
                 is ApiResponse.Success -> {

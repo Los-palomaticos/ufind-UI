@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import social.ufind.data.model.UserModel
 
@@ -22,6 +23,7 @@ class DataStoreManager(private val context: Context) {
             preferences[TOKEN] = userModel.token
             preferences[PHOTO] = userModel.photo
             preferences[USERNAME] = userModel.username
+            preferences[TUTORIAL] = "0"
         }
     }
     fun getUserData(): Flow<UserModel> = context.dataStore.data.map { user ->
@@ -33,17 +35,15 @@ class DataStoreManager(private val context: Context) {
             username = user[USERNAME] ?: ""
         )
     }
-    suspend fun savePostPhotoUri (name: String) {
-        context.dataStore.edit {
-            it[POST_PHOTO_URI] = name
+    suspend fun setPostTutorialTrue () {
+        context.dataStore.edit { preferences ->
+            preferences[TUTORIAL] = "1"
         }
     }
-    fun getPostPhotoUri(): Flow<String> = context.dataStore.data.map{
-        it[POST_PHOTO_URI]?:""
-    }
-    suspend fun clearPostPhotoUri() {
-        context.dataStore.edit {
-            it[POST_PHOTO_URI] = ""
+
+    fun getPostTutorial(): Flow<String> {
+        return context.dataStore.data.map{
+            it[TUTORIAL] ?: "0"
         }
     }
     suspend fun clearDataStore() = context.dataStore.edit {
@@ -56,5 +56,6 @@ class DataStoreManager(private val context: Context) {
         val TOKEN = stringPreferencesKey("TOKEN")
         val USERNAME = stringPreferencesKey("USERNAME")
         val POST_PHOTO_URI = stringPreferencesKey("POST_PHOTO_NAME")
+        val TUTORIAL = stringPreferencesKey("TUTORIAL")
     }
 }

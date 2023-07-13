@@ -14,6 +14,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import social.ufind.UfindApplication
 import social.ufind.data.UfindDatabase
+import social.ufind.data.datastore.DataStoreManager
 import social.ufind.data.mediator.PostMediator
 import social.ufind.data.mediator.SavedPostsMediator
 import social.ufind.data.mediator.UserPostsMediator
@@ -30,7 +31,8 @@ import java.net.ConnectException
 
 class PostRepository(
     private val database: UfindDatabase,
-    private val api: PostService
+    private val api: PostService,
+    private val dataStoreManager: DataStoreManager
 ) {
     private val postDao = database.postDao()
     private val photos = mutableListOf<MultipartBody.Part>()
@@ -178,5 +180,12 @@ class PostRepository(
         } catch (e: Exception) {
             ApiResponse.Error(e)
         }
+    }
+
+    suspend fun setPostTutorialTrue() {
+        dataStoreManager.setPostTutorialTrue()
+    }
+    fun getPostTutorial(): Flow<String> {
+        return dataStoreManager.getPostTutorial()
     }
 }
