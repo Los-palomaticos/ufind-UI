@@ -83,17 +83,20 @@ object AddPostScreen : NavRoute<AddPostViewModel> {
 fun AddPostScreen(viewModel: AddPostViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(
-        Modifier
+    Column(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        HeaderAddPost(modifier = Modifier.align(Alignment.TopStart), viewModel = viewModel)
+        HeaderAddPost(modifier = Modifier, viewModel = viewModel)
+        Spacer(modifier = Modifier.height(32.dp))
         BodyAddPost(
             uiState = uiState.value,
             viewModel = viewModel,
-            modifier = Modifier.align(Alignment.Center)
-                .fillMaxWidth()
+            modifier = Modifier
+                .fillMaxHeight()
                 .widthIn(0.dp, 500.dp)
         )
     }
@@ -106,9 +109,6 @@ fun HeaderAddPost(modifier: Modifier, viewModel: AddPostViewModel) {
         title = "Crear publicación",
         onClick = { viewModel.navigateBack() }
     )
-    Box(modifier = modifier) {
-        Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
-    }
 }
 
 @Composable
