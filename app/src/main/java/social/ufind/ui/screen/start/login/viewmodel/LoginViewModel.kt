@@ -1,6 +1,5 @@
 package social.ufind.ui.screen.start.login.viewmodel
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import social.ufind.navigation.OptionsRoutes
 import social.ufind.navigation.RouteNavigator
 import social.ufind.navigation.UfindNavigator
 import social.ufind.network.ApiResponse
@@ -48,6 +48,10 @@ class LoginViewModel(
                 else -> {}
             }
         }
+    }
+
+    fun navigateToHome() {
+        routeNavigator.navigateToRoute(OptionsRoutes.UserInterface.route)
     }
 
     fun checkData() {

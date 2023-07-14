@@ -43,6 +43,9 @@ class MainViewModel(val repository: UserRepository): ViewModel(), DefaultLifecyc
             }
         }
     }
+    fun resetState() {
+        _uiState.value = MainUiState.Resume
+    }
     
     fun updateStartDestination(value: String) {
         startDestination.value = value

@@ -61,29 +61,29 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-
-            HandleState(uiState,viewModel)
+            LaunchedEffect(uiState) {
+                handleState(uiState,viewModel)
+            }
 
             UfindTheme(useDarkTheme = isSystemInDarkTheme()) {
                 NavigationComponent(navHostController = navController, startDestination = startDestination.value)
             }
         }
     }
-}
-@Composable
-fun HandleState(uiState: MainUiState, viewModel: MainViewModel) {
-    when(uiState) {
-        is MainUiState.Resume -> {}
-        is MainUiState.ConnectionError -> {
-            Toast.makeText(LocalContext.current, "No tienes conexión a internet, algunas funciones fallarán", Toast.LENGTH_SHORT).show()
-            viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
+    private fun handleState(uiState: MainUiState, viewModel: MainViewModel) {
+        when(uiState) {
+            is MainUiState.Resume -> {}
+            is MainUiState.ConnectionError -> {
+                viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
+            }
+            is MainUiState.Success -> {
+                viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
+            }
+            else -> {
+                viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)
+            }
         }
-        is MainUiState.Success -> {
-            viewModel.updateStartDestination(OptionsRoutes.UserInterface.route)
-        }
-        else -> {
-            viewModel.updateStartDestination(OptionsRoutes.LogInOrSignUpOptions.route)
-        }
+        viewModel.resetState()
     }
 }
 

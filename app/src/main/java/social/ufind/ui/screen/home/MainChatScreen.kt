@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Person
@@ -73,7 +74,7 @@ fun MainChatTopBar() {
                 shape = RoundedCornerShape(16.dp)
             ),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.text_color)
+            containerColor = MaterialTheme.colors.background
         )
     ) {
         Row(
@@ -97,7 +98,7 @@ fun MainChatTopBar() {
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
-                color = Color.White
+                color = MaterialTheme.colors.onBackground
             )
         }
     }

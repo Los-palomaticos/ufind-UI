@@ -93,7 +93,7 @@ fun AddPostScreen(viewModel: AddPostViewModel) {
             uiState = uiState.value,
             viewModel = viewModel,
             modifier = Modifier.align(Alignment.Center)
-                .fillMaxHeight()
+                .fillMaxWidth()
                 .widthIn(0.dp, 500.dp)
         )
     }
