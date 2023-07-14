@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,7 +59,6 @@ import social.ufind.navigation.NavRoute
 import social.ufind.ui.screen.home.post.add.viewmodel.AddPostViewModel
 import social.ufind.ui.screen.home.user.settings.HeaderConfigurationCard
 
-
 object AddPostScreen : NavRoute<AddPostViewModel> {
     override val route: String
         get() = OptionsRoutes.AddPostScreen.route
@@ -83,32 +81,26 @@ object AddPostScreen : NavRoute<AddPostViewModel> {
 fun AddPostScreen(viewModel: AddPostViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
+    Box(
+        Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp)
     ) {
-        HeaderAddPost(modifier = Modifier, viewModel = viewModel)
-        Spacer(modifier = Modifier.height(32.dp))
+        HeaderAddPost(Modifier.align(Alignment.TopStart))
         BodyAddPost(
             uiState = uiState.value,
             viewModel = viewModel,
-            modifier = Modifier
-                .fillMaxHeight()
-                .widthIn(0.dp, 500.dp)
+            modifier = Modifier.align(Alignment.Center).widthIn(0.dp,500.dp)
         )
     }
 
 }
 
 @Composable
-fun HeaderAddPost(modifier: Modifier, viewModel: AddPostViewModel) {
-    HeaderConfigurationCard(
-        title = "Crear publicación",
-        onClick = { viewModel.navigateBack() }
-    )
+fun HeaderAddPost(modifier: Modifier) {
+    Box(modifier = modifier) {
+        Text(text = "", color = colorResource(id = R.color.text_color), fontSize = 16.sp)
+    }
 }
 
 @Composable
@@ -153,6 +145,12 @@ fun BodyAddPost(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        HeaderConfigurationCard(
+            title = "Crear publicación",
+            onClick = { viewModel.navigateBack() }
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+
         Column(
             modifier = modifier,
             verticalArrangement = Arrangement.Center,
@@ -318,40 +316,40 @@ fun LocationCardPost(onClickGoToMapScreen: () -> Unit = {}) {
                 }
             }
 
-/*            Card(
-                onClick = onClickGoToMapScreen,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 4.dp
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
-            ) {
+            /*            Card(
+                            onClick = onClickGoToMapScreen,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 4.dp
+                            ),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White
+                            )
+                        ) {
 
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Image(
-                        painter = painterResource(id = R.drawable.mapbutton),
-                        contentDescription = "Logo",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
-                    )
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Ir a mapa",
-                            textAlign = TextAlign.Center,
-                            color = colorResource(id = R.color.text_color),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }*/
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.mapbutton),
+                                    contentDescription = "Logo",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.matchParentSize()
+                                )
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        "Ir a mapa",
+                                        textAlign = TextAlign.Center,
+                                        color = colorResource(id = R.color.text_color),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }*/
         }
     }
 }
