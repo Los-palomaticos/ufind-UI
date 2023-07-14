@@ -146,8 +146,12 @@ class ItemPostViewModel(
 
             context.startActivity(emailIntent)
         } catch (e: Exception) {
-            Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
-            Log.d("ItemPostViewModel", e.toString())
+            try {
+                enviarCorreoCasoFalla(context, destinatario, asunto)
+            } catch(e: Exception) {
+                Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
+                Log.d("ItemPostViewModel", e.toString())
+            }
         }
     }
 
@@ -209,4 +213,38 @@ class ItemPostViewModel(
 //        )
     }
 
+    fun enviarCorreoCasoFalla(context: Context, destinatario: String, asunto: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:")
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(destinatario))
+        intent.putExtra(Intent.EXTRA_SUBJECT, asunto)
+
+        val packageManager = context.packageManager
+        val activities = packageManager.queryIntentActivities(intent, 0)
+
+        if (activities.isNotEmpty()) {
+            val emailApps = ArrayList<ResolveInfo>()
+            for (resolveInfo in activities) {
+                val packageName = resolveInfo.activityInfo.packageName
+                if (packageName != null && packageName.contains("com.google.android.gm")) {
+                    emailApps.add(resolveInfo)
+                }
+            }
+
+            if (emailApps.isNotEmpty()) {
+                intent.`package` = "com.google.android.gm" // Establecer el paquete de Gmail
+                context.startActivity(intent)
+            } else {
+                // Abrir el selector de aplicaciones de correo electrónico
+                val chooserIntent = Intent.createChooser(intent, "Seleccionar aplicación de correo")
+                if (chooserIntent.resolveActivity(packageManager) != null) {
+                    context.startActivity(chooserIntent)
+                } else {
+                    Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(context, "No se encontró ninguna aplicación de correo", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
